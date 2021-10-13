@@ -11,7 +11,7 @@ H5P.MarkTheWordsPapiJo.XapiGenerator = (function ($) {
    * @constructor
    */
   function XapiGenerator(MarkTheWordsPapiJo) {
-console.log ('this is function XapiGenerator line 14');
+
     /**
      * Generate answered event
      * @return {H5P.XAPIEvent}

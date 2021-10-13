@@ -58,7 +58,6 @@ H5P.MarkTheWordsPapiJo = (function ($, Question, Word, KeyboardNav, XapiGenerato
 
     this.keyboardNavigators = [];
     this.initMarkTheWordsPapiJo();
-    console.log ('papi jo coucou ici ' + JSON.stringify(this, null, "  "));
     this.XapiGenerator = new XapiGenerator(this);
   }
 
@@ -86,20 +85,70 @@ H5P.MarkTheWordsPapiJo = (function ($, Question, Word, KeyboardNav, XapiGenerato
   MarkTheWordsPapiJo.prototype.createHtmlForWords = function (nodes) {
     var self = this;
     var html = '';
+    
+    // Papi Jo added syllables detection.
+    // TODO make $sep an option in edit content parametres. For the time being we shall use the hyphen character (-).    
+    var $sep = "-";
+    
+    // Routine by Sebastian to accept group of words inside asterisks.
+    // See https://github.com/sr258/h5p-mark-the-words    
+    var getSelectableStrings = function (text) {
+      var outputStrings = [];
+      /*
+       * Temporarily replace double asterisks with a replacement character,
+       * so they don't tamper with the detection of words/phrases to be marked
+       */
+      var DOUBLE_ASTERISK_REPLACEMENT = '\u250C'; // no-width space character     
+      var re = new RegExp('(&nbsp;|\r\n|\n|\r|)' + $sep, 'g');
+      // END PAPI JO
+      
+      text = text
+        .replace(/\s\*\*\*/g, ' *' + DOUBLE_ASTERISK_REPLACEMENT) // Cover edge case with escaped * in front
+        .replace(/\*\*\*\s/g, DOUBLE_ASTERISK_REPLACEMENT + '* ') // Cover edge case with escaped * behind
+        .replace(/\*\*/g, DOUBLE_ASTERISK_REPLACEMENT) // Regular escaped *
+        .replace(re, ' '+ $sep); // syllable separator
+      //text = ' ' + text + ' ';
+
+      var pos;
+      do {
+        pos = -1;
+        // Added papi Jo "OR NOT whitespace" front and back.
+        var rg = /(\ |[^\w\s])\*[^\*]+\*(\ |[^\w\s])/; 
+        var match = text.match(rg);
+        
+        if (match !== null) {
+          pos = match.index;
+          // Front part (bunch of regular strings), can each be added to the output          
+          outputStrings = outputStrings.concat(text.slice(0, pos + 1).match(/[^\s]+/g) || []);
+          // Middle part (word/phrase to be marked), can be added as one word/phrase
+          outputStrings.push(match[0]);
+          // back part (could be anything), still needs to be checked
+          text = text.slice(pos + match[0].length - 1);
+        }
+      } while (pos != -1);
+      // Add each remaining word to output
+      outputStrings = outputStrings.concat(text.match(/[^\s]+/g) || []);
+      // Should be map() in ES6
+      outputStrings.forEach(function(string, index) {
+        outputStrings[index] = string.replace(new RegExp(DOUBLE_ASTERISK_REPLACEMENT, 'g'), '**');
+      });
+
+      // Return null to match the behavior of the old word/phrase detection routine
+      return (outputStrings.length === 0) ? null : outputStrings;
+    };
+    // END OF SEBASTIAN ROUTINE.
+    
     for (var i = 0; i < nodes.length; i++) {
       var node = nodes[i];
 
       if (node instanceof Text) {
         var text = $(node).text();
-        // TODO make $sep an option in edit content parametres. For the time being we shall use the hyphen character (-).
-        var $sep = "-";
-        var re = new RegExp('(&nbsp;|\r\n|\n|\r|)' + $sep, 'g');
-        var selectableStrings = text.replace(re, ' ' + $sep)
-          .match(/$sep\*[^\*$sep]+\*$sep|[^\s]+/g);
+        var selectableStrings = getSelectableStrings(text);  
         if (selectableStrings) {
           selectableStrings.forEach(function (entry) {
 
             entry = entry.trim();
+            
             if (!entry.startsWith($sep)) {
               $sepElements = ' ';
             } else { // Case syllables.
@@ -110,22 +159,32 @@ H5P.MarkTheWordsPapiJo = (function ($, Question, Word, KeyboardNav, XapiGenerato
             if (html) {
               html += $sepElements;
             }
-
+            
+            // Papi Jo added removal of the '/' character used as phonemics delimiter from prefix & suffix.
+            
             // Remove prefix punctuations from word
-            var prefix = entry.match(/^[\[\({⟨¿¡“"«„]+/);
+            var prefix = entry.match(/^[\[\({⟨¿¡“"«„/]+/);
+            // Papi Jo added remove extra punctuations left over before group of words.
+            if (entry == prefix) {
+              return;
+            }
             var start = 0;
             if (prefix !== null) {
               start = prefix[0].length;
               html += prefix;
             }
 
-            // Remove suffix punctuations from word
-            var suffix = entry.match(/[",….:;?!\]\)}⟩»”]+$/);
+            // Remove suffix punctuations from word            
+            var suffix = entry.match(/[",….:;?!\]\)}⟩»”/]+$/);
+            // Papi Jo added remove extra punctuations left over after group of words.
+            if (entry == suffix) {
+              return;
+            }
             var end = entry.length - start;
             if (suffix !== null) {
               end -= suffix[0].length;
             }
-
+            
             // Word
             entry = entry.substr(start, end);
             if (entry.length) {
@@ -156,7 +215,6 @@ H5P.MarkTheWordsPapiJo = (function ($, Question, Word, KeyboardNav, XapiGenerato
         }
       }
     }
-
     return html;
   };
 

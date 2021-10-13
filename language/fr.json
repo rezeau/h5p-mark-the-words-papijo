@@ -10,8 +10,8 @@
       "placeholder": "Voici une réponse exacte : *réponse*.",
       "description": "",
       "important": {
-        "description": "<ul><li>Les mots corrects sont marqués avec un astérisque (*) avant et après le mot.</li><li>Les astérisques peuvent être ajoutés dans les mots marqués en ajoutant un autre astérisque, * mot correct *** =&gt; mot correct *.</li><li>Seuls les mots peuvent être marqués comme corrects. Pas les phrases.</li></ul>",
-        "example": "Les mots corrects sont marqués comme ceci: *motcorrect *, un astérisque est écrit comme ceci: *motcorrect***."
+        "description" : "<ul><li>Les mots corrects sont marqués par des astérisques (*) avant et après le mot.</li><li>Les mots peuvent être divisés en syllabes en utilisant le trait d'union normal (-).</li><li>Les mots et les groupes de mots peuvent être marqués comme corrects.</li><li>Pour la transcription phonétique, veuillez utiliser le système API, avec des barres obliques comme dans l'exemple ci-dessous.</li></ul>",
+      "exemple" : "Les mots corrects sont marqués comme suit : *lemonade*, les syllabes accentuées correctes sont marquées comme ceci : le-mo-*nade*, les phrases correctes comme ceci : *un verre de limonade*. Tapez la syllabe accentuée correcte dans 'limonade' en phonétique comme ceci : /le-mə-*neɪd*/"
       }
     },
     {

@@ -38,8 +38,8 @@
     "placeholder": "This is an answer: *answer*.",
     "description": "",
     "important": {
-      "description": "<ul><li>Correct words are marked with asterisks (*) before and after the word.</li><li>Asterisks can be added within marked words by adding another asterisk, *correctword*** =&gt; correctword*.</li><li>Only words may be marked as correct. Not phrases.</li></ul>",
-      "example": "The correct words are marked like this: *correctword*, an asterisk is written like this: *correctword***."
+      "description": "<ul><li>Correct words are marked with asterisks (*) before and after the word.</li><li>Words can be divided into syllables by using the normal hyphen character (-).</li><li>Words and phrases (group of words) may be marked as correct.</li><li>For phonetic transcription, please use the British English system, with forward slashes as in the example below.</li></ul>",
+      "example": "Correct words are marked like this: *lemonade*, correct stressed syllables are marked like this: le‑mo‑*nade*, correct phrases like this: *a glass of lemonade*. Type the correct stressed syllable in 'lemonade' in phonetics like this: /le-mə-*neɪd*/"
     }
   },
   {
