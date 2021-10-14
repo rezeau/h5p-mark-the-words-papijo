@@ -117,10 +117,11 @@ H5P.MarkTheWordsPapiJo = (function ($, Question, Word, KeyboardNav, XapiGenerato
       do {
         pos = -1;
         // Added papi Jo "OR NOT whitespace" front and back.
+        // Replaced the \s whitespace operator with a few operators in order to preserve the nonbreaking characters.
         var rg = /(\ |[^\w\u0020\f\n\r\t\v])\*[^\*]+\*(\ |[^\w\u0020\f\n\r\t\v])/;
         var match = text.match(rg);
-        
-        if (match !== null) {
+        // Eliminate potential redundant $sep here.
+        if (match !== null && match[1] !== $sep) {
           pos = match.index;
           // Front part (bunch of regular strings), can each be added to the output          
           outputStrings = outputStrings.concat(text.slice(0, pos + 1).match(/[^\u0020\f\n\r\t\v]+/g) || []);
