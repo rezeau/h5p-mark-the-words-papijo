@@ -101,7 +101,7 @@ H5P.MarkTheWordsPapiJo = (function ($, Question, Word, KeyboardNav, XapiGenerato
        */
       var DOUBLE_ASTERISK_REPLACEMENT = '\u250C'; // no-width space character     
       var rgsep = new RegExp('(&nbsp;|\r\n|\n|\r|)' + $sep, 'g');
-      var rglinkWords = new RegExp('_', 'g');
+      var rglinkWords = new RegExp($linkWords, 'g');
       
       // END PAPI JO
       
@@ -110,7 +110,7 @@ H5P.MarkTheWordsPapiJo = (function ($, Question, Word, KeyboardNav, XapiGenerato
         .replace(/\*\*\*\s/g, DOUBLE_ASTERISK_REPLACEMENT + '* ') // Cover edge case with escaped * behind
         .replace(/\*\*/g, DOUBLE_ASTERISK_REPLACEMENT) // Regular escaped *
         .replace(rgsep, ' '+ $sep) // syllable separator
-        .replace(rglinkWords, '\u00a0'); // Added papi Jo to replace underscores with no-break space character U+00A0
+        .replace(rglinkWords, '\u00a0'); // Added papi Jo to replace underscores with no-break space character  \u00a0
         text = ' ' + text + ' '; // To deal with beginning and end of paragraphs.
       
       var pos;
@@ -131,7 +131,7 @@ H5P.MarkTheWordsPapiJo = (function ($, Question, Word, KeyboardNav, XapiGenerato
         }
       } while (pos != -1);
       // Add each remaining word to output
-      outputStrings = outputStrings.concat(text.match(/[^\s]+/g) || []);
+      outputStrings = outputStrings.concat(text.match(/[^\u0020\f\n\r\t\v]+/g) || []);
       // Should be map() in ES6
       outputStrings.forEach(function(string, index) {
         outputStrings[index] = string.replace(new RegExp(DOUBLE_ASTERISK_REPLACEMENT, 'g'), '**');
