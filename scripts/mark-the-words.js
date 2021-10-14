@@ -89,9 +89,10 @@ H5P.MarkTheWordsPapiJo = (function ($, Question, Word, KeyboardNav, XapiGenerato
     // Papi Jo added syllables detection.
     // TODO make $sep an option in edit content parametres. For the time being we shall use the hyphen character (-).    
     var $sep = "-";
+    var $linkWords = "_"; //underscore maybe offer a choice in parametres
     
     // Routine by Sebastian to accept group of words inside asterisks.
-    // See https://github.com/sr258/h5p-mark-the-words    
+    // See https://github.com/sr258/h5p-mark-the-words/tree/HFP-1095    
     var getSelectableStrings = function (text) {
       var outputStrings = [];
       /*
@@ -99,27 +100,30 @@ H5P.MarkTheWordsPapiJo = (function ($, Question, Word, KeyboardNav, XapiGenerato
        * so they don't tamper with the detection of words/phrases to be marked
        */
       var DOUBLE_ASTERISK_REPLACEMENT = '\u250C'; // no-width space character     
-      var re = new RegExp('(&nbsp;|\r\n|\n|\r|)' + $sep, 'g');
+      var rgsep = new RegExp('(&nbsp;|\r\n|\n|\r|)' + $sep, 'g');
+      var rglinkWords = new RegExp('_', 'g');
+      
       // END PAPI JO
       
       text = text
         .replace(/\s\*\*\*/g, ' *' + DOUBLE_ASTERISK_REPLACEMENT) // Cover edge case with escaped * in front
         .replace(/\*\*\*\s/g, DOUBLE_ASTERISK_REPLACEMENT + '* ') // Cover edge case with escaped * behind
         .replace(/\*\*/g, DOUBLE_ASTERISK_REPLACEMENT) // Regular escaped *
-        .replace(re, ' '+ $sep); // syllable separator
-      //text = ' ' + text + ' ';
-
+        .replace(rgsep, ' '+ $sep) // syllable separator
+        .replace(rglinkWords, '\u00a0'); // Added papi Jo to replace underscores with no-break space character U+00A0
+        text = ' ' + text + ' '; // To deal with beginning and end of paragraphs.
+      
       var pos;
       do {
         pos = -1;
         // Added papi Jo "OR NOT whitespace" front and back.
-        var rg = /(\ |[^\w\s])\*[^\*]+\*(\ |[^\w\s])/; 
+        var rg = /(\ |[^\w\u0020\f\n\r\t\v])\*[^\*]+\*(\ |[^\w\u0020\f\n\r\t\v])/;
         var match = text.match(rg);
         
         if (match !== null) {
           pos = match.index;
           // Front part (bunch of regular strings), can each be added to the output          
-          outputStrings = outputStrings.concat(text.slice(0, pos + 1).match(/[^\s]+/g) || []);
+          outputStrings = outputStrings.concat(text.slice(0, pos + 1).match(/[^\u0020\f\n\r\t\v]+/g) || []);
           // Middle part (word/phrase to be marked), can be added as one word/phrase
           outputStrings.push(match[0]);
           // back part (could be anything), still needs to be checked
@@ -148,7 +152,6 @@ H5P.MarkTheWordsPapiJo = (function ($, Question, Word, KeyboardNav, XapiGenerato
           selectableStrings.forEach(function (entry) {
 
             entry = entry.trim();
-            
             if (!entry.startsWith($sep)) {
               $sepElements = ' ';
             } else { // Case syllables.
