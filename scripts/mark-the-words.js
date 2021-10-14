@@ -26,6 +26,7 @@ H5P.MarkTheWordsPapiJo = (function ($, Question, Word, KeyboardNav, XapiGenerato
     // Set default behavior.
     this.params = $.extend(true, {
       taskDescription: "",
+      wordsLink: "_",
       textField: "This is a *nice*, *flexible* content type.",
       overallFeedback: [],
       behaviour: {
@@ -56,6 +57,11 @@ H5P.MarkTheWordsPapiJo = (function ($, Question, Word, KeyboardNav, XapiGenerato
       this.previousState = this.contentData.previousState;
     }
 
+    this.$wordsLink = this.params.wordsLink;
+    if (this.$wordsLink == '&amp;') {
+      this.$wordsLink = '&';
+    }
+    
     this.keyboardNavigators = [];
     this.initMarkTheWordsPapiJo();
     this.XapiGenerator = new XapiGenerator(this);
@@ -85,11 +91,10 @@ H5P.MarkTheWordsPapiJo = (function ($, Question, Word, KeyboardNav, XapiGenerato
   MarkTheWordsPapiJo.prototype.createHtmlForWords = function (nodes) {
     var self = this;
     var html = '';
-    
+    wordsLink = this.$wordsLink
     // Papi Jo added syllables detection.
     // TODO make $sep an option in edit content parametres. For the time being we shall use the hyphen character (-).    
     var $sep = "-";
-    var $linkWords = "_"; //underscore maybe offer a choice in parametres
     
     // Routine by Sebastian to accept group of words inside asterisks.
     // See https://github.com/sr258/h5p-mark-the-words/tree/HFP-1095    
@@ -101,7 +106,7 @@ H5P.MarkTheWordsPapiJo = (function ($, Question, Word, KeyboardNav, XapiGenerato
        */
       var DOUBLE_ASTERISK_REPLACEMENT = '\u250C'; // no-width space character     
       var rgsep = new RegExp('(&nbsp;|\r\n|\n|\r|)' + $sep, 'g');
-      var rglinkWords = new RegExp($linkWords, 'g');
+      var rgwordsLink = new RegExp(wordsLink, 'g');
       
       // END PAPI JO
       
@@ -110,7 +115,7 @@ H5P.MarkTheWordsPapiJo = (function ($, Question, Word, KeyboardNav, XapiGenerato
         .replace(/\*\*\*\s/g, DOUBLE_ASTERISK_REPLACEMENT + '* ') // Cover edge case with escaped * behind
         .replace(/\*\*/g, DOUBLE_ASTERISK_REPLACEMENT) // Regular escaped *
         .replace(rgsep, ' '+ $sep) // syllable separator
-        .replace(rglinkWords, '\u00a0'); // Added papi Jo to replace underscores with no-break space character  \u00a0
+        .replace(rgwordsLink, '\u00a0'); // Added papi Jo to replace underscores with no-break space character  \u00a0
         text = ' ' + text + ' '; // To deal with beginning and end of paragraphs.
       
       var pos;
