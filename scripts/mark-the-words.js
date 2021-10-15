@@ -95,6 +95,15 @@ H5P.MarkTheWordsPapiJo = (function ($, Question, Word, KeyboardNav, XapiGenerato
     // See https://github.com/sr258/h5p-mark-the-words/tree/HFP-1095    
     var getSelectableStrings = function (text) {
       var outputStrings = [];
+      // Detect presence of words between square brackets.
+      var match = text.match(/\[(.*?)\]/g);
+      if (match) {
+        for (let i = 0; i < match.length; i++) {
+          var replace = match[i].replace(/ /g, '_')
+          text = text.replace(match[i], replace)
+        }
+      }
+      
       /*
        * Temporarily replace double asterisks with a replacement character,
        * so they don't tamper with the detection of words/phrases to be marked
@@ -152,7 +161,13 @@ H5P.MarkTheWordsPapiJo = (function ($, Question, Word, KeyboardNav, XapiGenerato
         if (selectableStrings) {
           selectableStrings.forEach(function (entry) {
 
-            entry = entry.trim();
+            entry = entry.trim();            
+            // Deal with unselectable words (between square brackets).
+            if (entry.startsWith('[')) {
+              entry = entry.substring(1, entry.length-1);  // remove []              
+              html += entry;
+              return;
+            }
             if (!entry.startsWith($sep)) {
               $sepElements = ' ';
             } else { // Case syllables.
