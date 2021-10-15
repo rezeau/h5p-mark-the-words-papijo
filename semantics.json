@@ -29,28 +29,6 @@
     }
   },
   {
-    "name": "wordsLink",
-    "type": "select",
-    "label": "Character used for WRONG groups of words",
-    "importance": "low",
-    "description": "Select the character you want to use to group words into WRONG groups.",
-    "default": "_",
-    "options": [
-      {
-        "value": "_",
-        "label": "the underscore: wrong_word_group"
-      },
-      {
-        "value": "\\+",
-        "label": "the + sign: : wrong+word+group"
-      },
-      {
-        "value": "&",
-        "label": "the ampersand: : wrong&word&group"
-      }
-    ]
-  },
-  {
     "label": "Textfield",
     "importance": "high",
     "name": "textField",

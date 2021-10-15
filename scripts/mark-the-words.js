@@ -26,7 +26,6 @@ H5P.MarkTheWordsPapiJo = (function ($, Question, Word, KeyboardNav, XapiGenerato
     // Set default behavior.
     this.params = $.extend(true, {
       taskDescription: "",
-      wordsLink: "_",
       textField: "This is a *nice*, *flexible* content type.",
       overallFeedback: [],
       behaviour: {
@@ -55,11 +54,6 @@ H5P.MarkTheWordsPapiJo = (function ($, Question, Word, KeyboardNav, XapiGenerato
     this.contentData = contentData;
     if (this.contentData !== undefined && this.contentData.previousState !== undefined) {
       this.previousState = this.contentData.previousState;
-    }
-
-    this.$wordsLink = this.params.wordsLink;
-    if (this.$wordsLink == '&amp;') {
-      this.$wordsLink = '&';
     }
     
     this.keyboardNavigators = [];
@@ -91,7 +85,7 @@ H5P.MarkTheWordsPapiJo = (function ($, Question, Word, KeyboardNav, XapiGenerato
   MarkTheWordsPapiJo.prototype.createHtmlForWords = function (nodes) {
     var self = this;
     var html = '';
-    wordsLink = this.$wordsLink
+    var wordsLink = '_';
     // Papi Jo added syllables detection.
     // TODO make $sep an option in edit content parametres. For the time being we shall use the hyphen character (-).    
     var $sep = "-";
@@ -104,7 +98,7 @@ H5P.MarkTheWordsPapiJo = (function ($, Question, Word, KeyboardNav, XapiGenerato
       var match = text.match(/\[(.*?)\]/g);
       if (match) {
         for (let i = 0; i < match.length; i++) {
-          var replace = match[i].replace(/ /g, '_')
+          var replace = match[i].replace(/ /g, wordsLink)
           text = text.replace(match[i], replace)
         }
       }
@@ -169,7 +163,7 @@ H5P.MarkTheWordsPapiJo = (function ($, Question, Word, KeyboardNav, XapiGenerato
             entry = entry.trim();            
             // Deal with unselectable words (between square brackets).
             if (entry.startsWith('[')) {
-              entry = entry.substring(1, entry.length-1);  // remove []              
+              entry = ' ' + entry.substring(1, entry.length-1);  // remove [] and add initial space for good measure?              
               html += entry;
               return;
             }
