@@ -59,6 +59,7 @@ H5P.MarkTheWordsPapiJo = (function ($, Question, Word, KeyboardNav, XapiGenerato
     this.keyboardNavigators = [];
     this.initMarkTheWordsPapiJo();
     this.XapiGenerator = new XapiGenerator(this);
+    
   }
 
   MarkTheWordsPapiJo.prototype = Object.create(H5P.EventDispatcher.prototype);
@@ -84,6 +85,7 @@ H5P.MarkTheWordsPapiJo = (function ($, Question, Word, KeyboardNav, XapiGenerato
    */
   MarkTheWordsPapiJo.prototype.createHtmlForWords = function (nodes) {
     var self = this;
+    
     var html = '';
     var wordsLink = '_';
     // Papi Jo added syllables detection.
@@ -707,6 +709,32 @@ H5P.MarkTheWordsPapiJo = (function ($, Question, Word, KeyboardNav, XapiGenerato
    * @see {@link https://github.com/h5p/h5p-question/blob/1558b6144333a431dd71e61c7021d0126b18e252/scripts/question.js#L1236|Called from H5P.Question}
    */
   MarkTheWordsPapiJo.prototype.registerDomElements = function () {
+    var self = this;
+    // Check for task media
+    var media = this.params.media;
+    if (media && media.type && media.type.library) {
+      media = media.type;
+      var type = media.library.split(' ')[0];
+      if (type === 'H5P.Image') {
+        if (media.params.file) {
+          // Register task image
+          self.setImage(media.params.file.path, {
+            disableImageZooming: this.params.media.disableImageZooming || false,
+            alt: media.params.alt
+          });
+        }
+      } else if (type === 'H5P.Video') {
+          if (media.params.sources) {
+            // Register task video
+            self.setVideo(media);
+          }
+      } else if (type === 'H5P.Audio') {
+        if (media.params.files) {
+          // Register task video also works for audio!
+          self.setVideo(media); 
+        } 
+      }
+    }
     // wrap introduction in div with id
     var introduction = '<div id="' + this.introductionId + '">' + this.params.taskDescription + '</div>';
 
@@ -835,6 +863,35 @@ H5P.MarkTheWordsPapiJo.parseText = function (question) {
     el.innerHTML = str;
     return el.value;
   }
+  /**
+   * An audio player to display above the task.
+   *
+   * @param {object} params
+   */
+  function setAudio(params) {
+    params.params = params.params || {};
+
+    sections.audio = {
+      $element: $('<div/>', {
+        'class': 'h5p-question-audio',
+      })
+    };
+
+    if (disableAutoPlay) {
+      params.params.autoplay = false;
+    }
+    else if (params.params.playerMode === 'transparent') {
+      params.params.autoplay = true; // false doesn't make sense for transparent audio
+    }
+
+    sections.audio.instance = H5P.newRunnable(params, self.contentId, sections.audio.$element, true);
+    // The height value that is set by H5P.Audio is counter-productive here.
+    if (sections.audio.instance.audio) {
+      sections.audio.instance.audio.style.height = '';
+    }
+
+    return self;
+  };
 
   const wordsWithAsterisksNotRemovedYet = getWords(replaceHtmlTags(decodeHtmlEntities(question), ' '))
     .map(function (w) {
