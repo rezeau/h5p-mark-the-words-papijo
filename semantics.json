@@ -67,10 +67,10 @@
     }
   },
   {
-    "name": "multiselect",
+    "name": "markSelectables",
     "type": "boolean",
-    "label": "Textfield contains groups of words?",
-    "description": "Check this box if your Textfield contains *groups of words*. Remember to add WRONG groups (distracters) to the text e.g. this_is_a_wrong_group",
+    "label": "Mark selectable words?",
+    "description": "Check this box if you want selectable words or groups of words to be displayed inside borders.",
     "importance": "low",
     "default": false
   },
@@ -91,7 +91,7 @@
     "placeholder": "This is an answer: *answer*.",
     "description": "",
     "important": {
-      "description": "<ul><li>Correct words are marked with asterisks (*) before and after the word.</li><li>Words can be divided into syllables by using the normal hyphen character (-).</li><li>Words and phrases (group of words) may be marked as correct.</li><li>For phonetic transcription, please use the British English system, with forward slashes as in the example below.</li></ul>",
+      "description": "<ul><li>Correct words/groups of words are marked with asterisks (*) before and after the word/group.</li><li>Words can be divided into syllables by using the normal hyphen character (-).</li><li>Put any word/group of words between square brackets to make them [non-selectable].</li><li>The 'Mark selectable words' option is especially useful if your Textfield contains *groups of words*. Remember to add WRONG words/groups (distracters) to the text by adding underscores e.g. this_is_a_wrong_group or this _word is wrong. If this option is selected it's not necessary to use []. All the words which are un-marked are also non-selectable.</li><li>For phonetic transcription, please use the British English system, with forward slashes as in the example below.</li></ul>",
       "example": "Correct words are marked like this: *lemonade*, correct stressed syllables are marked like this: le‑mo‑*nade*, correct phrases like this: *a glass of lemonade*. Type the correct stressed syllable in 'lemonade' in phonetics like this: /le-mə-*neɪd*/"
     }
   },
@@ -213,6 +213,14 @@
         "type": "boolean",
         "label": "Show score points",
         "description": "Show points earned for each answer.",
+        "importance": "low",
+        "default": true
+      },
+      {
+        "name": "showTicks",
+        "type": "boolean",
+        "label": "Show ticks",
+        "description": "Show correct and incorrect ticks for each answer.",
         "importance": "low",
         "default": true
       }

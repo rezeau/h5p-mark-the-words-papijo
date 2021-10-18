@@ -12,12 +12,14 @@ H5P.MarkTheWordsPapiJo.Word = (function () {
    * @type {string}
    */
   Word.ID_MARK_CORRECT = "h5p-description-correct";
+  Word.ID_MARK_CORRECT_NO_TICKS = "h5p-description-correct-no-ticks";
   /**
    * @constant
    *
    * @type {string}
    */
   Word.ID_MARK_INCORRECT = "h5p-description-incorrect";
+  Word.ID_MARK_INCORRECT_NO_TICKS = "h5p-description-incorrect-no-ticks";
 
   /**
    * Class for keeping track of selectable words.
@@ -146,9 +148,13 @@ H5P.MarkTheWordsPapiJo.Word = (function () {
      * @public
      * @param {H5P.Question.ScorePoints} scorePoints
      */
-    this.markCheck = function (scorePoints) {
+    this.markCheck = function (scorePoints, showTicks) {
       if (this.isSelected()) {
-        $word.attr('aria-describedby', isAnswer ? Word.ID_MARK_CORRECT : Word.ID_MARK_INCORRECT);
+        if (showTicks) {
+          $word.attr('aria-describedby', isAnswer ? Word.ID_MARK_CORRECT : Word.ID_MARK_INCORRECT);
+        } else {
+          $word.attr('aria-describedby', isAnswer ? Word.ID_MARK_CORRECT_NO_TICKS : Word.ID_MARK_INCORRECT_NO_TICKS);
+        }
         ariaText.innerHTML = isAnswer
           ? self.params.correctAnswer
           : self.params.incorrectAnswer;

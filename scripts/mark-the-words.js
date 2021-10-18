@@ -26,14 +26,15 @@ H5P.MarkTheWordsPapiJo = (function ($, Question, Word, KeyboardNav, XapiGenerato
     // Set default behavior.
     this.params = $.extend(true, {
       taskDescription: "",
-      multiselect: false,
+      markSelectables: false,
       textField: "This is a *nice*, *flexible* content type.",
       overallFeedback: [],
       behaviour: {
         enableRetry: true,
         enableSolutionsButton: true,
         enableCheckButton: true,
-        showScorePoints: true
+        showScorePoints: true,
+        showTicks: true
       },
       checkAnswerButton: "Check",
       tryAgainButton: "Retry",
@@ -84,7 +85,7 @@ H5P.MarkTheWordsPapiJo = (function ($, Question, Word, KeyboardNav, XapiGenerato
    */
   MarkTheWordsPapiJo.prototype.createHtmlForWords = function (nodes) {
     var self = this;
-    var multiselect = this.params.multiselect;
+    var markSelectables = this.params.markSelectables;
     var html = '';
     var wordsLink = '_';
     // Papi Jo added syllables detection.
@@ -162,7 +163,7 @@ H5P.MarkTheWordsPapiJo = (function ($, Question, Word, KeyboardNav, XapiGenerato
           selectableStrings.forEach(function (entry) {
           
             // Find potential single wrong words marked with underscore(s)
-            if (multiselect) {
+            if (markSelectables) {
               var len = entry.trim().split(/\s+/).length;
               if (len == 1 && entry.match(/\u00a0/g)) {
                 entry = entry.replace(/\u00a0/g, '\u200b'); //U+200B zero-width space              
@@ -218,9 +219,9 @@ H5P.MarkTheWordsPapiJo = (function ($, Question, Word, KeyboardNav, XapiGenerato
             if (entry.length) {
               var rg = /(\*|\u00a0|\u200b)/;
               var match = entry.match(rg);
-              if (multiselect === false) {
+              if (markSelectables === false) {
                 html += '<span role="option" aria-selected="false">' + self.escapeHTML(entry) + '</span>';
-              } else if (multiselect && match) {
+              } else if (markSelectables && match) {
                 html += '<span role="option" aria-selected="false" class="groups_unread">' + self.escapeHTML(entry) + '</span>';
               } else {
                   html += self.escapeHTML(entry);
@@ -496,12 +497,13 @@ H5P.MarkTheWordsPapiJo = (function ($, Question, Word, KeyboardNav, XapiGenerato
     if (self.params.behaviour.showScorePoints) {
       scorePoints = new H5P.Question.ScorePoints();
     }
-
+  
     this.selectableWords.forEach(function (entry) {
       if (entry.isSelected()) {
-        entry.markCheck(scorePoints);
+        entry.markCheck(scorePoints, self.params.behaviour.showTicks);
       }
     });
+  
 
     this.$wordContainer.addClass('h5p-disable-hover');
     this.trigger('resize');
