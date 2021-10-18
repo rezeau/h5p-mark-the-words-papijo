@@ -67,6 +67,14 @@
     }
   },
   {
+    "name": "multiselect",
+    "type": "boolean",
+    "label": "Textfield contains groups of words?",
+    "description": "Check this box if your Textfield contains *groups of words*. Remember to add WRONG groups (distracters) to the text e.g. this_is_a_wrong_group",
+    "importance": "low",
+    "default": false
+  },
+  {
     "label": "Textfield",
     "importance": "high",
     "name": "textField",
@@ -77,7 +85,8 @@
       "br",
       "strong",
       "em",
-      "code"
+      "code",
+      "table"
     ],
     "placeholder": "This is an answer: *answer*.",
     "description": "",

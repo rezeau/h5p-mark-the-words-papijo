@@ -26,6 +26,7 @@ H5P.MarkTheWordsPapiJo = (function ($, Question, Word, KeyboardNav, XapiGenerato
     // Set default behavior.
     this.params = $.extend(true, {
       taskDescription: "",
+      multiselect: false,
       textField: "This is a *nice*, *flexible* content type.",
       overallFeedback: [],
       behaviour: {
@@ -70,9 +71,7 @@ H5P.MarkTheWordsPapiJo = (function ($, Question, Word, KeyboardNav, XapiGenerato
    */
   MarkTheWordsPapiJo.prototype.initMarkTheWordsPapiJo = function () {
     this.$inner = $('<div class="h5p-word-inner"></div>');
-
     this.addTaskTo(this.$inner);
-
     // Set user state
     this.setH5PUserState();
   };
@@ -85,7 +84,7 @@ H5P.MarkTheWordsPapiJo = (function ($, Question, Word, KeyboardNav, XapiGenerato
    */
   MarkTheWordsPapiJo.prototype.createHtmlForWords = function (nodes) {
     var self = this;
-    
+    var multiselect = this.params.multiselect;
     var html = '';
     var wordsLink = '_';
     // Papi Jo added syllables detection.
@@ -100,7 +99,7 @@ H5P.MarkTheWordsPapiJo = (function ($, Question, Word, KeyboardNav, XapiGenerato
       var match = text.match(/\[(.*?)\]/g);
       if (match) {
         for (let i = 0; i < match.length; i++) {
-          var replace = match[i].replace(/ /g, wordsLink)
+          var replace = match[i].replace(/ /g, '§')
           text = text.replace(match[i], replace)
         }
       }
@@ -155,16 +154,16 @@ H5P.MarkTheWordsPapiJo = (function ($, Question, Word, KeyboardNav, XapiGenerato
     
     for (var i = 0; i < nodes.length; i++) {
       var node = nodes[i];
-
       if (node instanceof Text) {
         var text = $(node).text();
+        
         var selectableStrings = getSelectableStrings(text);  
         if (selectableStrings) {
           selectableStrings.forEach(function (entry) {
-
-            entry = entry.trim();            
+            entry = entry.trim();
             // Deal with unselectable words (between square brackets).
             if (entry.startsWith('[')) {
+              entry = entry.replace(/§/g, ' ');              
               entry = ' ' + entry.substring(1, entry.length-1);  // remove [] and add initial space for good measure?              
               html += entry;
               return;
@@ -208,7 +207,15 @@ H5P.MarkTheWordsPapiJo = (function ($, Question, Word, KeyboardNav, XapiGenerato
             // Word
             entry = entry.substr(start, end);
             if (entry.length) {
-              html += '<span role="option" aria-selected="false">' + self.escapeHTML(entry) + '</span>';
+              var rg = /(\*|\u00a0)/;
+              var match = entry.match(rg);
+              if (multiselect === false) {
+                html += '<span role="option" aria-selected="false">' + self.escapeHTML(entry) + '</span>';
+              } else if (multiselect && match) {
+                html += '<span role="option" aria-selected="false" class="groups_unread">' + self.escapeHTML(entry) + '</span>';
+              } else {
+                  html += self.escapeHTML(entry);
+              }
             }
 
             if (suffix !== null) {
