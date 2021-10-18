@@ -158,9 +158,18 @@ H5P.MarkTheWordsPapiJo = (function ($, Question, Word, KeyboardNav, XapiGenerato
         var text = $(node).text();
         
         var selectableStrings = getSelectableStrings(text);  
-        if (selectableStrings) {
+        if (selectableStrings) {        
           selectableStrings.forEach(function (entry) {
+          
+            // Find potential single wrong words marked with underscore(s)
+            if (multiselect) {
+              var len = entry.trim().split(/\s+/).length;
+              if (len == 1 && entry.match(/\u00a0/g)) {
+                entry = entry.replace(/\u00a0/g, '\u200b'); //U+200B zero-width space              
+              }
+            } 
             entry = entry.trim();
+            
             // Deal with unselectable words (between square brackets).
             if (entry.startsWith('[')) {
               entry = entry.replace(/§/g, ' ');              
@@ -207,7 +216,7 @@ H5P.MarkTheWordsPapiJo = (function ($, Question, Word, KeyboardNav, XapiGenerato
             // Word
             entry = entry.substr(start, end);
             if (entry.length) {
-              var rg = /(\*|\u00a0)/;
+              var rg = /(\*|\u00a0|\u200b)/;
               var match = entry.match(rg);
               if (multiselect === false) {
                 html += '<span role="option" aria-selected="false">' + self.escapeHTML(entry) + '</span>';
