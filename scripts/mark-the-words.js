@@ -5,8 +5,7 @@
  * @external {jQuery} $ H5P.jQuery
  */
 H5P.MarkTheWordsPapiJo = (function ($, Question, Word, KeyboardNav, XapiGenerator) {
-  /**
-   * Initialize module.
+   /* Initialize module.
    *
    * @class H5P.MarkTheWordsPapiJo
    * @extends H5P.Question
@@ -120,7 +119,7 @@ H5P.MarkTheWordsPapiJo = (function ($, Question, Word, KeyboardNav, XapiGenerato
         .replace(/\*\*\*\s/g, DOUBLE_ASTERISK_REPLACEMENT + '* ') // Cover edge case with escaped * behind
         .replace(/\*\*/g, DOUBLE_ASTERISK_REPLACEMENT) // Regular escaped *
         .replace(rgsep, ' '+ $sep) // syllable separator
-        .replace(rgwordsLink, '\u00a0'); // Added papi Jo to replace underscores with no-break space character  \u00a0
+        //.replace(rgwordsLink, '\u00a0'); // Added papi Jo to replace underscores with no-break space character  \u00a0
         text = ' ' + text + ' '; // To deal with beginning and end of paragraphs.
       
       var pos;
@@ -129,9 +128,11 @@ H5P.MarkTheWordsPapiJo = (function ($, Question, Word, KeyboardNav, XapiGenerato
         // Added papi Jo "OR NOT whitespace" front and back.
         // Replaced the \s whitespace operator with a few operators in order to preserve the nonbreaking characters.
         var rg = /(\ |[^\w\u0020\f\n\r\t\v])\*[^\*]+\*(\ |[^\w\u0020\f\n\r\t\v])/;
+        var rg = /(\ |[^\w\u0020\f\n\r\t\v])(\*|\u005f)[^\*]+(\*|\u005f)(\ |[^\w\u0020\f\n\r\t\v])/;
         var match = text.match(rg);
         // Eliminate potential redundant $sep here.
         if (match !== null && match[1] !== $sep) {
+        //console.log (JSON.stringify(match, null, "  "));
           pos = match.index;
           // Front part (bunch of regular strings), can each be added to the output          
           outputStrings = outputStrings.concat(text.slice(0, pos + 1).match(/[^\u0020\f\n\r\t\v]+/g) || []);
@@ -157,18 +158,20 @@ H5P.MarkTheWordsPapiJo = (function ($, Question, Word, KeyboardNav, XapiGenerato
       var node = nodes[i];
       if (node instanceof Text) {
         var text = $(node).text();
-        
+        //console.log (text);
         var selectableStrings = getSelectableStrings(text);  
         if (selectableStrings) {        
           selectableStrings.forEach(function (entry) {
-          
+          //console.log (entry);
             // Find potential single wrong words marked with underscore(s)
+            /*
             if (markSelectables) {
               var len = entry.trim().split(/\s+/).length;
               if (len == 1 && entry.match(/\u00a0/g)) {
                 entry = entry.replace(/\u00a0/g, '\u200b'); //U+200B zero-width space              
               }
             } 
+            */
             entry = entry.trim();
             
             // Deal with unselectable words (between square brackets).
@@ -217,7 +220,9 @@ H5P.MarkTheWordsPapiJo = (function ($, Question, Word, KeyboardNav, XapiGenerato
             // Word
             entry = entry.substr(start, end);
             if (entry.length) {
-              var rg = /(\*|\u00a0|\u200b)/;
+            console.log ('----------> ' + entry);
+              //var rg = /(\*|\u00a0|\u200b)/;
+              var rg = /(\*|\u005f|\u200b)/;
               var match = entry.match(rg);
               if (markSelectables === false) {
                 html += '<span role="option" aria-selected="false">' + self.escapeHTML(entry) + '</span>';
@@ -252,6 +257,7 @@ H5P.MarkTheWordsPapiJo = (function ($, Question, Word, KeyboardNav, XapiGenerato
         }
       }
     }
+    
     return html;
   };
 
@@ -331,6 +337,7 @@ H5P.MarkTheWordsPapiJo = (function ($, Question, Word, KeyboardNav, XapiGenerato
 
       // Add keyboard navigation to this element
       var selectableWord = new Word($(this), self.params);
+      //console.log (JSON.stringify(selectableWord, null, "  "));
       if (selectableWord.isAnswer()) {
         self.answers += 1;
       }
@@ -365,7 +372,7 @@ H5P.MarkTheWordsPapiJo = (function ($, Question, Word, KeyboardNav, XapiGenerato
       html: self.params.a11yClickableTextLabel,
       tabIndex: '-1',
     }).appendTo($container);
-
+//console.log (JSON.stringify(self.params.a11yClickableTextLabel, null, "  "));
     $wordContainer.appendTo($container);
     self.$wordContainer = $wordContainer;
   };
@@ -763,6 +770,7 @@ H5P.MarkTheWordsPapiJo = (function ($, Question, Word, KeyboardNav, XapiGenerato
     this.createDescriptionsDom().appendTo(this.$inner);
 
     // Register content
+    
     this.setContent(this.$inner, {
       'class': 'h5p-word'
     });
@@ -790,169 +798,8 @@ H5P.MarkTheWordsPapiJo = (function ($, Question, Word, KeyboardNav, XapiGenerato
 }(H5P.jQuery, H5P.Question, H5P.MarkTheWordsPapiJo.Word, H5P.KeyboardNav, H5P.MarkTheWordsPapiJo.XapiGenerator));
 
 /**
+ * Removed useless functions 19 OCT 2021.
  * Static utility method for parsing H5P.MarkTheWordsPapiJo content item questions
  * into format useful for generating reports.
- * 
- * Example input: "<p lang=\"en\">I like *pizza* and *burgers*.</p>"
- * 
- * Produces the following:
- * [
- *   {
- *     type: 'text',
- *     content: 'I like '
- *   },
- *   {
- *     type: 'answer',
- *     correct: 'pizza',
- *   },
- *   {
- *     type: 'text',
- *     content: ' and ',
- *   },
- *   {
- *     type: 'answer',
- *     correct: 'burgers'
- *   },
- *   {
- *     type: 'text',
- *     content: '.'
- *   }
- * ]
- * 
- * @param {string} question MarkTheWordsPapiJo textField (html)
+
  */
-H5P.MarkTheWordsPapiJo.parseText = function (question) {
-
-  /**
-   * Separate all words surrounded by a space and an asterisk and any other
-   * sequence of non-whitespace characters from str into an array.
-   * 
-   * @param {string} str 
-   * @returns {string[]} array of all words in the given string
-   */
-  function getWords(str) { 
-    return str.match(/ \*[^\*]+\* |[^\s]+/g);
-  }
-
-  /**
-   * Replace each HTML tag in str with the provided value and return the resulting string
-   * 
-   * Regexp expression explained:
-   *   <     - first character is '<'
-   *   [^>]* - followed by zero or more occurences of any character except '>'
-   *   >     - last character is '>'
-   **/ 
-  function replaceHtmlTags(str, value) {
-    return str.replace(/<[^>]*>/g, value);
-  }
-
-  function startsAndEndsWith(char, str) {
-    return str.startsWith(char) && str.endsWith(char);
-  }
-
-  function removeLeadingPunctuation(str) {
-    return str.replace(/^[\[\({⟨¿¡“"«„]+/, '');
-  }
-
-  function removeTrailingPunctuation(str) {
-    return str.replace(/[",….:;?!\]\)}⟩»”]+$/, '');
-  }
-
-  /**
-   * Escape double asterisks ** = *, and remove single asterisk.
-   * @param {string} str 
-   */
-  function handleAsterisks(str) {
-    var asteriskIndex = str.indexOf('*');
-
-    while (asteriskIndex !== -1) {
-      str = str.slice(0, asteriskIndex) + str.slice(asteriskIndex + 1, str.length);
-      asteriskIndex = str.indexOf('*', asteriskIndex + 1);
-    }
-    return str;
-  }
-
-  /**
-   * Decode HTML entities (e.g. &nbsp;) from the given string using the DOM API
-   * @param {string} str 
-   */
-  function decodeHtmlEntities(str) {
-    const el = document.createElement('textarea');
-    el.innerHTML = str;
-    return el.value;
-  }
-  /**
-   * An audio player to display above the task.
-   *
-   * @param {object} params
-   */
-  function setAudio(params) {
-    params.params = params.params || {};
-
-    sections.audio = {
-      $element: $('<div/>', {
-        'class': 'h5p-question-audio',
-      })
-    };
-
-    if (disableAutoPlay) {
-      params.params.autoplay = false;
-    }
-    else if (params.params.playerMode === 'transparent') {
-      params.params.autoplay = true; // false doesn't make sense for transparent audio
-    }
-
-    sections.audio.instance = H5P.newRunnable(params, self.contentId, sections.audio.$element, true);
-    // The height value that is set by H5P.Audio is counter-productive here.
-    if (sections.audio.instance.audio) {
-      sections.audio.instance.audio.style.height = '';
-    }
-
-    return self;
-  };
-
-  const wordsWithAsterisksNotRemovedYet = getWords(replaceHtmlTags(decodeHtmlEntities(question), ' '))
-    .map(function (w) {
-      return w.trim();
-    })
-    .map(function (w) {
-      return removeLeadingPunctuation(w);
-    })
-    .map(function (w) {
-      return removeTrailingPunctuation(w);
-    });
-
-  const allSelectableWords = wordsWithAsterisksNotRemovedYet.map(function (w) {
-    return handleAsterisks(w); 
-  });
-
-  const correctWordIndexes = [];
-
-  const correctWords = wordsWithAsterisksNotRemovedYet
-    .filter(function (w, i) { 
-      if (startsAndEndsWith('*', w)) {
-        correctWordIndexes.push(i);
-        return true;
-      }
-      return false;
-    })
-    .map(function (w) {
-      return handleAsterisks(w);
-    });
-  
-  const printableQuestion = replaceHtmlTags(decodeHtmlEntities(question), ' ')
-    .replace('\xa0', '\x20');
-
-  return {
-    alternatives: allSelectableWords,
-    correctWords: correctWords,
-    correctWordIndexes: correctWordIndexes,
-    textWithPlaceholders: printableQuestion.match(/[^\s]+/g)
-      .reduce(function (textWithPlaceholders, word, index) {
-        word = removeTrailingPunctuation(
-          removeLeadingPunctuation(word));
-        
-        return textWithPlaceholders.replace(word, '%' + index);
-      }, printableQuestion)
-  };
-};

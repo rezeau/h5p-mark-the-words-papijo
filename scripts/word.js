@@ -45,6 +45,17 @@ H5P.MarkTheWordsPapiJo.Word = (function () {
       $word.text(handledInput);
     }
 
+    // Check if word is a distracter (wrong answer)
+    var isDistracter = checkForDistracter();
+
+    // Remove single asterisk and escape double asterisks.
+    //handleAsterisks();
+
+    if (isDistracter) {
+      $word.text(handledInput);
+    }
+
+
     const ariaText = document.createElement('span');
     ariaText.classList.add('hidden-but-read');
     $word[0].appendChild(ariaText);
@@ -63,8 +74,36 @@ H5P.MarkTheWordsPapiJo.Word = (function () {
           handledInput = input.slice(1, input.length - 1);
           return true;
         }
+        if (wordString.charAt(wordString.length - 1) === ('_')) {
+          handledInput = input.slice(1, input.length - 1);
+          return false;
+        }
         // If punctuation, add the punctuation to the end of the word.
         else if(wordString.charAt(wordString.length - 2) === ('*')) {
+          handledInput = input.slice(1, input.length - 2);
+          return true;
+        }
+        return false;
+      }
+      return false;
+    }
+
+    /**
+     * Checks if the word is a distracter by checking the first, second to last and last character of the word.
+     *
+     * @private
+     * @return {Boolean} Returns true if the word is a distracter.
+     */
+    function checkForDistracter() {
+      // Check last and next to last character, in case of punctuations.
+      var wordString = removeDoubleAsterisks(input);
+      if (wordString.charAt(0) === ('_') && wordString.length > 2) {
+        if (wordString.charAt(wordString.length - 1) === ('_')) {
+          handledInput = input.slice(1, input.length - 1);
+          return true;
+        }
+        // If punctuation, add the punctuation to the end of the word.
+        else if(wordString.charAt(wordString.length - 2) === ('_')) {
           handledInput = input.slice(1, input.length - 2);
           return true;
         }
@@ -90,7 +129,6 @@ H5P.MarkTheWordsPapiJo.Word = (function () {
         }
         asteriskIndex = wordString.indexOf('*', asteriskIndex + 1);
       }
-
       return slicedWord;
     }
 
