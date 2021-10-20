@@ -46,7 +46,7 @@ H5P.MarkTheWordsPapiJo.Word = (function () {
     }
 
     // Check if word is a distracter (wrong answer)
-    var isDistracter = checkForDistracter();
+    var isDistracter = checkForDistracter(self.params.distractorDelimiter);
 
     // Remove single asterisk and escape double asterisks.
     //handleAsterisks();
@@ -94,16 +94,16 @@ H5P.MarkTheWordsPapiJo.Word = (function () {
      * @private
      * @return {Boolean} Returns true if the word is a distracter.
      */
-    function checkForDistracter() {
+    function checkForDistracter(dl) {
       // Check last and next to last character, in case of punctuations.
       var wordString = removeDoubleAsterisks(input);
-      if (wordString.charAt(0) === ('_') && wordString.length > 2) {
-        if (wordString.charAt(wordString.length - 1) === ('_')) {
+      if (wordString.charAt(0) === (dl) && wordString.length > 2) {
+        if (wordString.charAt(wordString.length - 1) === (dl)) {
           handledInput = input.slice(1, input.length - 1);
           return true;
         }
         // If punctuation, add the punctuation to the end of the word.
-        else if(wordString.charAt(wordString.length - 2) === ('_')) {
+        else if(wordString.charAt(wordString.length - 2) === (dl)) {
           handledInput = input.slice(1, input.length - 2);
           return true;
         }
@@ -186,9 +186,9 @@ H5P.MarkTheWordsPapiJo.Word = (function () {
      * @public
      * @param {H5P.Question.ScorePoints} scorePoints
      */
-    this.markCheck = function (scorePoints, showTicks) {
+    this.markCheck = function (scorePoints) {
       if (this.isSelected()) {
-        if (showTicks) {
+        if (self.params.behaviour.showTicks) {
           $word.attr('aria-describedby', isAnswer ? Word.ID_MARK_CORRECT : Word.ID_MARK_INCORRECT);
         } else {
           $word.attr('aria-describedby', isAnswer ? Word.ID_MARK_CORRECT_NO_TICKS : Word.ID_MARK_INCORRECT_NO_TICKS);
