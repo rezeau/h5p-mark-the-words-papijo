@@ -171,12 +171,22 @@ H5P.MarkTheWordsPapiJo.Word = (function () {
      * @public
      */
     this.markClear = function () {
-      $word
-        .attr('aria-selected', false)
-        .removeAttr('aria-describedby');
-
-      ariaText.innerHTML = '';
-      this.clearScorePoint();
+      // Keep correct words.
+      var keepCorrectAnswers = false;
+      if (self.params.behaviour.keepCorrectAnswers) {
+        var className = $word.attr('aria-describedby');
+        if (className !== undefined) {
+          var keepCorrectAnswers = className.match(/h5p-description-correct(|-no-ticks)/g);
+        }
+      }
+      if (!keepCorrectAnswers) {
+        $word
+          .attr('aria-selected', false)
+          .removeAttr('aria-describedby');
+  
+        ariaText.innerHTML = '';
+        this.clearScorePoint();
+      }
     };
 
     /**
