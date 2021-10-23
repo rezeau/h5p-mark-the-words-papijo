@@ -8,9 +8,9 @@ H5P.KeyboardNav = (function (EventDispatcher) {
    * Construct a new KeyboardNav
    * @constructor
    */
-  function KeyboardNav() {
+  function KeyboardNav(keepCorrectAnswers) {
     EventDispatcher.call(this);
-
+    this.keepCorrectAnswers = keepCorrectAnswers;
     /** @member {boolean} */
     this.selectability = true;
 
@@ -59,6 +59,21 @@ H5P.KeyboardNav = (function (EventDispatcher) {
       return;
     }
 
+    if (this.keepCorrectAnswers) {
+      var i = 1;
+      var prevKeepanswer = true;
+      while (prevKeepanswer && (index - i >= 0)) {   
+        var role = this.getElements()[index - i].getAttribute('role');
+        if (role && role == 'keepanswer') {
+          i++;
+        } else {
+          prevKeepanswer = false;
+          this.focusOnElementAt(index - i);
+        }
+      }
+      return;
+    }
+
     this.focusOnElementAt(isFirstElement ? (this.elements.length - 1) : (index - 1));
 
     /**
@@ -80,11 +95,28 @@ H5P.KeyboardNav = (function (EventDispatcher) {
    * @fires KeyboardNav#previousOption
    */
   KeyboardNav.prototype.nextOption = function (index) {
+    var nbElements = this.elements.length;
     var isLastElement = index === this.elements.length - 1;
+    
     if (isLastElement) {
       return;
     }
-
+    
+    if (this.keepCorrectAnswers) {
+      var i = 1;
+      var nextKeepanswer = true;
+      while (nextKeepanswer && (index + i < nbElements)) {   
+        var role = this.getElements()[index + i].getAttribute('role');
+        if (role && role == 'keepanswer') {
+          i++;
+        } else {
+          nextKeepanswer = false;
+          this.focusOnElementAt(index + i);
+        }
+      }
+      return;
+    }
+    
     this.focusOnElementAt(isLastElement ? 0 : (index + 1));
 
     /**
@@ -126,11 +158,12 @@ H5P.KeyboardNav = (function (EventDispatcher) {
    * @public
    */
   KeyboardNav.prototype.enableSelectability = function () {
-    this.elements.forEach(function (el) {
+    this.elements.forEach(function (el) {    
       el.el.addEventListener('keydown', el.keyDown);
       el.el.addEventListener('click', el.onClick);
     }.bind(this));
     this.selectability = true;
+    
   };
 
   /**
@@ -165,7 +198,6 @@ H5P.KeyboardNav = (function (EventDispatcher) {
    */
   KeyboardNav.prototype.toggleSelect = function(el){
     if(this.selectability) {
-
       // toggle selection
       el.setAttribute('aria-selected', !isElementSelected(el));
 

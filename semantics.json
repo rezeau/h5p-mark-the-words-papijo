@@ -104,13 +104,19 @@
     "type": "text",
     "widget": "html",
     "tags": [
-      "p",
-      "br",
+      "p",      
       "strong",
       "em",
+      "ul",
+      "ol",
+      "hr",
       "code",
       "table"
     ],
+    "font": {
+      "size": true,
+      "family": true
+    },
     "placeholder": "This is an answer: *answer*.",
     "description": "",
     "important": {
@@ -221,6 +227,28 @@
         "label": "Enable \"Show solution\" button",
         "importance": "low",
         "default": true
+      },
+      {
+        "name": "minScore",
+        "type": "number",
+        "label": "Minimum score percentage",
+        "description": "Minimum score percentage to obtain before Solutions can be displayed. Maximum required is 75%.",
+        "importance": "low",
+        "optional": true,
+        "min": 0,
+        "max": 80,
+        "step": 10,        
+        "default": 0,
+        "unit": "%", 
+        "widget": "showWhen",
+        "showWhen": {
+          "rules": [
+            {
+              "field": "enableSolutionsButton",
+              "equals": true
+            }
+          ]
+        }
       },
       {
         "name": "enableCheckButton",

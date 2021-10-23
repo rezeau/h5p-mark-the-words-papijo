@@ -35,7 +35,8 @@ H5P.MarkTheWordsPapiJo = (function ($, Question, Word, KeyboardNav, XapiGenerato
         enableCheckButton: true,
         showScorePoints: true,
         showTicks: true,
-        keepCorrectAnswers: false
+        keepCorrectAnswers: false,
+        minScore: 0
       },
       checkAnswerButton: "Check",
       tryAgainButton: "Retry",
@@ -44,6 +45,7 @@ H5P.MarkTheWordsPapiJo = (function ($, Question, Word, KeyboardNav, XapiGenerato
       incorrectAnswer: "Incorrect!",
       missedAnswer: "Answer not found!",
       displaySolutionDescription:  "Task is updated to contain the solution.",
+      scoreTooLow: "The solution won't be available untill your score is at least @minscore/@maxscore",
       scoreBarLabel: 'You got :num out of :total points',
       a11yFullTextLabel: 'Full readable text',
       a11yClickableTextLabel: 'Full text where words can be marked',
@@ -308,7 +310,7 @@ H5P.MarkTheWordsPapiJo = (function ($, Question, Word, KeyboardNav, XapiGenerato
 
       if (isNewParagraph) {
         // Add keyboard navigation helper
-        self.currentKeyboardNavigator = new KeyboardNav();
+        self.currentKeyboardNavigator = new KeyboardNav(self.params.behaviour.keepCorrectAnswers);
 
         // on word clicked
         self.currentKeyboardNavigator.on('select', function () {
@@ -403,6 +405,21 @@ H5P.MarkTheWordsPapiJo = (function ($, Question, Word, KeyboardNav, XapiGenerato
     });
 
     this.addButton('show-solution', this.params.showSolutionButton, function () {
+      if (self.params.behaviour.minScore > 0) {
+        var minScore = self.params.behaviour.minScore;
+        var answers = self.calculateScore();
+        var nbTotal = answers.correct + answers.missed;
+        var score = answers.score;
+        var percent = (score / nbTotal) * 100 ;
+        if (percent < minScore) {
+          var scoreTooLowText = self.params.scoreTooLow
+            .replace('@minscore', Math.round(nbTotal*minScore/100))
+            .replace('@maxscore', nbTotal);
+          self.setFeedback();
+          self.updateFeedbackContent(scoreTooLowText);
+          return;
+        };
+      }
       self.setAllMarks();
 
       self.$a11yClickableTextLabel.html(self.params.a11ySolutionModeHeader + ' - ' + self.params.a11yClickableTextLabel);
@@ -587,7 +604,9 @@ H5P.MarkTheWordsPapiJo = (function ($, Question, Word, KeyboardNav, XapiGenerato
    */
   MarkTheWordsPapiJo.prototype.clearAllMarks = function () {
     this.selectableWords.forEach(function (entry) {
+      
       entry.markClear();
+      
     });
 
     this.$wordContainer.removeClass('h5p-disable-hover');
@@ -757,9 +776,10 @@ H5P.MarkTheWordsPapiJo = (function ($, Question, Word, KeyboardNav, XapiGenerato
     this.setContent(this.$inner, {
       'class': 'h5p-word'
     });
-
+    
     // Register buttons
     this.addButtons();
+    
   };
 
   /**

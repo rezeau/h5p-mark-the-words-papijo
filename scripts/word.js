@@ -171,7 +171,7 @@ H5P.MarkTheWordsPapiJo.Word = (function () {
      * @public
      */
     this.markClear = function () {
-      // Keep correct words.
+      // Keep correct answers.
       var keepCorrectAnswers = false;
       if (self.params.behaviour.keepCorrectAnswers) {
         var className = $word.attr('aria-describedby');
@@ -186,7 +186,13 @@ H5P.MarkTheWordsPapiJo.Word = (function () {
   
         ariaText.innerHTML = '';
         this.clearScorePoint();
+      } else {
+        $word
+          .attr('aria-selected', true)
+          .attr('role', 'keepanswer');
       }
+      
+  
     };
 
     /**

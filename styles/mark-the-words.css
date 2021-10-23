@@ -37,6 +37,16 @@
   cursor: pointer;
   position: relative;
 }
+/* Answer already found and keep correct answers option selected. */
+.h5p-mark-the-words [role="keepanswer"] {
+  white-space: nowrap;
+  padding: 0.15em;
+  border-radius: 0.25em;
+  cursor: none;
+  position: relative;
+  border-color: rgb(0,0,0)!important;
+}
+
 
 .h5p-mark-the-words .h5p-word-selectable-words:not(.h5p-disable-hover) [role="option"]:hover {
   box-shadow: inset 0px 0px 0px 2px #cee0f4;
