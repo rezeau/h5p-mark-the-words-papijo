@@ -232,7 +232,7 @@
         "name": "minScore",
         "type": "number",
         "label": "Minimum score percentage",
-        "description": "Minimum score percentage to obtain before Solutions can be displayed. Maximum required is 75%.",
+        "description": "Minimum score percentage to obtain before Solutions can be displayed. Maximum required is 80%.",
         "importance": "low",
         "optional": true,
         "min": 0,
