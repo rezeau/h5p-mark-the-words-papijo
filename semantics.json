@@ -109,14 +109,9 @@
       "em",
       "ul",
       "ol",
-      "hr",
       "code",
       "table"
     ],
-    "font": {
-      "size": true,
-      "family": true
-    },
     "placeholder": "This is an answer: *answer*.",
     "description": "",
     "important": {
@@ -232,12 +227,12 @@
         "name": "minScore",
         "type": "number",
         "label": "Minimum score percentage",
-        "description": "Minimum score percentage to obtain before Solutions can be displayed. Maximum required is 80%.",
+        "description": "Minimum score percentage to obtain before Solutions can be displayed.",
         "importance": "low",
         "optional": true,
         "min": 0,
-        "max": 80,
-        "step": 10,        
+        "max": 95,
+        "step": 5,        
         "default": 0,
         "unit": "%", 
         "widget": "showWhen",

@@ -413,7 +413,7 @@ H5P.MarkTheWordsPapiJo = (function ($, Question, Word, KeyboardNav, XapiGenerato
         var percent = (score / nbTotal) * 100 ;
         if (percent < minScore) {
           var scoreTooLowText = self.params.scoreTooLow
-            .replace('@minscore', Math.round(nbTotal*minScore/100))
+            .replace('@minscore', Math.ceil(nbTotal*minScore/100))
             .replace('@maxscore', nbTotal);
           self.setFeedback();
           self.updateFeedbackContent(scoreTooLowText);
