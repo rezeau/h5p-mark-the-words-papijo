@@ -130,7 +130,7 @@ H5P.MarkTheWordsPapiJo = (function ($, Question, Word, KeyboardNav, XapiGenerato
           + distDel + '|\\*[^\\*]+\\*)(\\ |[^\\w\\u0020\\f\\n\\r\\t\\v])');
 
         var match = text.match(rg);
-
+        
         // Eliminate potential redundant $sep here.
         if (match !== null && match[1] !== $sep) {
           pos = match.index;
@@ -162,6 +162,13 @@ H5P.MarkTheWordsPapiJo = (function ($, Question, Word, KeyboardNav, XapiGenerato
         if (selectableStrings) {
           selectableStrings.forEach(function (entry, index) {
             entry = entry.trim();
+            
+            // Detect and remove superfluous pseudo-selectable end punct marks!
+            var punct = /^[",….:;?!\]\)}⟩»”]+$/
+            if (entry.match(punct)) {
+              return;
+            }
+            
             // Deal with unselectable words (between square brackets).
             if (entry.startsWith('[')) {
               entry = entry.replace(/§/g, ' ');
@@ -179,7 +186,7 @@ H5P.MarkTheWordsPapiJo = (function ($, Question, Word, KeyboardNav, XapiGenerato
             if (html) {
               html += $sepElements;
             }
-            // Remove prefix punctuations from word
+            // Remove prefix punctuations from word.
             var prefix = entry.match(/^[\[\({⟨¿¡“"«„/]+/);
             if (entry == prefix) {
               return;
@@ -189,23 +196,14 @@ H5P.MarkTheWordsPapiJo = (function ($, Question, Word, KeyboardNav, XapiGenerato
               start = prefix[0].length;
               html += prefix;
             }
-
-            // Remove suffix punctuations from word
-            var suffix = entry.match(/[",….:;?!\]\)}⟩»”/]+$/);
-            if (suffix) {
-              var prevEntry = selectableStrings[index - 1];
-              if (prevEntry) {
-                var endPunct = prevEntry.slice(-1);
-                if (prevEntry.match(/[",….:;?!]/)) {
-                  return;
-                }
-              }
-            }
+            
+            // Remove suffix punctuations from word.            
+            var suffix = entry.match(/[",….:;?!\]\)}⟩»”]+$/);
             var end = entry.length - start;
             if (suffix !== null) {
               end -= suffix[0].length;
             }
-
+            
             // Word
             entry = entry.substr(start, end);
             if (entry.length) {
@@ -220,10 +218,11 @@ H5P.MarkTheWordsPapiJo = (function ($, Question, Word, KeyboardNav, XapiGenerato
                   html += self.escapeHTML(entry);
               }
             }
-
+            
             if (suffix !== null) {
               html += suffix;
             }
+            
           });
         }
         else if ((selectableStrings !== null) && text.length) {
@@ -400,7 +399,7 @@ H5P.MarkTheWordsPapiJo = (function ($, Question, Word, KeyboardNav, XapiGenerato
       });
     }
 
-    this.addButton('try-again', this.params.tryAgainButton, this.resetTask.bind(this), false, {
+    this.addButton('try-again', this.params.tryAgainButton, this.retry.bind(this), false, {
       'aria-label': this.params.a11yRetry,
     });
 
@@ -602,11 +601,9 @@ H5P.MarkTheWordsPapiJo = (function ($, Question, Word, KeyboardNav, XapiGenerato
   /**
    * Clear styling on marked words.
    */
-  MarkTheWordsPapiJo.prototype.clearAllMarks = function () {
+  MarkTheWordsPapiJo.prototype.clearAllMarks = function (keepCorrectAnswers) {
     this.selectableWords.forEach(function (entry) {
-      
-      entry.markClear();
-      
+      entry.markClear(keepCorrectAnswers);
     });
 
     this.$wordContainer.removeClass('h5p-disable-hover');
@@ -672,12 +669,33 @@ H5P.MarkTheWordsPapiJo = (function ($, Question, Word, KeyboardNav, XapiGenerato
   };
 
   /**
+   * Resets the task back to its' initial state but keeps potential correct answers marked as such.
+   *
+   * @fires MarkTheWordsPapiJo#resize
+   */
+
+  MarkTheWordsPapiJo.prototype.retry = function () {
+    this.isAnswered = false;
+    this.clearAllMarks(this.params.behaviour.keepCorrectAnswers);
+    this.hideEvaluation();
+    this.hideButton('try-again');
+    this.hideButton('show-solution');
+    this.showButton('check-answer');
+    this.$a11yClickableTextLabel.html(this.params.a11yClickableTextLabel);
+
+    this.toggleSelectable(false);
+    this.trigger('resize');
+  };
+
+
+  /**
    * Resets the task back to its' initial state.
    *
    * @fires MarkTheWordsPapiJo#resize
    * @see {@link https://h5p.org/documentation/developers/contracts|Needed for contracts.}
    */
-  MarkTheWordsPapiJo.prototype.resetTask = function () {
+
+MarkTheWordsPapiJo.prototype.resetTask = function () {
     this.isAnswered = false;
     this.clearAllMarks();
     this.hideEvaluation();
@@ -689,6 +707,7 @@ H5P.MarkTheWordsPapiJo = (function ($, Question, Word, KeyboardNav, XapiGenerato
     this.toggleSelectable(false);
     this.trigger('resize');
   };
+
 
   /**
    * Returns an object containing the selected words

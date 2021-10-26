@@ -67,7 +67,7 @@
 /* Correctly answered marking */
 .h5p-mark-the-words [aria-describedby="h5p-description-correct"],
 .h5p-mark-the-words [aria-describedby="h5p-description-correct-no-ticks"] {
-  background: #9dd8bb;
+  background: #9dd8bb!important;
   color: #255c41;
   display: inline-block;
   line-height: 1;
@@ -75,7 +75,7 @@
 /* Wrongly answered marking */
 .h5p-mark-the-words [aria-describedby="h5p-description-incorrect"],
 .h5p-mark-the-words [aria-describedby="h5p-description-incorrect-no-ticks"] {
-  background-color: #f7d0d0;
+  background-color: #f7d0d0!important;
   color: #b71c1c;
   text-decoration: line-through;
   display: inline-block;

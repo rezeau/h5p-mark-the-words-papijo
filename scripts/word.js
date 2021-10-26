@@ -166,20 +166,18 @@ H5P.MarkTheWordsPapiJo.Word = (function () {
     };
 
     /**
-     * Clears all marks from the word.
+     * Clears all marks from the word except if keepCorrectAnswers.
      *
      * @public
      */
-    this.markClear = function () {
-      // Keep correct answers.
-      var keepCorrectAnswers = false;
-      if (self.params.behaviour.keepCorrectAnswers) {
+    this.markClear = function (keepCorrectAnswers) {
+      if (keepCorrectAnswers) {
         var className = $word.attr('aria-describedby');
         if (className !== undefined) {
-          var keepCorrectAnswers = className.match(/h5p-description-correct(|-no-ticks)/g);
+          var keep = className.match(/h5p-description-correct(|-no-ticks)/g);
         }
       }
-      if (!keepCorrectAnswers) {
+      if (!keep) {
         $word
           .attr('aria-selected', false)
           .removeAttr('aria-describedby');
@@ -191,8 +189,6 @@ H5P.MarkTheWordsPapiJo.Word = (function () {
           .attr('aria-selected', true)
           .attr('role', 'keepanswer');
       }
-      
-  
     };
 
     /**
