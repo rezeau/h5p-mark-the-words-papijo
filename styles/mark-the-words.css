@@ -57,7 +57,8 @@
   background: #cee0f4;
 }
 /* Missed word*/
-.h5p-mark-the-words [aria-describedby="h5p-description-missed"] {
+.h5p-mark-the-words [aria-describedby="h5p-description-missed"],
+.h5p-mark-the-words [aria-describedby="h5p-description-missed-mistake"] {
   color: #255c41;
   font-weight: bold;
   border: 1px #255c41 dashed!important;
@@ -66,7 +67,8 @@
 
 /* Correctly answered marking */
 .h5p-mark-the-words [aria-describedby="h5p-description-correct"],
-.h5p-mark-the-words [aria-describedby="h5p-description-correct-no-ticks"] {
+.h5p-mark-the-words [aria-describedby="h5p-description-correct-no-ticks"],
+.h5p-mark-the-words [aria-describedby="h5p-description-correct-no-ticks-is-mistake"] {
   background: #9dd8bb!important;
   color: #255c41;
   display: inline-block;
@@ -127,4 +129,20 @@ button.h5p-retry-button.h5p-retry-button {
 .h5p-mark-the-words .groups_unread {
  border: thin solid #90b6e3;
  border-radius: .25em;
+}
+
+.h5p-mark-the-words [aria-describedby="h5p-description-is-mistake"] {
+  color: red;
+  background-color: rgb(255,255,255);
+}
+.h5p-mark-the-words [aria-describedby="h5p-description-not-mistake"] {
+  color: blue;
+  background-color: rgb(255,255,255);
+}
+.h5p-mark-the-words [aria-describedby="h5p-description-missed-mistake"] {
+  color: red;
+  background-color: rgb(255,255,255);
+}
+.h5p-mark-the-words [aria-describedby="h5p-description-remove-mistake"] {
+  display: none;
 }

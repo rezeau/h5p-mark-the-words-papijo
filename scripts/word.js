@@ -6,6 +6,7 @@ H5P.MarkTheWordsPapiJo.Word = (function () {
    * @type {string}
   */
   Word.ID_MARK_MISSED = "h5p-description-missed";
+  Word.ID_MARK_MISSED_MISTAKE = "h5p-description-missed-mistake";
   /**
    * @constant
    *
@@ -13,6 +14,9 @@ H5P.MarkTheWordsPapiJo.Word = (function () {
    */
   Word.ID_MARK_CORRECT = "h5p-description-correct";
   Word.ID_MARK_CORRECT_NO_TICKS = "h5p-description-correct-no-ticks";
+  Word.ID_MARK_IS_MISTAKE = "h5p-description-is-mistake";
+  Word.ID_MARK_NOT_MISTAKE = "h5p-description-not-mistake";
+  Word.ID_MARK_REMOVE_MISTAKE = "h5p-description-remove-mistake";
   /**
    * @constant
    *
@@ -20,6 +24,7 @@ H5P.MarkTheWordsPapiJo.Word = (function () {
    */
   Word.ID_MARK_INCORRECT = "h5p-description-incorrect";
   Word.ID_MARK_INCORRECT_NO_TICKS = "h5p-description-incorrect-no-ticks";
+  
 
   /**
    * Class for keeping track of selectable words.
@@ -170,11 +175,13 @@ H5P.MarkTheWordsPapiJo.Word = (function () {
      *
      * @public
      */
-    this.markClear = function (keepCorrectAnswers) {
+    this.markClear = function (keepCorrectAnswers, spotTheMistakes) {
       if (keepCorrectAnswers) {
         var className = $word.attr('aria-describedby');
-        if (className !== undefined) {
-          var keep = className.match(/h5p-description-correct(|-no-ticks)/g);
+        
+        if (className !== undefined) {          
+        // h5p-description-is-mistake
+          var keep = className.match(/h5p-description-(correct|is-mistake)(|-no-ticks)/g);
         }
       }
       if (!keep) {
@@ -188,7 +195,16 @@ H5P.MarkTheWordsPapiJo.Word = (function () {
         $word
           .attr('aria-selected', true)
           .attr('role', 'keepanswer');
+        if (spotTheMistakes) { // Hide correctly spotted mistake.
+          $word.attr('aria-describedby', Word.ID_MARK_REMOVE_MISTAKE);
+        }
       }
+      if (!keepCorrectAnswers && !spotTheMistakes) {
+        $word
+          .attr('aria-selected', false)
+          .attr('role', 'option');
+      }
+      
     };
 
     /**
@@ -198,10 +214,10 @@ H5P.MarkTheWordsPapiJo.Word = (function () {
      * @public
      * @param {H5P.Question.ScorePoints} scorePoints
      */
-    this.markCheck = function (scorePoints) {
+    this.markCheck = function (scorePoints, spotTheMistakes) {
       if (this.isSelected()) {
         if (self.params.behaviour.showTicks) {
-          $word.attr('aria-describedby', isAnswer ? Word.ID_MARK_CORRECT : Word.ID_MARK_INCORRECT);
+          $word.attr('aria-describedby', isAnswer ? Word.ID_MARK_CORRECT : Word.ID_MARK_INCORRECT);          
         } else {
           $word.attr('aria-describedby', isAnswer ? Word.ID_MARK_CORRECT_NO_TICKS : Word.ID_MARK_INCORRECT_NO_TICKS);
         }
@@ -212,9 +228,19 @@ H5P.MarkTheWordsPapiJo.Word = (function () {
         if (scorePoints) {
           $word[0].appendChild(scorePoints.getElement(isAnswer));
         }
-      }
-      else if (isAnswer) {
-        $word.attr('aria-describedby', Word.ID_MARK_MISSED);
+        if (spotTheMistakes) { //
+          if (isAnswer) { // 
+            $word.attr('aria-describedby', Word.ID_MARK_IS_MISTAKE);
+          } else {
+            $word.attr('aria-describedby', Word.ID_MARK_NOT_MISTAKE);
+          }
+        }
+      } else if (isAnswer) {        
+        if (spotTheMistakes) {
+          $word.attr('aria-describedby', Word.ID_MARK_MISSED_MISTAKE);          
+        } else {
+          $word.attr('aria-describedby', Word.ID_MARK_MISSED);
+        }
         ariaText.innerHTML = self.params.missedAnswer;
       }
     };

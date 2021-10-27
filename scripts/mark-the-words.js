@@ -40,6 +40,7 @@ H5P.MarkTheWordsPapiJo = (function ($, Question, Word, KeyboardNav, XapiGenerato
         adjustScore: false,
         adjustScorePerCent: 1,
         enableScoreExplanation: false,
+        spotTheMistakes: true
       },
       checkAnswerButton: "Check",
       tryAgainButton: "Retry",
@@ -78,6 +79,8 @@ H5P.MarkTheWordsPapiJo = (function ($, Question, Word, KeyboardNav, XapiGenerato
       this.adjustScorePerCent = 1; 
       this.enableScoreExplanation = false;
     }
+    this.keepCorrectAnswers = this.params.behaviour.keepCorrectAnswers
+    this.spotTheMistakes = this.params.behaviour.spotTheMistakes;
   
   }
 
@@ -324,7 +327,7 @@ H5P.MarkTheWordsPapiJo = (function ($, Question, Word, KeyboardNav, XapiGenerato
 
       if (isNewParagraph) {
         // Add keyboard navigation helper
-        self.currentKeyboardNavigator = new KeyboardNav(self.params.behaviour.keepCorrectAnswers);
+        self.currentKeyboardNavigator = new KeyboardNav(self.keepCorrectAnswers);
 
         // on word clicked
         self.currentKeyboardNavigator.on('select', function () {
@@ -503,8 +506,9 @@ H5P.MarkTheWordsPapiJo = (function ($, Question, Word, KeyboardNav, XapiGenerato
    * @fires MarkTheWordsPapiJo#resize
    */
   MarkTheWordsPapiJo.prototype.setAllMarks = function () {
+    var spot = this.spotTheMistakes;
     this.selectableWords.forEach(function (entry) {
-      entry.markCheck();
+      entry.markCheck(0, spot);
       entry.clearScorePoint();
     });
 
@@ -531,7 +535,7 @@ H5P.MarkTheWordsPapiJo = (function ($, Question, Word, KeyboardNav, XapiGenerato
 
     this.selectableWords.forEach(function (entry) {
       if (entry.isSelected()) {
-        entry.markCheck(scorePoints);
+        entry.markCheck(scorePoints, self.spotTheMistakes);
       }
     });
 
@@ -564,7 +568,10 @@ H5P.MarkTheWordsPapiJo = (function ($, Question, Word, KeyboardNav, XapiGenerato
     }
     this.setFeedback(scoreText, score, maxScore, this.params.scoreBarLabel, helpText);
 
-    this.trigger('resize');    
+    this.trigger('resize');
+    if (score == this.answers) {
+      this.clearAllMarks(this.keepCorrectAnswers, this.spotTheMistakes);
+    }    
     return score === this.answers;
   };
 
@@ -628,9 +635,9 @@ H5P.MarkTheWordsPapiJo = (function ($, Question, Word, KeyboardNav, XapiGenerato
   /**
    * Clear styling on marked words.
    */
-  MarkTheWordsPapiJo.prototype.clearAllMarks = function (keepCorrectAnswers) {
+  MarkTheWordsPapiJo.prototype.clearAllMarks = function (keepCorrectAnswers, spotTheMistakes) {
     this.selectableWords.forEach(function (entry) {
-      entry.markClear(keepCorrectAnswers);
+      entry.markClear(keepCorrectAnswers, spotTheMistakes);
     });
 
     this.$wordContainer.removeClass('h5p-disable-hover');
@@ -704,7 +711,7 @@ H5P.MarkTheWordsPapiJo = (function ($, Question, Word, KeyboardNav, XapiGenerato
 
   MarkTheWordsPapiJo.prototype.retry = function () {
     this.isAnswered = false;
-    this.clearAllMarks(this.params.behaviour.keepCorrectAnswers);
+    this.clearAllMarks(this.keepCorrectAnswers, this.spotTheMistakes);
     this.hideEvaluation();
     this.hideButton('try-again');
     this.hideButton('show-solution');
@@ -725,13 +732,14 @@ H5P.MarkTheWordsPapiJo = (function ($, Question, Word, KeyboardNav, XapiGenerato
 
 MarkTheWordsPapiJo.prototype.resetTask = function () {
     this.isAnswered = false;
-    this.clearAllMarks();
+    this.clearAllMarks(false, false);
+    
     this.hideEvaluation();
     this.hideButton('try-again');
     this.hideButton('show-solution');
     this.showButton('check-answer');
     this.$a11yClickableTextLabel.html(this.params.a11yClickableTextLabel);
-
+    
     this.toggleSelectable(false);
     this.trigger('resize');
   };
