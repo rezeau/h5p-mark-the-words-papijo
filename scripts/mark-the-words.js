@@ -36,7 +36,10 @@ H5P.MarkTheWordsPapiJo = (function ($, Question, Word, KeyboardNav, XapiGenerato
         showScorePoints: true,
         showTicks: true,
         keepCorrectAnswers: false,
-        minScore: 0
+        minScore: 0,
+        adjustScore: false,
+        adjustScorePerCent: 1,
+        enableScoreExplanation: false,
       },
       checkAnswerButton: "Check",
       tryAgainButton: "Retry",
@@ -45,8 +48,9 @@ H5P.MarkTheWordsPapiJo = (function ($, Question, Word, KeyboardNav, XapiGenerato
       incorrectAnswer: "Incorrect!",
       missedAnswer: "Answer not found!",
       displaySolutionDescription:  "Task is updated to contain the solution.",
-      scoreTooLow: "The solution won't be available untill your score is at least @minscore/@maxscore",
+      scoreTooLow: "The solution won't be available until your score is at least @minscore/@maxscore",
       scoreBarLabel: 'You got :num out of :total points',
+      scoreExplanationButtonLabel: 'Show score explanation',
       a11yFullTextLabel: 'Full readable text',
       a11yClickableTextLabel: 'Full text where words can be marked',
       a11ySolutionModeHeader: 'Solution mode',
@@ -64,6 +68,17 @@ H5P.MarkTheWordsPapiJo = (function ($, Question, Word, KeyboardNav, XapiGenerato
     this.keyboardNavigators = [];
     this.initMarkTheWordsPapiJo();
     this.XapiGenerator = new XapiGenerator(this);
+    
+    if (this.params.behaviour.adjustScore) {
+      this.adjustScorePerCent = this.params.behaviour.adjustScorePerCent / 100;
+      if (this.params.behaviour.enableScoreExplanation) {
+        this.enableScoreExplanation = true;
+      }
+    } else {
+      this.adjustScorePerCent = 1; 
+      this.enableScoreExplanation = false;
+    }
+  
   }
 
   MarkTheWordsPapiJo.prototype = Object.create(H5P.EventDispatcher.prototype);
@@ -377,7 +392,6 @@ H5P.MarkTheWordsPapiJo = (function ($, Question, Word, KeyboardNav, XapiGenerato
         self.isAnswered = true;
         var answers = self.calculateScore();
         self.feedbackSelectedWords();
-
         if (!self.showEvaluation(answers)) {
           // Only show if a correct answer was not found.
           if (self.params.behaviour.enableSolutionsButton && (answers.correct < self.answers)) {
@@ -402,17 +416,26 @@ H5P.MarkTheWordsPapiJo = (function ($, Question, Word, KeyboardNav, XapiGenerato
     this.addButton('try-again', this.params.tryAgainButton, this.retry.bind(this), false, {
       'aria-label': this.params.a11yRetry,
     });
-
+    
     this.addButton('show-solution', this.params.showSolutionButton, function () {
       if (self.params.behaviour.minScore > 0) {
-        var minScore = self.params.behaviour.minScore;
+        var minScore = self.params.behaviour.minScore;        
         var answers = self.calculateScore();
-        var nbTotal = answers.correct + answers.missed;
+        var adjust = self.adjustScorePerCent;
+        var nbTotalRaw = answers.correct + answers.missed;
+        var nbTotal = nbTotalRaw * adjust;
+        var mini = nbTotalRaw * minScore / 100 * adjust;
+        // Calculate minimum score sc to allow display Solutions.
+        for (var i = adjust; i < nbTotal; i += adjust) {
+          if (i >= Math.max(i , mini)) {
+            var sc = i;
+            break;
+          } 
+        }
         var score = answers.score;
-        var percent = (score / nbTotal) * 100 ;
-        if (percent < minScore) {
+        if (score < sc) {        
           var scoreTooLowText = self.params.scoreTooLow
-            .replace('@minscore', Math.ceil(nbTotal*minScore/100))
+            .replace('@minscore',  i)
             .replace('@maxscore', nbTotal);
           self.setFeedback();
           self.updateFeedbackContent(scoreTooLowText);
@@ -525,18 +548,23 @@ H5P.MarkTheWordsPapiJo = (function ($, Question, Word, KeyboardNav, XapiGenerato
    */
   MarkTheWordsPapiJo.prototype.showEvaluation = function (answers) {
     this.hideEvaluation();
-    var score = answers.score;
-
+    var score = answers.score;    
+    maxScore = this.answers * this.adjustScorePerCent;
+    
     //replace editor variables with values, uses regexp to replace all instances.
     var scoreText = H5P.Question.determineOverallFeedback(this.params.overallFeedback, score / this.answers).replace(/@score/g, score.toString())
-      .replace(/@total/g, this.answers.toString())
+      .replace(/@total/g, maxScore.toString())
       .replace(/@correct/g, answers.correct.toString())
       .replace(/@wrong/g, answers.wrong.toString())
       .replace(/@missed/g, answers.missed.toString());
 
-    this.setFeedback(scoreText, score, this.answers, this.params.scoreBarLabel);
+    var helpText = this.enableScoreExplanation ? this.params.scoreExplanation : false;
+    if (helpText) {
+      helpText = helpText.replace(/@percent/g, this.adjustScorePerCent * 100 + '%');
+    }
+    this.setFeedback(scoreText, score, maxScore, this.params.scoreBarLabel, helpText);
 
-    this.trigger('resize');
+    this.trigger('resize');    
     return score === this.answers;
   };
 
@@ -557,7 +585,6 @@ H5P.MarkTheWordsPapiJo = (function ($, Question, Word, KeyboardNav, XapiGenerato
    */
   MarkTheWordsPapiJo.prototype.calculateScore = function () {
     var self = this;
-
     /**
      * @typedef {Object} Answers
      * @property {number} correct The number of correct answers
@@ -587,14 +614,14 @@ H5P.MarkTheWordsPapiJo = (function ($, Question, Word, KeyboardNav, XapiGenerato
       return result;
     }, initial);
 
-    // if no wrong answers, and black is correct
+    // if no wrong answers, and blank is correct
     if (answers.wrong === 0 && self.blankIsCorrect) {
       answers.correct = 1;
     }
 
     // no negative score
     answers.score = Math.max(answers.correct - answers.wrong, 0);
-
+    answers.score = answers.score * this.adjustScorePerCent;
     return answers;
 }
 
@@ -637,7 +664,8 @@ H5P.MarkTheWordsPapiJo = (function ($, Question, Word, KeyboardNav, XapiGenerato
    * @returns {Number} maxScore The maximum amount of points achievable.
    */
   MarkTheWordsPapiJo.prototype.getMaxScore = function () {
-    return this.answers;
+    var adjustScore = this.params.behaviour.adjustScore;
+    return this.answers * this.adjustScorePerCent;
   };
 
   /**

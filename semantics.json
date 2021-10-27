@@ -1,5 +1,11 @@
 [
   {
+    "name": "info",
+    "type": "boolean",
+    "label": "Tutorial and Examples: <a href=\"http://www.rezeau.org/drupal/\" target=\"_blank\" rel=\"noopener\">Papi Jo's Drupal test site</a></span>",
+    "description": "<span style=\"color: white;margin-top: -20px;display: table-caption;font-size: large;\">&#9608;</span>"    
+  },
+  {
     "name": "media",
     "type": "group",
     "label": "Media",
@@ -202,6 +208,15 @@
     "common": true
   },
   {
+    "label": "Score explanation text",
+    "importance": "low",
+    "name": "scoreExplanation",
+    "type": "text",
+    "default": "In this activity your score and the maximum score are both multiplied by @percent.",
+    "common": true,
+    "optional": true
+  },
+  {
     "name": "behaviour",
     "importance": "low",
     "type": "group",
@@ -227,7 +242,7 @@
         "name": "minScore",
         "type": "number",
         "label": "Minimum score percentage",
-        "description": "Minimum score percentage to obtain before Solutions can be displayed.",
+        "description": "Minimum score percentage to obtain before Solutions can be displayed. Enter 0(%) OR leave empty for no minimum limit.",
         "importance": "low",
         "optional": true,
         "min": 0,
@@ -240,6 +255,54 @@
           "rules": [
             {
               "field": "enableSolutionsButton",
+              "equals": true
+            }
+          ]
+        }
+      },
+      {
+        "name": "adjustScore",
+        "type": "boolean",
+        "label": "Adjust Score",
+        "importance": "low",
+        "default": false,
+        "description": "If this content has a lot of correct items you may adjust the maximum score by multiplying it by a certain percentage. Can be useful is this content is part of a Book or Quiz, etc."
+      },
+      {
+        "name": "adjustScorePerCent",
+        "type": "number",
+        "label": "adjust Score by...",
+        "description": "",
+        "importance": "low",
+        "optional": true,
+        "min": 5,
+        "max": 95,
+        "step": 5,        
+        "default": 50,
+        "unit": "%",
+        "widget": "showWhen",
+        "showWhen": {
+          "rules": [
+            {
+              "field": "adjustScore",
+              "equals": true
+            }
+          ]
+        }
+      },
+      {
+        "name": "enableScoreExplanation",
+        "type": "boolean",
+        "label": "Enable score explanation",
+        "description": "Display a score explanation to user when checking their answers (if the 'Adjust Score' option has been selected).",
+        "importance": "low",
+        "default": true,
+        "optional": true,
+        "widget": "showWhen",
+        "showWhen": {
+          "rules": [
+            {
+              "field": "adjustScore",
               "equals": true
             }
           ]
@@ -321,6 +384,14 @@
     "type": "text",
     "label": "Textual representation of the score bar for those using a readspeaker",
     "default": "You got :num out of :total points",
+    "importance": "low",
+    "common": true
+  },
+  {
+    "name": "scoreExplanationButtonLabel",
+    "type": "text",
+    "label": "Textual representation of the score explanation button",
+    "default": "Show score explanation",
     "importance": "low",
     "common": true
   },
