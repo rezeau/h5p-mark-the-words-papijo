@@ -40,7 +40,7 @@ H5P.MarkTheWordsPapiJo = (function ($, Question, Word, KeyboardNav, XapiGenerato
         adjustScore: false,
         adjustScorePerCent: 1,
         enableScoreExplanation: false,
-        spotTheMistakes: true
+        spotTheMistakes: false
       },
       checkAnswerButton: "Check",
       tryAgainButton: "Retry",

@@ -340,6 +340,14 @@
         "description": "Check this option if you want to keep the correct words displayed after pressing 'Retry'.",
         "importance": "low",
         "default": false
+      },
+      {
+        "name": "spotTheMistakes",
+        "type": "boolean",
+        "label": "Enable the 'Spot The Mistakes' mode",
+        "importance": "low",
+        "default": false,
+        "description": "If you enable this mode, the student will have to click on the mistakes/WRONG answers. The correctly spotted WRONG answers will then disappear from the text."
       }
     ]
   },
