@@ -30,7 +30,8 @@
   outline: none;
 }
 /* Selectable words*/
-.h5p-mark-the-words [role="option"] {
+.h5p-mark-the-words [role="option"],
+.h5p-mark-the-words .noPadding {
   white-space: nowrap;
   padding: 0.15em;
   border-radius: 0.25em;
@@ -67,8 +68,7 @@
 
 /* Correctly answered marking */
 .h5p-mark-the-words [aria-describedby="h5p-description-correct"],
-.h5p-mark-the-words [aria-describedby="h5p-description-correct-no-ticks"],
-.h5p-mark-the-words [aria-describedby="h5p-description-correct-no-ticks-is-mistake"] {
+.h5p-mark-the-words [aria-describedby="h5p-description-correct-no-ticks"] {
   background: #9dd8bb!important;
   color: #255c41;
   display: inline-block;
@@ -85,7 +85,8 @@
 }
 /* Feedback icons */
 /* papi Jo make the check & cross marks display optional*/
-.h5p-mark-the-words [aria-describedby="h5p-description-correct"]:after {
+.h5p-mark-the-words [aria-describedby="h5p-description-correct"]:after,
+.h5p-mark-the-words [aria-describedby="h5p-description-is-mistake"]:after {
   position: relative;
   right: 0.1em;
   text-decoration: none;
@@ -94,7 +95,8 @@
   color: #255c41;
   padding-left: 0.75em;
 }
-.h5p-mark-the-words [aria-describedby="h5p-description-incorrect"]:after {
+.h5p-mark-the-words [aria-describedby="h5p-description-incorrect"]:after,
+.h5p-mark-the-words [aria-describedby="h5p-description-not-mistake"]:after {
   position: relative;
   right: 0.1em;
   display: inline-block;
@@ -131,11 +133,13 @@ button.h5p-retry-button.h5p-retry-button {
  border-radius: .25em;
 }
 
-.h5p-mark-the-words [aria-describedby="h5p-description-is-mistake"] {
+.h5p-mark-the-words [aria-describedby="h5p-description-is-mistake"],
+.h5p-mark-the-words [aria-describedby="h5p-description-correct-is-mistake-no-ticks"] {
   color: red;
   background-color: rgb(255,255,255);
 }
-.h5p-mark-the-words [aria-describedby="h5p-description-not-mistake"] {
+.h5p-mark-the-words [aria-describedby="h5p-description-not-mistake"],
+.h5p-mark-the-words [aria-describedby="h5p-description-incorrect-not-mistake-no-ticks"] {
   color: blue;
   background-color: rgb(255,255,255);
 }
@@ -145,4 +149,9 @@ button.h5p-retry-button.h5p-retry-button {
 }
 .h5p-mark-the-words [aria-describedby="h5p-description-remove-mistake"] {
   display: none;
+}
+
+.h5p-mark-the-words .noPadding {
+  padding-left: 0;
+  padding-right: 0;
 }

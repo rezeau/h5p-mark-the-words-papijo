@@ -44,13 +44,14 @@ H5P.MarkTheWordsPapiJo = (function ($, Question, Word, KeyboardNav, XapiGenerato
       },
       checkAnswerButton: "Check",
       tryAgainButton: "Retry",
-      showSolutionButton: "Show solution",
+      showSolutionButton: "Show solution",      
       correctAnswer: "Correct!",
       incorrectAnswer: "Incorrect!",
       missedAnswer: "Answer not found!",
       displaySolutionDescription:  "Task is updated to contain the solution.",
       scoreTooLow: "The solution won't be available until your score is at least @minscore/@maxscore",
       scoreBarLabel: 'You got :num out of :total points',
+      scoreExplanation: 'In this activity your score and the maximum score are both multiplied by @percent.',
       scoreExplanationButtonLabel: 'Show score explanation',
       a11yFullTextLabel: 'Full readable text',
       a11yClickableTextLabel: 'Full text where words can be marked',
@@ -79,9 +80,12 @@ H5P.MarkTheWordsPapiJo = (function ($, Question, Word, KeyboardNav, XapiGenerato
       this.adjustScorePerCent = 1; 
       this.enableScoreExplanation = false;
     }
-    this.keepCorrectAnswers = this.params.behaviour.keepCorrectAnswers
+    
     this.spotTheMistakes = this.params.behaviour.spotTheMistakes;
-  
+    this.keepCorrectAnswers = this.params.behaviour.keepCorrectAnswers;
+    if (this.spotTheMistakes || this.params.markSelectables) {
+      this.keepCorrectAnswers = false;
+    }
   }
 
   MarkTheWordsPapiJo.prototype = Object.create(H5P.EventDispatcher.prototype);
@@ -112,12 +116,24 @@ H5P.MarkTheWordsPapiJo = (function ($, Question, Word, KeyboardNav, XapiGenerato
     var distDel = this.params.distractorDelimiter;
     // Papi Jo added syllables detection.
     // TODO make $sep an option in edit content parametres. For the time being we shall use the hyphen character (-)
-    var $sep = "-";
+    
+    var spotTheMistakes = this.params.behaviour.spotTheMistakes;
+    if (spotTheMistakes) {
+      var $sep = "​";
+    } else {
+      var $sep = "-";
+    }
 
     // Routine by Sebastian to accept group of words inside asterisks.
     // See https://github.com/sr258/h5p-mark-the-words/tree/HFP-1095
     var getSelectableStrings = function (text) {
       var outputStrings = [];
+      /*
+       * Temporarily replace double asterisks with a replacement character,
+       * so they don't tamper with the detection of words/phrases to be marked
+       */
+      //var DOUBLE_ASTERISK_REPLACEMENT = '\u250C'; // no-width space character
+      
       // Detect presence of words between square brackets.
       var match = text.match(/\[(.*?)\]/g);
       if (match) {
@@ -126,28 +142,26 @@ H5P.MarkTheWordsPapiJo = (function ($, Question, Word, KeyboardNav, XapiGenerato
           text = text.replace(match[i], replace)
         }
       }
-
-      /*
-       * Temporarily replace double asterisks with a replacement character,
-       * so they don't tamper with the detection of words/phrases to be marked
-       */
-      var DOUBLE_ASTERISK_REPLACEMENT = '\u250C'; // no-width space character
-      var rgsep = new RegExp('(&nbsp;|\r\n|\n|\r|)' + $sep, 'g');
-
-      text = text
-        .replace(/\s\*\*\*/g, ' *' + DOUBLE_ASTERISK_REPLACEMENT) // Cover edge case with escaped * in front
-        .replace(/\*\*\*\s/g, DOUBLE_ASTERISK_REPLACEMENT + '* ') // Cover edge case with escaped * behind
-        .replace(/\*\*/g, DOUBLE_ASTERISK_REPLACEMENT) // Regular escaped *
-        .replace(rgsep, ' '+ $sep) // syllable separator
-        text = ' ' + text + ' '; // To deal with beginning and end of paragraphs.
+      // In text, find $sep preceded or followed by * or _ marker in order to add a blank space just in front of the $sep.
+      var rgsep = new RegExp('(&nbsp;|\r\n|\n|\r|)' + '((?<=(' + distDel + '|\\*))' + $sep + '|' + $sep + '(?=(' + distDel + '|\\*)))', 'g');
+      text = text.replace(rgsep, ' ' + $sep);
+      text = ' ' + text + ' '; // To deal with beginning and end of paragraphs.
+            
+      //text = text
+        //.replace(/\s\*\*\*/g, ' *' + DOUBLE_ASTERISK_REPLACEMENT) // Cover edge case with escaped * in front
+        //.replace(/\*\*\*\s/g, DOUBLE_ASTERISK_REPLACEMENT + '* ') // Cover edge case with escaped * behind
+        //.replace(/\*\*/g, DOUBLE_ASTERISK_REPLACEMENT) // Regular escaped *
+      
+      //text = ' ' + text + ' '; // To deal with beginning and end of paragraphs.
 
       var pos;
+      
       do {
         pos = -1;
+        // TODO revise this rg it does not match things as expected...
         var rg = new RegExp('(\\ |[^\\w\\u0020\\f\\n\\r\\t\\v])(\\' + distDel + '[^\\' + distDel + ']+\\'
           + distDel + '|\\*[^\\*]+\\*)(\\ |[^\\w\\u0020\\f\\n\\r\\t\\v])');
-
-        var match = text.match(rg);
+        var match = text.match(rg);        
         
         // Eliminate potential redundant $sep here.
         if (match !== null && match[1] !== $sep) {
@@ -160,13 +174,15 @@ H5P.MarkTheWordsPapiJo = (function ($, Question, Word, KeyboardNav, XapiGenerato
           text = text.slice(pos + match[0].length - 1);
         }
       } while (pos != -1);
+      
       // Add each remaining word to output
       outputStrings = outputStrings.concat(text.match(/[^\u0020\f\n\r\t\v]+/g) || []);
       // Should be map() in ES6
+      /*
       outputStrings.forEach(function(string, index) {
         outputStrings[index] = string.replace(new RegExp(DOUBLE_ASTERISK_REPLACEMENT, 'g'), '**');
       });
-
+*/
       // Return null to match the behavior of the old word/phrase detection routine
       return (outputStrings.length === 0) ? null : outputStrings;
     };
@@ -176,12 +192,35 @@ H5P.MarkTheWordsPapiJo = (function ($, Question, Word, KeyboardNav, XapiGenerato
       var node = nodes[i];
       if (node instanceof Text) {
         var text = $(node).text();
+        var noPadding = '';
+        var ZERO_WITDH_SPACE = '\u200B'; // zero-width space character
+        // If spotTheMistakes, swap correct <-> incorrect answers!
+        
+        if (spotTheMistakes) {
+          if (!markSelectables) {
+            noPadding = 'noPadding';
+          }
+            
+          var rg = new RegExp('[' + distDel + '*]', 'g');
+          // https://stackoverflow.com/questions/48571430/javascript-swap-characters-in-string          
+        
+          text = text.replace(rg, function($1) { return $1 === distDel ? '*' : distDel });
+          
+          var regex = new RegExp('-', "g");          
+          text = text.replace(regex, ZERO_WITDH_SPACE);
+          
+        }
+        /*
+        var regex = new RegExp('-', "g");
+        text = text.replace(regex, ZERO_WITDH_SPACE);
+        */
         var selectableStrings = getSelectableStrings(text);
         if (selectableStrings) {
           selectableStrings.forEach(function (entry, index) {
             entry = entry.trim();
+            //console.log ('entry = ' + entry);
             
-            // Detect and remove superfluous pseudo-selectable end punct marks!
+            // Detect and remove potential superfluous pseudo-selectable end punct marks!
             var punct = /^[",….:;?!\]\)}⟩»”]+$/
             if (entry.match(punct)) {
               return;
@@ -205,6 +244,7 @@ H5P.MarkTheWordsPapiJo = (function ($, Question, Word, KeyboardNav, XapiGenerato
               html += $sepElements;
             }
             // Remove prefix punctuations from word.
+            
             var prefix = entry.match(/^[\[\({⟨¿¡“"«„/]+/);
             if (entry == prefix) {
               return;
@@ -216,7 +256,8 @@ H5P.MarkTheWordsPapiJo = (function ($, Question, Word, KeyboardNav, XapiGenerato
             }
             
             // Remove suffix punctuations from word.            
-            var suffix = entry.match(/[",….:;?!\]\)}⟩»”]+$/);
+            var suffix = entry.match(/[",….:;?!/\]/\)}⟩»”]+$/);
+            
             var end = entry.length - start;
             if (suffix !== null) {
               end -= suffix[0].length;
@@ -224,13 +265,19 @@ H5P.MarkTheWordsPapiJo = (function ($, Question, Word, KeyboardNav, XapiGenerato
             
             // Word
             entry = entry.substr(start, end);
+            
             if (entry.length) {
+            
               // Match * for correct answers and distDel for distracters.
+              // TODO track zerowidth space to add a no pad to it in class
               var rg = new RegExp ('(\\*|' + distDel + ')');
               var match = entry.match(rg);
-              if (markSelectables === false) {
-                html += '<span role="option" aria-selected="false">' + self.escapeHTML(entry) + '</span>';
+              
+              
+              if (markSelectables === false) {                                 
+                html += '<span role="option" aria-selected="false" class=' + noPadding +'>' + self.escapeHTML(entry) + '</span>';                
               } else if (markSelectables && match) {
+              
                 html += '<span role="option" aria-selected="false" class="groups_unread">' + self.escapeHTML(entry) + '</span>';
               } else {
                   html += self.escapeHTML(entry);
@@ -256,13 +303,13 @@ H5P.MarkTheWordsPapiJo = (function ($, Question, Word, KeyboardNav, XapiGenerato
           for (var j = 0; j < node.attributes.length; j++) {
             attributes +=node.attributes[j].name + '="' + node.attributes[j].nodeValue + '" ';
           }
+          
           html += '<' + node.nodeName +  attributes + '>';
           html += self.createHtmlForWords(node.childNodes);
           html += '</' + node.nodeName + '>';
         }
       }
     }
-
     return html;
   };
 
@@ -273,6 +320,7 @@ H5P.MarkTheWordsPapiJo = (function ($, Question, Word, KeyboardNav, XapiGenerato
    * @returns {jQuery}
    */
   MarkTheWordsPapiJo.prototype.escapeHTML = function (html) {
+    
     return $('<div>').text(html).html();
   };
 
@@ -542,8 +590,7 @@ H5P.MarkTheWordsPapiJo = (function ($, Question, Word, KeyboardNav, XapiGenerato
 
     this.$wordContainer.addClass('h5p-disable-hover');
     this.trigger('resize');
-  };
-
+}
   /**
    * Evaluate task and display score text for word markings.
    *
@@ -570,7 +617,9 @@ H5P.MarkTheWordsPapiJo = (function ($, Question, Word, KeyboardNav, XapiGenerato
 
     this.trigger('resize');
     if (score == this.answers) {
-      this.clearAllMarks(this.keepCorrectAnswers, this.spotTheMistakes);
+      if (this.spotTheMistakes) {
+        this.clearAllMarks(false, false, true);
+      }
     }    
     return score === this.answers;
   };
@@ -635,9 +684,9 @@ H5P.MarkTheWordsPapiJo = (function ($, Question, Word, KeyboardNav, XapiGenerato
   /**
    * Clear styling on marked words.
    */
-  MarkTheWordsPapiJo.prototype.clearAllMarks = function (keepCorrectAnswers, spotTheMistakes) {
+  MarkTheWordsPapiJo.prototype.clearAllMarks = function (keepCorrectAnswers, spotTheMistakes, isFinished) {
     this.selectableWords.forEach(function (entry) {
-      entry.markClear(keepCorrectAnswers, spotTheMistakes);
+      entry.markClear(keepCorrectAnswers, spotTheMistakes, isFinished);
     });
 
     this.$wordContainer.removeClass('h5p-disable-hover');
@@ -711,7 +760,7 @@ H5P.MarkTheWordsPapiJo = (function ($, Question, Word, KeyboardNav, XapiGenerato
 
   MarkTheWordsPapiJo.prototype.retry = function () {
     this.isAnswered = false;
-    this.clearAllMarks(this.keepCorrectAnswers, this.spotTheMistakes);
+    this.clearAllMarks(this.keepCorrectAnswers, this.spotTheMistakes, false);
     this.hideEvaluation();
     this.hideButton('try-again');
     this.hideButton('show-solution');
@@ -732,7 +781,7 @@ H5P.MarkTheWordsPapiJo = (function ($, Question, Word, KeyboardNav, XapiGenerato
 
 MarkTheWordsPapiJo.prototype.resetTask = function () {
     this.isAnswered = false;
-    this.clearAllMarks(false, false);
+    this.clearAllMarks(false, false, true);
     
     this.hideEvaluation();
     this.hideButton('try-again');

@@ -15,7 +15,9 @@ H5P.MarkTheWordsPapiJo.Word = (function () {
   Word.ID_MARK_CORRECT = "h5p-description-correct";
   Word.ID_MARK_CORRECT_NO_TICKS = "h5p-description-correct-no-ticks";
   Word.ID_MARK_IS_MISTAKE = "h5p-description-is-mistake";
+  Word.ID_MARK_IS_MISTAKE_NO_TICKS = "h5p-description-correct-is-mistake-no-ticks";
   Word.ID_MARK_NOT_MISTAKE = "h5p-description-not-mistake";
+  Word.ID_MARK_NOT_MISTAKE_NO_TICKS = "h5p-description-incorrect-not-mistake-no-ticks";
   Word.ID_MARK_REMOVE_MISTAKE = "h5p-description-remove-mistake";
   /**
    * @constant
@@ -175,34 +177,35 @@ H5P.MarkTheWordsPapiJo.Word = (function () {
      *
      * @public
      */
-    this.markClear = function (keepCorrectAnswers, spotTheMistakes) {
-      if (keepCorrectAnswers) {
-        var className = $word.attr('aria-describedby');
-        
+    this.markClear = function (keepCorrectAnswers, spotTheMistakes, isFinished) {
+      var className = $word.attr('aria-describedby');
+      if (isFinished) { // Hide correctly spotted mistake at the very end of activity only.        
+        if (className !== undefined) {          
+        // h5p-description-is-mistake
+          var mistake = className.match(/h5p-description-(correct|is-mistake)(|-no-ticks)/g);
+        }
+        if (mistake!== undefined) {        
+          $word.attr('aria-describedby', Word.ID_MARK_REMOVE_MISTAKE);
+          return;
+        }
+      }      
+      if (keepCorrectAnswers) {                
         if (className !== undefined) {          
         // h5p-description-is-mistake
           var keep = className.match(/h5p-description-(correct|is-mistake)(|-no-ticks)/g);
         }
       }
-      if (!keep) {
+      
+      if (keep == undefined) {
         $word
           .attr('aria-selected', false)
           .removeAttr('aria-describedby');
-  
         ariaText.innerHTML = '';
         this.clearScorePoint();
       } else {
         $word
           .attr('aria-selected', true)
-          .attr('role', 'keepanswer');
-        if (spotTheMistakes) { // Hide correctly spotted mistake.
-          $word.attr('aria-describedby', Word.ID_MARK_REMOVE_MISTAKE);
-        }
-      }
-      if (!keepCorrectAnswers && !spotTheMistakes) {
-        $word
-          .attr('aria-selected', false)
-          .attr('role', 'option');
+          .attr('role', 'keepanswer');        
       }
       
     };
@@ -229,10 +232,18 @@ H5P.MarkTheWordsPapiJo.Word = (function () {
           $word[0].appendChild(scorePoints.getElement(isAnswer));
         }
         if (spotTheMistakes) { //
-          if (isAnswer) { // 
-            $word.attr('aria-describedby', Word.ID_MARK_IS_MISTAKE);
+          if (self.params.behaviour.showTicks) {
+            if (isAnswer) { // 
+              $word.attr('aria-describedby', Word.ID_MARK_IS_MISTAKE);
+            } else {
+              $word.attr('aria-describedby', Word.ID_MARK_NOT_MISTAKE);
+            }
           } else {
-            $word.attr('aria-describedby', Word.ID_MARK_NOT_MISTAKE);
+            if (isAnswer) { // 
+              $word.attr('aria-describedby', Word.ID_MARK_IS_MISTAKE_NO_TICKS);
+            } else {
+              $word.attr('aria-describedby', Word.ID_MARK_NOT_MISTAKE_NO_TICKS);
+            }
           }
         }
       } else if (isAnswer) {        

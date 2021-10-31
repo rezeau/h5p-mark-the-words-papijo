@@ -121,8 +121,8 @@
     "placeholder": "This is an answer: *answer*.",
     "description": "",
     "important": {
-      "description": "<ul><li>Correct words/groups of words are marked with asterisks (*) before and after the word/group.</li><li>Words can be divided into syllables by using the normal hyphen character (-).</li><li>Put any word/group of words between square brackets to make them [non-selectable].</li><li>The 'Mark selectable words' option is especially useful if your Textfield contains *groups of words*. Remember to add distractors to the text by adding your selected distractor delimiter (above), e.g. with underscores e.g. _this is a distractor_ or _distractor_. If this option is selected it's not necessary to use []. All the words which are un-marked are also non-selectable.</li><li>For phonetic transcription, please use the British English system, with forward slashes as in the example below.</li></ul>",
-      "example": "Correct words are marked like this: *lemonade*, correct stressed syllables are marked like this: le‑mo‑*nade*, correct phrases like this: *a glass of lemonade*. Type the correct stressed syllable in 'lemonade' in phonetics like this: /le-mə-*neɪd*/"
+      "description": "<ul><li>Correct words/groups of words are marked with asterisks (*) before and after the word/group.</li><li>Asterisks can be added within marked words by adding another asterisk, e.g. \"6 = *2**3*\" =&gt; \"2*3\".</li><li>Words can be divided into syllables by using the normal hyphen character (-).</li><li>Put any word/group of words between square brackets to make them [non-selectable].</li><li>The 'Mark selectable words' option is especially useful if your Textfield contains *groups of words*. Remember to add distractors to the text by adding your selected distractor delimiter (above), e.g. with underscores e.g. _this is a distractor_ or _distractor_. If this option is selected it's not necessary to use []. All the words which are un-marked are also non-selectable.</li><li>For phonetic transcription, please use the British English system, with forward slashes as in the example below.</li></ul>",
+      "example": "<ul><li>Correct words are marked like this: *lemonade*, correct stressed syllables are marked like this: le-mo-*nade*, correct phrases like this: *a glass of lemonade*. </li><li>Type the correct stressed syllable in 'lemonade' in phonetics like this: /le-mə-*neɪd*/</li><li>These animals are mammals: *cat*, _eagle_, *whale*.</li></ul>"
     }
   },
   {
@@ -213,8 +213,15 @@
     "name": "scoreExplanation",
     "type": "text",
     "default": "In this activity your score and the maximum score are both multiplied by @percent.",
-    "common": true,
-    "optional": true
+    "common": true
+  },
+  {
+    "label": "Score too low to display Solution",
+    "importance": "low",
+    "name": "scoreTooLow",
+    "type": "text",
+    "default": "The solution won't be available until your score is at least @minscore/@maxscore.",
+    "common": true
   },
   {
     "name": "behaviour",
@@ -334,20 +341,29 @@
         "default": true
       },
       {
-        "name": "keepCorrectAnswers",
-        "type": "boolean",
-        "label": "Keep correct answers",
-        "description": "Check this option if you want to keep the correct words displayed after pressing 'Retry'.",
-        "importance": "low",
-        "default": false
-      },
-      {
         "name": "spotTheMistakes",
         "type": "boolean",
         "label": "Enable the 'Spot The Mistakes' mode",
         "importance": "low",
         "default": false,
-        "description": "If you enable this mode, the student will have to click on the mistakes/WRONG answers. The correctly spotted WRONG answers will then disappear from the text."
+        "description": "This mode swaps your correct <-> incorrect answers. The student will have to click on the mistakes/WRONG answers. The correctly spotted WRONG answers will be marked as correct (and give the point). They will disappear from the text when the activity is finished."
+      },
+      {
+        "name": "keepCorrectAnswers",
+        "type": "boolean",
+        "label": "Keep correct answers",
+        "description": "Check this option if you want to keep the correct answers displayed after pressing 'Retry'. Not available in the Spot The Mistakes mode as it would give away the solutions.",
+        "importance": "low",
+        "default": false, 
+        "widget": "showWhen",
+        "showWhen": {
+          "rules": [
+            {
+              "field": "spotTheMistakes",
+              "equals": false
+            }
+          ]
+        }
       }
     ]
   },
