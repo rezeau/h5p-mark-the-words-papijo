@@ -604,7 +604,7 @@ H5P.MarkTheWordsPapiJo = (function ($, Question, Word, KeyboardNav, XapiGenerato
     this.trigger('resize');
     if (score == this.answers) {
       if (this.spotTheMistakes) {
-        this.clearAllMarks(false, false, true);
+        this.clearAllMarks(false, false, true, resetTask);
       }
     }    
     return score === this.answers;
@@ -670,9 +670,9 @@ H5P.MarkTheWordsPapiJo = (function ($, Question, Word, KeyboardNav, XapiGenerato
   /**
    * Clear styling on marked words.
    */
-  MarkTheWordsPapiJo.prototype.clearAllMarks = function (keepCorrectAnswers, spotTheMistakes, isFinished) {
+  MarkTheWordsPapiJo.prototype.clearAllMarks = function (keepCorrectAnswers, spotTheMistakes, isFinished, resetTask) {
     this.selectableWords.forEach(function (entry) {
-      entry.markClear(keepCorrectAnswers, spotTheMistakes, isFinished);
+      entry.markClear(keepCorrectAnswers, spotTheMistakes, isFinished, resetTask);
     });
 
     this.$wordContainer.removeClass('h5p-disable-hover');
@@ -746,7 +746,7 @@ H5P.MarkTheWordsPapiJo = (function ($, Question, Word, KeyboardNav, XapiGenerato
 
   MarkTheWordsPapiJo.prototype.retry = function () {
     this.isAnswered = false;
-    this.clearAllMarks(this.keepCorrectAnswers, this.spotTheMistakes, false);
+    this.clearAllMarks(this.keepCorrectAnswers, this.spotTheMistakes, false, resetTask = false);
     this.hideEvaluation();
     this.hideButton('try-again');
     this.hideButton('show-solution');
@@ -766,7 +766,7 @@ H5P.MarkTheWordsPapiJo = (function ($, Question, Word, KeyboardNav, XapiGenerato
 
 MarkTheWordsPapiJo.prototype.resetTask = function () {
     this.isAnswered = false;
-    this.clearAllMarks(false, false, true);
+    this.clearAllMarks(false, false, true, resetTask = true);
     
     this.hideEvaluation();
     this.hideButton('try-again');

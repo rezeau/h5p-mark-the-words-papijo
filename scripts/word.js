@@ -177,24 +177,27 @@ H5P.MarkTheWordsPapiJo.Word = (function () {
      *
      * @public
      */
-    this.markClear = function (keepCorrectAnswers, spotTheMistakes, isFinished) {
+    this.markClear = function (keepCorrectAnswers, spotTheMistakes, isFinished, resetTask) {
       var className = $word.attr('aria-describedby');
-      
-      if (isFinished) { // Hide correctly spotted mistake at the very end of activity only.
-        if (className !== undefined) {
-        // h5p-description-is-mistake also hide potential pipe characters used for choice of correct/wrong words.
-          var mistake = className.match(/(h5p-description-(correct|is-mistake)(|-no-ticks)|removePipe)/g);
-        }
-        if (mistake!== undefined) {    
-          $word.attr('aria-describedby', Word.ID_MARK_REMOVE_MISTAKE);
-          return;
-        }
-      } else { // If this word is the pipe choice character, do not clear the removePipe attr aria-describedby value !     
-        var input = $word.text();
-        if (input == '|') {
-          return;
+      if (!resetTask) {
+        if (isFinished) {
+          // Hide correctly spotted mistake at the very end of activity only.
+          if (className !== undefined) {
+          // h5p-description-is-mistake also hide potential pipe characters used for choice of correct/wrong words.
+            var mistake = className.match(/(h5p-description-(correct|is-mistake)(|-no-ticks)|removePipe)/g);
+          }
+          if (mistake!== undefined) {    
+            $word.attr('aria-describedby', Word.ID_MARK_REMOVE_MISTAKE);
+            return;
+          }
+        } else { // If this word is the pipe choice character, do not clear the removePipe attr aria-describedby value !     
+          var input = $word.text();
+          if (input == '|') {
+            return;
+          }
         }
       }
+      
       if (keepCorrectAnswers) {                
         if (className !== undefined) {          
         // h5p-description-is-mistake
