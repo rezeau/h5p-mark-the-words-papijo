@@ -179,12 +179,13 @@ H5P.MarkTheWordsPapiJo.Word = (function () {
      */
     this.markClear = function (keepCorrectAnswers, spotTheMistakes, isFinished) {
       var className = $word.attr('aria-describedby');
-      if (isFinished) { // Hide correctly spotted mistake at the very end of activity only.        
-        if (className !== undefined) {          
-        // h5p-description-is-mistake
-          var mistake = className.match(/h5p-description-(correct|is-mistake)(|-no-ticks)/g);
+      
+      if (isFinished) { // Hide correctly spotted mistake at the very end of activity only.
+        if (className !== undefined) {
+        // h5p-description-is-mistake also hide potential pipe characters used for choice of correct/wrong words.
+          var mistake = className.match(/(h5p-description-(correct|is-mistake)(|-no-ticks)|removePipe)/g);
         }
-        if (mistake!== undefined) {        
+        if (mistake!== undefined) {    
           $word.attr('aria-describedby', Word.ID_MARK_REMOVE_MISTAKE);
           return;
         }

@@ -155,3 +155,8 @@ button.h5p-retry-button.h5p-retry-button {
   padding-left: 0;
   padding-right: 0;
 }
+
+.h5p-mark-the-words [aria-describedby="removePipe"] {
+  pointer-events: none;
+  padding: 0 ;  
+}

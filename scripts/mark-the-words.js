@@ -117,13 +117,13 @@ H5P.MarkTheWordsPapiJo = (function ($, Question, Word, KeyboardNav, XapiGenerato
     var distDel = this.params.distractorDelimiter;
     var spotTheMistakes = this.params.behaviour.spotTheMistakes;
     var removeHyphens = this.params.behaviour.removeHyphens;
-    
+    var WORD_JOINER = '\u2060'; // http://www.unicode-symbol.com/u/2060.html && https://en.wikipedia.org/wiki/Word_joiner    
     if (removeHyphens) {
-      var $sep = "​";
+      var $sep = WORD_JOINER;
     } else {
       var $sep = "-";
     }
-
+    
     // Routine by Sebastian to accept group of words inside asterisks.
     // See https://github.com/sr258/h5p-mark-the-words/tree/HFP-1095
     var getSelectableStrings = function (text) {
@@ -152,7 +152,7 @@ H5P.MarkTheWordsPapiJo = (function ($, Question, Word, KeyboardNav, XapiGenerato
         .replace(/\*\*/g, DOUBLE_ASTERISK_REPLACEMENT) // Regular escaped *
         .replace(rgsep, ' ' + $sep);
       text = ' ' + text + ' '; // To deal with beginning and end of paragraphs.
-
+      
       var pos;      
       do {
         pos = -1;
@@ -186,11 +186,10 @@ H5P.MarkTheWordsPapiJo = (function ($, Question, Word, KeyboardNav, XapiGenerato
       var node = nodes[i];
       if (node instanceof Text) {
         var text = $(node).text();
-        var noPadding = '';
-        var ZERO_WITDH_SPACE = '\u200B'; // zero-width space character
+        var noPadding = '';        
         if (removeHyphens) {
           var regex = new RegExp('-', "g");          
-          text = text.replace(regex, ZERO_WITDH_SPACE);
+          text = text.replace(regex, WORD_JOINER);
           noPadding = 'noPadding';
         }
         // If spotTheMistakes, swap correct <-> incorrect answers!
@@ -202,7 +201,9 @@ H5P.MarkTheWordsPapiJo = (function ($, Question, Word, KeyboardNav, XapiGenerato
         var selectableStrings = getSelectableStrings(text);
         if (selectableStrings) {
           selectableStrings.forEach(function (entry, index) {
+            
             entry = entry.trim();
+            
             // Detect and remove potential superfluous pseudo-selectable punct marks!
             var punct = /^[",….:;?!\]\)}⟩»”-]+$/
             if (entry.match(punct)) {
@@ -247,17 +248,28 @@ H5P.MarkTheWordsPapiJo = (function ($, Question, Word, KeyboardNav, XapiGenerato
             
             // Word
             entry = entry.substr(start, end);
-            
+            var removePipe = false;
+            if (entry == '|') {
+              removePipe = true;
+            }
             if (entry.length) {
               // Match * for correct answers and distDel for distracters.
               var rg = new RegExp ('(\\*|' + distDel + ')');
               var match = entry.match(rg);
               if (markSelectables === false) {                                 
-                html += '<span role="option" aria-selected="false" class=' + noPadding +'>' + self.escapeHTML(entry) + '</span>';                
+                if (!removePipe) {
+                  html += '<span role="option" aria-selected="false" class=' + noPadding +'>' + self.escapeHTML(entry) + '</span>';
+                } else {
+                  html += '<span role="option" aria-describedby="removePipe">' + self.escapeHTML(entry) + '</span>';
+                }                
               } else if (markSelectables && match) {
-                html += '<span role="option" aria-selected="false" class="groups_unread">' + self.escapeHTML(entry) + '</span>';
+                  html += '<span role="option" aria-selected="false" class="groups_unread">' + self.escapeHTML(entry) + '</span>';
               } else {
+                if (!removePipe) {
                   html += self.escapeHTML(entry);
+                } else {
+                  html += '<span role="option" aria-describedby="removePipe">' + self.escapeHTML(entry) + '</span>';
+                }
               }
             }
             if (suffix !== null) {
