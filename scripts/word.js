@@ -214,7 +214,8 @@ H5P.MarkTheWordsPapiJo.Word = (function () {
       } else {
         $word
           .attr('aria-selected', true)
-          .attr('role', 'keepanswer');        
+          .attr('role', 'keepanswer')
+          .attr('aria-describedby', Word.ID_MARK_CORRECT_NO_TICKS);
       }
       
     };
