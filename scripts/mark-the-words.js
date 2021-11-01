@@ -25,7 +25,6 @@ H5P.MarkTheWordsPapiJo = (function ($, Question, Word, KeyboardNav, XapiGenerato
     // Set default behavior.
     this.params = $.extend(true, {
       taskDescription: "",
-      markSelectables: false,
       distractorDelimiter: '_',
       textField: "This is a *nice*, *flexible* content type.",
       overallFeedback: [],
@@ -41,7 +40,8 @@ H5P.MarkTheWordsPapiJo = (function ($, Question, Word, KeyboardNav, XapiGenerato
         adjustScorePerCent: 1,
         enableScoreExplanation: false,
         spotTheMistakes: false,
-        removeHyphens:false
+        removeHyphens:false,
+        markSelectables: false
       },
       checkAnswerButton: "Check",
       tryAgainButton: "Retry",
@@ -84,7 +84,7 @@ H5P.MarkTheWordsPapiJo = (function ($, Question, Word, KeyboardNav, XapiGenerato
     
     this.spotTheMistakes = this.params.behaviour.spotTheMistakes;
     this.keepCorrectAnswers = this.params.behaviour.keepCorrectAnswers;
-    if (this.spotTheMistakes || this.params.markSelectables) {
+    if (this.spotTheMistakes || this.params.behaviour.markSelectables) {
       this.keepCorrectAnswers = false;
     }
   }
@@ -110,7 +110,7 @@ H5P.MarkTheWordsPapiJo = (function ($, Question, Word, KeyboardNav, XapiGenerato
    */
   MarkTheWordsPapiJo.prototype.createHtmlForWords = function (nodes) {
     var self = this;
-    var markSelectables = this.params.markSelectables;
+    var markSelectables = this.params.behaviour.markSelectables;
     var html = '';
     
     // Distractor delimiter    

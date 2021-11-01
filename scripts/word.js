@@ -189,7 +189,12 @@ H5P.MarkTheWordsPapiJo.Word = (function () {
           $word.attr('aria-describedby', Word.ID_MARK_REMOVE_MISTAKE);
           return;
         }
-      }      
+      } else { // If this word is the pipe choice character, do not clear the removePipe attr aria-describedby value !     
+        var input = $word.text();
+        if (input == '|') {
+          return;
+        }
+      }
       if (keepCorrectAnswers) {                
         if (className !== undefined) {          
         // h5p-description-is-mistake

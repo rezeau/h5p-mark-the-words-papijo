@@ -90,14 +90,6 @@
     ]
   },
   {
-    "name": "markSelectables",
-    "type": "boolean",
-    "label": "Mark selectable words?",
-    "description": "Check this box if you want selectable words or groups of words to be displayed inside borders.",
-    "importance": "low",
-    "default": false
-  },
-  {
     "label": "Textfield",
     "importance": "high",
     "name": "textField",
@@ -268,6 +260,14 @@
         "importance": "low",
         "default": false,
         "description": "If this content has a lot of correct items you may adjust the maximum score by multiplying it by a certain percentage. Can be useful is this content is part of a Book or Quiz, etc."
+      },
+      {
+        "name": "markSelectables",
+        "type": "boolean",
+        "label": "Mark selectable words?",
+        "description": "Check this box if you want selectable words or groups of words to be displayed inside borders.",
+        "importance": "low",
+        "default": false
       },
       {
         "name": "adjustScorePerCent",
