@@ -40,7 +40,8 @@ H5P.MarkTheWordsPapiJo = (function ($, Question, Word, KeyboardNav, XapiGenerato
         adjustScore: false,
         adjustScorePerCent: 1,
         enableScoreExplanation: false,
-        spotTheMistakes: false
+        spotTheMistakes: false,
+        removeHyphens:false
       },
       checkAnswerButton: "Check",
       tryAgainButton: "Retry",
@@ -115,8 +116,9 @@ H5P.MarkTheWordsPapiJo = (function ($, Question, Word, KeyboardNav, XapiGenerato
     // Distractor delimiter    
     var distDel = this.params.distractorDelimiter;
     var spotTheMistakes = this.params.behaviour.spotTheMistakes;
+    var removeHyphens = this.params.behaviour.removeHyphens;
     
-    if (spotTheMistakes) {
+    if (removeHyphens) {
       var $sep = "​";
     } else {
       var $sep = "-";
@@ -186,17 +188,16 @@ H5P.MarkTheWordsPapiJo = (function ($, Question, Word, KeyboardNav, XapiGenerato
         var text = $(node).text();
         var noPadding = '';
         var ZERO_WITDH_SPACE = '\u200B'; // zero-width space character
-        
+        if (removeHyphens) {
+          var regex = new RegExp('-', "g");          
+          text = text.replace(regex, ZERO_WITDH_SPACE);
+          noPadding = 'noPadding';
+        }
         // If spotTheMistakes, swap correct <-> incorrect answers!
         if (spotTheMistakes) {
-          if (!markSelectables) {
-            noPadding = 'noPadding';
-          }            
           var rg = new RegExp('[' + distDel + '*]', 'g');
           // https://stackoverflow.com/questions/48571430/javascript-swap-characters-in-string
           text = text.replace(rg, function($1) { return $1 === distDel ? '*' : distDel });
-          var regex = new RegExp('-', "g");          
-          text = text.replace(regex, ZERO_WITDH_SPACE);
         }
         var selectableStrings = getSelectableStrings(text);
         if (selectableStrings) {
