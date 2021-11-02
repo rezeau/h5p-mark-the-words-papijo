@@ -750,9 +750,13 @@ H5P.MarkTheWordsPapiJo = (function ($, Question, Word, KeyboardNav, XapiGenerato
     this.hideEvaluation();
     this.hideButton('try-again');
     this.hideButton('show-solution');
-    this.showButton('check-answer');
+    this.showButton('check-answer');    
     this.$a11yClickableTextLabel.html(this.params.a11yClickableTextLabel);
-
+    
+    // If correct answers are kept, remove the h5p-question-plus-one div.
+    if (this.keepCorrectAnswers) {
+      this.$wordContainer.find('.h5p-question-plus-one').remove();
+    }
     this.toggleSelectable(false);
     this.trigger('resize');
   };

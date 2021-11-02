@@ -179,6 +179,7 @@ H5P.MarkTheWordsPapiJo.Word = (function () {
      */
     this.markClear = function (keepCorrectAnswers, spotTheMistakes, isFinished, resetTask) {
       var className = $word.attr('aria-describedby');
+      // TODO simplify the resetTask clear...
       if (!resetTask) {
         if (isFinished) {
           // Hide correctly spotted mistake at the very end of activity only.
@@ -216,6 +217,10 @@ H5P.MarkTheWordsPapiJo.Word = (function () {
           .attr('aria-selected', true)
           .attr('role', 'keepanswer')
           .attr('aria-describedby', Word.ID_MARK_CORRECT_NO_TICKS);
+      }
+      if (resetTask) {
+        $word
+          .attr('role', 'option')
       }
       
     };
