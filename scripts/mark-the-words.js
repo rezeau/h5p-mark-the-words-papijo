@@ -45,7 +45,7 @@ H5P.MarkTheWordsPapiJo = (function ($, Question, Word, KeyboardNav, XapiGenerato
       },
       checkAnswerButton: "Check",
       tryAgainButton: "Retry",
-      showSolutionButton: "Show solution",      
+      showSolutionButton: "Show solution",
       correctAnswer: "Correct!",
       incorrectAnswer: "Incorrect!",
       missedAnswer: "Answer not found!",
@@ -71,17 +71,17 @@ H5P.MarkTheWordsPapiJo = (function ($, Question, Word, KeyboardNav, XapiGenerato
     this.keyboardNavigators = [];
     this.initMarkTheWordsPapiJo();
     this.XapiGenerator = new XapiGenerator(this);
-    
+
     if (this.params.behaviour.adjustScore) {
       this.adjustScorePerCent = this.params.behaviour.adjustScorePerCent / 100;
       if (this.params.behaviour.enableScoreExplanation) {
         this.enableScoreExplanation = true;
       }
     } else {
-      this.adjustScorePerCent = 1; 
+      this.adjustScorePerCent = 1;
       this.enableScoreExplanation = false;
     }
-    
+
     this.spotTheMistakes = this.params.behaviour.spotTheMistakes;
     this.keepCorrectAnswers = this.params.behaviour.keepCorrectAnswers;
     if (this.spotTheMistakes || this.params.behaviour.markSelectables) {
@@ -112,23 +112,23 @@ H5P.MarkTheWordsPapiJo = (function ($, Question, Word, KeyboardNav, XapiGenerato
     var self = this;
     var markSelectables = this.params.behaviour.markSelectables;
     var html = '';
-    
-    // Distractor delimiter    
+
+    // Distractor delimiter
     var distDel = this.params.distractorDelimiter;
     var spotTheMistakes = this.params.behaviour.spotTheMistakes;
     var removeHyphens = this.params.behaviour.removeHyphens;
-    var WORD_JOINER = '\u2060'; // http://www.unicode-symbol.com/u/2060.html && https://en.wikipedia.org/wiki/Word_joiner    
+    var WORD_JOINER = '\u2060'; // http://www.unicode-symbol.com/u/2060.html && https://en.wikipedia.org/wiki/Word_joiner
     if (removeHyphens) {
       var $sep = WORD_JOINER;
     } else {
       var $sep = "-";
     }
-    
+
     // Routine by Sebastian to accept group of words inside asterisks.
     // See https://github.com/sr258/h5p-mark-the-words/tree/HFP-1095
     var getSelectableStrings = function (text) {
       var outputStrings = [];
-      
+
       // Detect presence of words between square brackets.
       var match = text.match(/\[(.*?)\]/g);
       if (match) {
@@ -142,18 +142,18 @@ H5P.MarkTheWordsPapiJo = (function ($, Question, Word, KeyboardNav, XapiGenerato
        * so they don't tamper with the detection of words/phrases to be marked
        */
       var DOUBLE_ASTERISK_REPLACEMENT = '\u250C'; // no-width space character
-      
+
       // In text, find $sep preceded or followed by * or _ marker in order to add a blank space just in front of the $sep.
       var rgsep = new RegExp('(&nbsp;|\r\n|\n|\r|)' + '((?<=(' + distDel + '|\\*))' + $sep + '|' + $sep + '(?=(' + distDel + '|\\*)))', 'g');
-      
+
       text = text
         .replace(/\s\*\*\*/g, ' *' + DOUBLE_ASTERISK_REPLACEMENT) // Cover edge case with escaped * in front
         .replace(/\*\*\*\s/g, DOUBLE_ASTERISK_REPLACEMENT + '* ') // Cover edge case with escaped * behind
         .replace(/\*\*/g, DOUBLE_ASTERISK_REPLACEMENT) // Regular escaped *
         .replace(rgsep, ' ' + $sep);
       text = ' ' + text + ' '; // To deal with beginning and end of paragraphs.
-      
-      var pos;      
+
+      var pos;
       do {
         pos = -1;
         var rg = new RegExp('(\\ |[^\\w\\u0020\\f\\n\\r\\t\\v])(\\' + distDel + '[^\\' + distDel + ']+\\'
@@ -169,7 +169,7 @@ H5P.MarkTheWordsPapiJo = (function ($, Question, Word, KeyboardNav, XapiGenerato
           text = text.slice(pos + match[0].length - 1);
         }
       } while (pos != -1);
-      
+
       // Add each remaining word to output.
       outputStrings = outputStrings.concat(text.match(/[^\u0020\f\n\r\t\v]+/g) || []);
       // Deal with double asterisks.
@@ -186,9 +186,9 @@ H5P.MarkTheWordsPapiJo = (function ($, Question, Word, KeyboardNav, XapiGenerato
       var node = nodes[i];
       if (node instanceof Text) {
         var text = $(node).text();
-        var noPadding = '';        
+        var noPadding = '';
         if (removeHyphens) {
-          var regex = new RegExp('-', "g");          
+          var regex = new RegExp('-', "g");
           text = text.replace(regex, WORD_JOINER);
           noPadding = 'noPadding';
         }
@@ -201,15 +201,15 @@ H5P.MarkTheWordsPapiJo = (function ($, Question, Word, KeyboardNav, XapiGenerato
         var selectableStrings = getSelectableStrings(text);
         if (selectableStrings) {
           selectableStrings.forEach(function (entry, index) {
-            
+
             entry = entry.trim();
-            
+
             // Detect and remove potential superfluous pseudo-selectable punct marks!
             var punct = /^[",….:;?!\]\)}⟩»”-]+$/
             if (entry.match(punct)) {
               return;
             }
-            
+
             // Deal with unselectable words (between square brackets).
             if (entry.startsWith('[')) {
               entry = entry.replace(/§/g, ' ');
@@ -228,7 +228,7 @@ H5P.MarkTheWordsPapiJo = (function ($, Question, Word, KeyboardNav, XapiGenerato
               html += $sepElements;
             }
             // Remove prefix punctuations from word.
-            
+
             var prefix = entry.match(/^[\[\({⟨¿¡“"«„/]+/);
             if (entry == prefix) {
               return;
@@ -238,14 +238,14 @@ H5P.MarkTheWordsPapiJo = (function ($, Question, Word, KeyboardNav, XapiGenerato
               start = prefix[0].length;
               html += prefix;
             }
-            
-            // Remove suffix punctuations from word.            
+
+            // Remove suffix punctuations from word.
             var suffix = entry.match(/[",….:;?!/\]/\)}⟩»”]+$/);
             var end = entry.length - start;
             if (suffix !== null) {
               end -= suffix[0].length;
             }
-            
+
             // Word
             entry = entry.substr(start, end);
             var removePipe = false;
@@ -256,12 +256,12 @@ H5P.MarkTheWordsPapiJo = (function ($, Question, Word, KeyboardNav, XapiGenerato
               // Match * for correct answers and distDel for distracters.
               var rg = new RegExp ('(\\*|' + distDel + ')');
               var match = entry.match(rg);
-              if (markSelectables === false) {                                 
+              if (markSelectables === false) {
                 if (!removePipe) {
                   html += '<span role="option" aria-selected="false" class=' + noPadding +'>' + self.escapeHTML(entry) + '</span>';
                 } else {
                   html += '<span role="option" aria-describedby="removePipe">' + self.escapeHTML(entry) + '</span>';
-                }                
+                }
               } else if (markSelectables && match) {
                   html += '<span role="option" aria-selected="false" class="groups_unread">' + self.escapeHTML(entry) + '</span>';
               } else {
@@ -306,7 +306,7 @@ H5P.MarkTheWordsPapiJo = (function ($, Question, Word, KeyboardNav, XapiGenerato
    * @returns {jQuery}
    */
   MarkTheWordsPapiJo.prototype.escapeHTML = function (html) {
-    
+
     return $('<div>').text(html).html();
   };
 
@@ -453,10 +453,10 @@ H5P.MarkTheWordsPapiJo = (function ($, Question, Word, KeyboardNav, XapiGenerato
     this.addButton('try-again', this.params.tryAgainButton, this.retry.bind(this), false, {
       'aria-label': this.params.a11yRetry,
     });
-    
+
     this.addButton('show-solution', this.params.showSolutionButton, function () {
       if (self.params.behaviour.minScore > 0) {
-        var minScore = self.params.behaviour.minScore;        
+        var minScore = self.params.behaviour.minScore;
         var answers = self.calculateScore();
         var adjust = self.adjustScorePerCent;
         var nbTotalRaw = answers.correct + answers.missed;
@@ -467,10 +467,10 @@ H5P.MarkTheWordsPapiJo = (function ($, Question, Word, KeyboardNav, XapiGenerato
           if (i >= Math.max(i , mini)) {
             var sc = i;
             break;
-          } 
+          }
         }
         var score = answers.score;
-        if (score < sc) {        
+        if (score < sc) {
           var scoreTooLowText = self.params.scoreTooLow
             .replace('@minscore',  i)
             .replace('@maxscore', nbTotal);
@@ -585,9 +585,9 @@ H5P.MarkTheWordsPapiJo = (function ($, Question, Word, KeyboardNav, XapiGenerato
    */
   MarkTheWordsPapiJo.prototype.showEvaluation = function (answers) {
     this.hideEvaluation();
-    var score = answers.score;    
+    var score = answers.score;
     maxScore = this.answers * this.adjustScorePerCent;
-    
+
     //replace editor variables with values, uses regexp to replace all instances.
     var scoreText = H5P.Question.determineOverallFeedback(this.params.overallFeedback, score / this.answers).replace(/@score/g, score.toString())
       .replace(/@total/g, maxScore.toString())
@@ -606,7 +606,7 @@ H5P.MarkTheWordsPapiJo = (function ($, Question, Word, KeyboardNav, XapiGenerato
       if (this.spotTheMistakes) {
         this.clearAllMarks(false, false, true, resetTask);
       }
-    }    
+    }
     return score === this.answers;
   };
 
@@ -750,9 +750,9 @@ H5P.MarkTheWordsPapiJo = (function ($, Question, Word, KeyboardNav, XapiGenerato
     this.hideEvaluation();
     this.hideButton('try-again');
     this.hideButton('show-solution');
-    this.showButton('check-answer');    
+    this.showButton('check-answer');
     this.$a11yClickableTextLabel.html(this.params.a11yClickableTextLabel);
-    
+
     // If correct answers are kept, remove the h5p-question-plus-one div.
     if (this.keepCorrectAnswers) {
       this.$wordContainer.find('.h5p-question-plus-one').remove();
@@ -771,13 +771,13 @@ H5P.MarkTheWordsPapiJo = (function ($, Question, Word, KeyboardNav, XapiGenerato
 MarkTheWordsPapiJo.prototype.resetTask = function () {
     this.isAnswered = false;
     this.clearAllMarks(false, false, true, resetTask = true);
-    
+
     this.hideEvaluation();
     this.hideButton('try-again');
     this.hideButton('show-solution');
     this.showButton('check-answer');
     this.$a11yClickableTextLabel.html(this.params.a11yClickableTextLabel);
-    
+
     this.toggleSelectable(false);
     this.trigger('resize');
   };
@@ -851,8 +851,8 @@ MarkTheWordsPapiJo.prototype.resetTask = function () {
       } else if (type === 'H5P.Audio') {
         if (media.params.files) {
           // Use setVideo pending forthcoming fix in H5P.Question OCT 2021
-          self.setVideo(media); 
-        } 
+          self.setVideo(media);
+        }
       }
     }
     // wrap introduction in div with id
@@ -869,10 +869,10 @@ MarkTheWordsPapiJo.prototype.resetTask = function () {
     this.setContent(this.$inner, {
       'class': 'h5p-word'
     });
-    
+
     // Register buttons
     this.addButtons();
-    
+
   };
 
   /**
