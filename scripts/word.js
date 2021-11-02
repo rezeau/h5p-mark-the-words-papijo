@@ -176,25 +176,22 @@ H5P.MarkTheWordsPapiJo.Word = (function () {
      *
      * @public
      */
-    this.markClear = function (keepCorrectAnswers, spotTheMistakes, isFinished, resetTask) {
-      var className = $word.attr('aria-describedby');
-      // TODO simplify the resetTask clear...
-      if (!resetTask) {
-        if (isFinished) {
-          // Hide correctly spotted mistake at the very end of activity only.
-          if (className !== undefined) {
-          // h5p-description-is-mistake also hide potential pipe characters used for choice of correct/wrong words.
-            var mistake = className.match(/(h5p-description-(correct|is-mistake)(|-no-ticks)|removePipe)/g);
-          }
-          if (mistake!== undefined) {
-            $word.attr('aria-describedby', Word.ID_MARK_REMOVE_MISTAKE);
-            return;
-          }
-        } else { // If this word is the pipe choice character, do not clear the removePipe attr aria-describedby value !
-          var input = $word.text();
-          if (input == '|') {
-            return;
-          }
+    this.markClear = function (keepCorrectAnswers, isFinished) {
+      var className = $word.attr('aria-describedby');      
+      if (isFinished) {
+        // Hide correctly spotted mistake at the very end of activity only.
+        if (className !== undefined) {
+        // h5p-description-is-mistake also hide potential pipe characters used for choice of correct/wrong words.
+          var mistake = className.match(/(h5p-description-(correct|is-mistake)(|-no-ticks)|removePipe)/g);
+        }
+        if (mistake!== undefined) {
+          $word.attr('aria-describedby', Word.ID_MARK_REMOVE_MISTAKE);
+          return;
+        }
+      } else { // If this word is the pipe choice character, do not clear the removePipe attr aria-describedby value !
+        var input = $word.text();
+        if (input == '|') {
+          return;
         }
       }
 
@@ -217,11 +214,22 @@ H5P.MarkTheWordsPapiJo.Word = (function () {
           .attr('role', 'keepanswer')
           .attr('aria-describedby', Word.ID_MARK_CORRECT_NO_TICKS);
       }
-      if (resetTask) {
-        $word
-          .attr('role', 'option')
-      }
 
+    };
+
+    /**
+     * Clears all marks from the word for reset task.
+     *
+     * @public
+     */
+    this.markClearAndResetTask = function () {
+      var className = $word.attr('aria-describedby');
+      $word
+        .attr('aria-selected', false)
+        .removeAttr('aria-describedby')
+        .attr('role', 'option');
+      ariaText.innerHTML = '';
+      this.clearScorePoint();
     };
 
     /**

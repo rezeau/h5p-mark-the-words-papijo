@@ -604,7 +604,7 @@ H5P.MarkTheWordsPapiJo = (function ($, Question, Word, KeyboardNav, XapiGenerato
     this.trigger('resize');
     if (score == this.answers) {
       if (this.spotTheMistakes) {
-        this.clearAllMarks(false, false, true, resetTask);
+        this.clearAllMarks(false, true);
       }
     }
     return score === this.answers;
@@ -670,9 +670,21 @@ H5P.MarkTheWordsPapiJo = (function ($, Question, Word, KeyboardNav, XapiGenerato
   /**
    * Clear styling on marked words.
    */
-  MarkTheWordsPapiJo.prototype.clearAllMarks = function (keepCorrectAnswers, spotTheMistakes, isFinished, resetTask) {
+  MarkTheWordsPapiJo.prototype.clearAllMarks = function (keepCorrectAnswers, isFinished) {
     this.selectableWords.forEach(function (entry) {
-      entry.markClear(keepCorrectAnswers, spotTheMistakes, isFinished, resetTask);
+      entry.markClear(keepCorrectAnswers, isFinished);
+    });
+
+    this.$wordContainer.removeClass('h5p-disable-hover');
+    this.trigger('resize');
+  };
+
+  /**
+   * Clear styling on marked words and reset the task.
+   */
+  MarkTheWordsPapiJo.prototype.clearAllMarksAndReset = function () {
+    this.selectableWords.forEach(function (entry) {
+      entry.markClearAndResetTask();
     });
 
     this.$wordContainer.removeClass('h5p-disable-hover');
@@ -746,7 +758,7 @@ H5P.MarkTheWordsPapiJo = (function ($, Question, Word, KeyboardNav, XapiGenerato
 
   MarkTheWordsPapiJo.prototype.retry = function () {
     this.isAnswered = false;
-    this.clearAllMarks(this.keepCorrectAnswers, this.spotTheMistakes, false, resetTask = false);
+    this.clearAllMarks(this.keepCorrectAnswers, false);
     this.hideEvaluation();
     this.hideButton('try-again');
     this.hideButton('show-solution');
@@ -770,7 +782,7 @@ H5P.MarkTheWordsPapiJo = (function ($, Question, Word, KeyboardNav, XapiGenerato
 
 MarkTheWordsPapiJo.prototype.resetTask = function () {
     this.isAnswered = false;
-    this.clearAllMarks(false, false, true, resetTask = true);
+    this.clearAllMarksAndReset();
 
     this.hideEvaluation();
     this.hideButton('try-again');
