@@ -35,7 +35,6 @@
   white-space: nowrap;
   padding: 0.15em;
   border-radius: 0.25em;
-  cursor: pointer;
   position: relative;
 }
 /* Answer already found and keep correct answers option selected. */
@@ -43,14 +42,13 @@
   white-space: nowrap;
   padding: 0.15em;
   border-radius: 0.25em;
-  cursor: none;
   position: relative;
   border-color: rgb(0,0,0)!important;
 }
 
-
 .h5p-mark-the-words .h5p-word-selectable-words:not(.h5p-disable-hover) [role="option"]:hover {
   box-shadow: inset 0px 0px 0px 2px #cee0f4;
+  cursor: pointer;
 }
 
 /* Colors and styling for word selections */
@@ -119,7 +117,9 @@
   display: inline-block;
 }
 button.h5p-retry-button.h5p-retry-button {
-  display: none;
+  height: 0;
+  width: 0;
+  overflow: hidden;
 }
 
 .h5p-mark-the-words .hidden-but-read {
