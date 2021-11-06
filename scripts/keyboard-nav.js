@@ -8,9 +8,8 @@ H5P.KeyboardNav = (function (EventDispatcher) {
    * Construct a new KeyboardNav
    * @constructor
    */
-  function KeyboardNav(keepCorrectAnswers) {
+  function KeyboardNav() {
     EventDispatcher.call(this);
-    this.keepCorrectAnswers = keepCorrectAnswers;
     /** @member {boolean} */
     this.selectability = true;
 
@@ -57,32 +56,19 @@ H5P.KeyboardNav = (function (EventDispatcher) {
     var isFirstElement = index === 0;
     if (isFirstElement) {
       return;
-    }
-
-    if (this.keepCorrectAnswers) {
-      var i = 1;
-      var prevKeepanswer = true;
-      while (prevKeepanswer && (index - i >= 0)) {   
-        var role = this.getElements()[index - i].getAttribute('role');
-        if (role && role == 'keepanswer') {
-          i++;
-        } else {
-          prevKeepanswer = false;
-          this.focusOnElementAt(index - i);
-        }
+    }    
+    var i = 1;
+    var prevKeepanswer = true;
+    while (prevKeepanswer && (index - i >= 0)) {   
+      let className = this.getElements()[index - i].className;
+      if (className && className === 'keepanswer') {
+        i++;
+      } else {
+        prevKeepanswer = false;
+        this.focusOnElementAt(index - i);
       }
-      return;
     }
-
-    this.focusOnElementAt(isFirstElement ? (this.elements.length - 1) : (index - 1));
-
-    /**
-     * Previous option event
-     *
-     * @event KeyboardNav#previousOption
-     * @type KeyboardNavigationEventData
-     */
-    this.trigger('previousOption', this.createEventPayload(index));
+    return;
   };
 
 
@@ -100,32 +86,19 @@ H5P.KeyboardNav = (function (EventDispatcher) {
     
     if (isLastElement) {
       return;
-    }
-    
-    if (this.keepCorrectAnswers) {
-      var i = 1;
-      var nextKeepanswer = true;
-      while (nextKeepanswer && (index + i < nbElements)) {   
-        var role = this.getElements()[index + i].getAttribute('role');
-        if (role && role == 'keepanswer') {
-          i++;
-        } else {
-          nextKeepanswer = false;
-          this.focusOnElementAt(index + i);
-        }
+    }    
+    var i = 1;
+    var nextKeepanswer = true;
+    while (nextKeepanswer && (index + i < nbElements)) {
+      let className = this.getElements()[index + i].className;
+      if (className && className === 'keepanswer') {
+        i++;
+      } else {
+        nextKeepanswer = false;
+        this.focusOnElementAt(index + i);
       }
-      return;
     }
-    
-    this.focusOnElementAt(isLastElement ? 0 : (index + 1));
-
-    /**
-     * Previous option event
-     *
-     * @event KeyboardNav#nextOption
-     * @type KeyboardNavigationEventData
-     */
-    this.trigger('nextOption', this.createEventPayload(index));
+    return;
   };
 
   /**

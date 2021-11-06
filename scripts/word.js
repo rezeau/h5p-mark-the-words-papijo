@@ -211,7 +211,7 @@ H5P.MarkTheWordsPapiJo.Word = (function () {
       } else {
         $word
           .attr('aria-selected', true)
-          .attr('role', 'keepanswer')
+          .attr('class', 'keepanswer')
           .attr('aria-describedby', Word.ID_MARK_CORRECT_NO_TICKS);
       }
 

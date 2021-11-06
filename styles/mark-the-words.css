@@ -38,12 +38,13 @@
   position: relative;
 }
 /* Answer already found and keep correct answers option selected. */
-.h5p-mark-the-words [role="keepanswer"] {
+.h5p-mark-the-words .keepanswer {
   white-space: nowrap;
   padding: 0.15em;
   border-radius: 0.25em;
   position: relative;
   border-color: rgb(0,0,0)!important;
+  cursor: text!important;
 }
 
 .h5p-mark-the-words .h5p-word-selectable-words:not(.h5p-disable-hover) [role="option"]:hover {
