@@ -194,18 +194,11 @@
     "common": true
   },
   {
-    "label": "Score explanation text",
-    "importance": "low",
-    "name": "scoreExplanation",
-    "type": "text",
-    "default": "In this activity your score and the maximum score are both multiplied by @percent.",
-    "common": true
-  },
-  {
     "label": "Score too low to display Solution",
     "importance": "low",
     "name": "scoreTooLow",
     "type": "text",
+    "description": "@minscore and @maxscore are placeholders that will be replaced by their respective values when this message is displayed to the student.",
     "default": "The solution won't be available until your score is at least @minscore/@maxscore.",
     "common": true
   },
@@ -254,60 +247,12 @@
         }
       },
       {
-        "name": "adjustScore",
-        "type": "boolean",
-        "label": "Adjust Score",
-        "importance": "low",
-        "default": false,
-        "description": "If this content has a lot of correct items you may adjust the maximum score by multiplying it by a certain percentage. Can be useful is this content is part of a Book or Quiz, etc."
-      },
-      {
         "name": "markSelectables",
         "type": "boolean",
         "label": "Mark selectable words?",
         "description": "Check this box if you want selectable words or groups of words to be displayed inside borders.",
         "importance": "low",
         "default": false
-      },
-      {
-        "name": "adjustScorePerCent",
-        "type": "number",
-        "label": "adjust Score by...",
-        "description": "",
-        "importance": "low",
-        "optional": true,
-        "min": 5,
-        "max": 95,
-        "step": 5,        
-        "default": 50,
-        "unit": "%",
-        "widget": "showWhen",
-        "showWhen": {
-          "rules": [
-            {
-              "field": "adjustScore",
-              "equals": true
-            }
-          ]
-        }
-      },
-      {
-        "name": "enableScoreExplanation",
-        "type": "boolean",
-        "label": "Enable score explanation",
-        "description": "Display a score explanation to user when checking their answers (if the 'Adjust Score' option has been selected).",
-        "importance": "low",
-        "default": true,
-        "optional": true,
-        "widget": "showWhen",
-        "showWhen": {
-          "rules": [
-            {
-              "field": "adjustScore",
-              "equals": true
-            }
-          ]
-        }
       },
       {
         "name": "enableCheckButton",
@@ -323,14 +268,6 @@
         "type": "boolean",
         "label": "Show score points",
         "description": "Show points earned for each answer.",
-        "importance": "low",
-        "default": true
-      },
-      {
-        "name": "showTicks",
-        "type": "boolean",
-        "label": "Show ticks",
-        "description": "Show correct and incorrect ticks for each answer.",
         "importance": "low",
         "default": true
       },
@@ -402,6 +339,24 @@
     "common": true
   },
   {
+    "label": "Spotted mistake text",
+    "importance": "low",
+    "name": "isMistake",
+    "type": "text",
+    "default": "Correctly spotted mistake!",
+    "description": "Text used to indicate that a mistake has been correctly spotted",
+    "common": true
+  },
+  {
+    "label": "Incorrectly marked mistake text",
+    "importance": "low",
+    "name": "notMistake",
+    "type": "text",
+    "default": "This is not a mistake!",
+    "description": "Text used to indicate that a word has been incorrectly marked as a mistake",
+    "common": true
+  },
+  {
     "label": "Description for Display Solution",
     "importance": "low",
     "name": "displaySolutionDescription",
@@ -415,14 +370,6 @@
     "type": "text",
     "label": "Textual representation of the score bar for those using a readspeaker",
     "default": "You got :num out of :total points",
-    "importance": "low",
-    "common": true
-  },
-  {
-    "name": "scoreExplanationButtonLabel",
-    "type": "text",
-    "label": "Textual representation of the score explanation button",
-    "default": "Show score explanation",
     "importance": "low",
     "common": true
   },

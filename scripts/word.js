@@ -13,19 +13,14 @@ H5P.MarkTheWordsPapiJo.Word = (function () {
    * @type {string}
    */
   Word.ID_MARK_CORRECT = "h5p-description-correct";
-  Word.ID_MARK_CORRECT_NO_TICKS = "h5p-description-correct-no-ticks";
   Word.ID_MARK_IS_MISTAKE = "h5p-description-is-mistake";
-  Word.ID_MARK_IS_MISTAKE_NO_TICKS = "h5p-description-correct-is-mistake-no-ticks";
   Word.ID_MARK_NOT_MISTAKE = "h5p-description-not-mistake";
-  Word.ID_MARK_NOT_MISTAKE_NO_TICKS = "h5p-description-incorrect-not-mistake-no-ticks";
-  Word.ID_MARK_REMOVE_MISTAKE = "h5p-description-remove-mistake";
   /**
    * @constant
    *
    * @type {string}
    */
   Word.ID_MARK_INCORRECT = "h5p-description-incorrect";
-  Word.ID_MARK_INCORRECT_NO_TICKS = "h5p-description-incorrect-no-ticks";
 
   /**
    * Class for keeping track of selectable words.
@@ -92,7 +87,7 @@ H5P.MarkTheWordsPapiJo.Word = (function () {
         return false;
       }
       return false;
-    }
+  }
 
     /**
      * Checks if the word is a distracter by checking the first, second to last and last character of the word.
@@ -177,18 +172,14 @@ H5P.MarkTheWordsPapiJo.Word = (function () {
      * @public
      */
     this.markClear = function (keepCorrectAnswers, isFinished) {
-      var className = $word.attr('aria-describedby');      
+      var className = $word.attr('class');      
       if (isFinished) {
         // Hide correctly spotted mistake at the very end of activity only.
-        if (className !== undefined) {
-        // h5p-description-is-mistake also hide potential pipe characters used for choice of correct/wrong words.
-          var mistake = className.match(/(h5p-description-(correct|is-mistake)(|-no-ticks)|removePipe)/g);
-        }
-        if (mistake!== undefined) {
-          $word.attr('aria-describedby', Word.ID_MARK_REMOVE_MISTAKE);
+        if (className === '' || className === 'removePipe') {
+          $word.attr('class', 'h5p-description-remove-mistake');          
           return;
         }
-      } else { // If this word is the pipe choice character, do not clear the removePipe attr aria-describedby value !
+      } else { // If this word is the pipe choice character, do not clear the removePipe class !
         var input = $word.text();
         if (input == '|') {
           return;
@@ -196,9 +187,9 @@ H5P.MarkTheWordsPapiJo.Word = (function () {
       }
 
       if (keepCorrectAnswers) {
-        if (className !== undefined) {
+        if (ariaAttr !== undefined) {
         // h5p-description-is-mistake
-          var keep = className.match(/h5p-description-(correct|is-mistake)(|-no-ticks)/g);
+          var keep = ariaAttr.match(/h5p-description-(correct|is-mistake)/g);
         }
       }
 
@@ -206,13 +197,15 @@ H5P.MarkTheWordsPapiJo.Word = (function () {
         $word
           .attr('aria-selected', false)
           .removeAttr('aria-describedby');
+          
         ariaText.innerHTML = '';
         this.clearScorePoint();
-      } else {
+      } 
+      else {
         $word
           .attr('aria-selected', true)
-          .attr('class', 'keepanswer')
-          .attr('aria-describedby', Word.ID_MARK_CORRECT_NO_TICKS);
+          .attr('class', 'keepanswer-no-ticks')
+          .attr('aria-describedby', Word.ID_MARK_CORRECT);
       }
 
     };
@@ -223,7 +216,7 @@ H5P.MarkTheWordsPapiJo.Word = (function () {
      * @public
      */
     this.markClearAndResetTask = function () {
-      var className = $word.attr('aria-describedby');
+      var ariaAttr = $word.attr('aria-describedby');
       $word
         .attr('aria-selected', false)
         .removeAttr('aria-describedby')
@@ -240,12 +233,9 @@ H5P.MarkTheWordsPapiJo.Word = (function () {
      * @param {H5P.Question.ScorePoints} scorePoints
      */
     this.markCheck = function (scorePoints, spotTheMistakes) {
+    // TODO remove keepanswer before adding it if needed.
       if (this.isSelected()) {
-        if (self.params.behaviour.showTicks) {
-          $word.attr('aria-describedby', isAnswer ? Word.ID_MARK_CORRECT : Word.ID_MARK_INCORRECT);
-        } else {
-          $word.attr('aria-describedby', isAnswer ? Word.ID_MARK_CORRECT_NO_TICKS : Word.ID_MARK_INCORRECT_NO_TICKS);
-        }
+        $word.attr('aria-describedby', isAnswer ? Word.ID_MARK_CORRECT : Word.ID_MARK_INCORRECT);
         ariaText.innerHTML = isAnswer
           ? self.params.correctAnswer
           : self.params.incorrectAnswer;
@@ -253,19 +243,16 @@ H5P.MarkTheWordsPapiJo.Word = (function () {
         if (scorePoints) {
           $word[0].appendChild(scorePoints.getElement(isAnswer));
         }
-        if (spotTheMistakes) { //
-          if (self.params.behaviour.showTicks) {
-            if (isAnswer) {
-              $word.attr('aria-describedby', Word.ID_MARK_IS_MISTAKE);
-            } else {
-              $word.attr('aria-describedby', Word.ID_MARK_NOT_MISTAKE);
-            }
+        // TOTO IF KEEPANSWERS
+        $word          
+          .attr('class', '');
+        if (spotTheMistakes) {
+          if (isAnswer) {
+            $word.attr('aria-describedby', Word.ID_MARK_IS_MISTAKE);
+            ariaText.innerHTML = self.params.isMistake;
           } else {
-            if (isAnswer) {
-              $word.attr('aria-describedby', Word.ID_MARK_IS_MISTAKE_NO_TICKS);
-            } else {
-              $word.attr('aria-describedby', Word.ID_MARK_NOT_MISTAKE_NO_TICKS);
-            }
+            $word.attr('aria-describedby', Word.ID_MARK_NOT_MISTAKE);
+            ariaText.innerHTML = self.params.notMistake;
           }
         }
       } else if (isAnswer) {

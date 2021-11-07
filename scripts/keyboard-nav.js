@@ -131,7 +131,14 @@ H5P.KeyboardNav = (function (EventDispatcher) {
    * @public
    */
   KeyboardNav.prototype.enableSelectability = function () {
-    this.elements.forEach(function (el) {    
+    this.elements.forEach(function (el) {
+    let className = el.el.className;
+    if (className === 'keepanswer') {
+      el.el.removeEventListener('keydown', el.keyDown);
+      el.el.removeEventListener('click', el.onClick);
+      this.selectability = false;
+      return;
+    }    
       el.el.addEventListener('keydown', el.keyDown);
       el.el.addEventListener('click', el.onClick);
     }.bind(this));
