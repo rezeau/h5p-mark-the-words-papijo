@@ -68,10 +68,11 @@ H5P.MarkTheWordsPapiJo = (function ($, Question, Word, KeyboardNav, XapiGenerato
     this.XapiGenerator = new XapiGenerator(this);
     
     this.spotTheMistakes = this.params.behaviour.spotTheMistakes;
-    this.keepCorrectAnswers = this.params.behaviour.keepCorrectAnswers;
+    
     if (this.spotTheMistakes || this.params.behaviour.markSelectables) {
-      this.keepCorrectAnswers = false;
+      this.params.behaviour.keepCorrectAnswers = false;
     }
+    this.keepCorrectAnswers = this.params.behaviour.keepCorrectAnswers;
   }
 
   MarkTheWordsPapiJo.prototype = Object.create(H5P.EventDispatcher.prototype);
