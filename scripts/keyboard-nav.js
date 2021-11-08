@@ -26,7 +26,7 @@ H5P.KeyboardNav = (function (EventDispatcher) {
    * @param {HTMLElement} el The element
    * @public
    */
-  KeyboardNav.prototype.addElement = function(el){
+  KeyboardNav.prototype.addElement = function (el) {
     const keyDown = this.handleKeyDown.bind(this);
     const onClick = this.onClick.bind(this);
     el.addEventListener('keydown', keyDown);
@@ -39,7 +39,7 @@ H5P.KeyboardNav = (function (EventDispatcher) {
       onClick: onClick,
     });
 
-    if(this.elements.length === 1){ // if first
+    if (this.elements.length === 1) { // if first
       this.setTabbableAt(0);
     }
   };
@@ -63,7 +63,8 @@ H5P.KeyboardNav = (function (EventDispatcher) {
       let className = this.getElements()[index - i].className;
       if (className && className === 'keepanswer') {
         i++;
-      } else {
+      } 
+      else {
         prevKeepanswer = false;
         this.focusOnElementAt(index - i);
       }
@@ -93,7 +94,8 @@ H5P.KeyboardNav = (function (EventDispatcher) {
       let className = this.getElements()[index + i].className;
       if (className && className === 'keepanswer') {
         i++;
-      } else {
+      } 
+      else {
         nextKeepanswer = false;
         this.focusOnElementAt(index + i);
       }
@@ -132,13 +134,13 @@ H5P.KeyboardNav = (function (EventDispatcher) {
    */
   KeyboardNav.prototype.enableSelectability = function () {
     this.elements.forEach(function (el) {
-    let className = el.el.className;
-    if (className === 'keepanswer') {
-      el.el.removeEventListener('keydown', el.keyDown);
-      el.el.removeEventListener('click', el.onClick);
-      this.selectability = false;
-      return;
-    }    
+      let className = el.el.className;
+      if (className === 'keepanswer') {
+        el.el.removeEventListener('keydown', el.keyDown);
+        el.el.removeEventListener('click', el.onClick);
+        this.selectability = false;
+        return;
+      }    
       el.el.addEventListener('keydown', el.keyDown);
       el.el.addEventListener('click', el.onClick);
     }.bind(this));
@@ -164,7 +166,7 @@ H5P.KeyboardNav = (function (EventDispatcher) {
    * @public
    */
   KeyboardNav.prototype.removeAllTabbable = function () {
-    this.elements.forEach(function(el){
+    this.elements.forEach (function (el) {
       el.el.removeAttribute('tabindex');
     });
   };
@@ -176,8 +178,8 @@ H5P.KeyboardNav = (function (EventDispatcher) {
    * @private
    * @fires KeyboardNav#select
    */
-  KeyboardNav.prototype.toggleSelect = function(el){
-    if(this.selectability) {
+  KeyboardNav.prototype.toggleSelect = function (el) {
+    if (this.selectability) {
       // toggle selection
       el.setAttribute('aria-selected', !isElementSelected(el));
 
@@ -203,7 +205,7 @@ H5P.KeyboardNav = (function (EventDispatcher) {
    * @param {KeyboardEvent} event Keyboard event
    * @private
    */
-  KeyboardNav.prototype.handleKeyDown = function(event){
+  KeyboardNav.prototype.handleKeyDown = function (event) {
     var index;
 
     switch (event.which) {
@@ -248,7 +250,7 @@ H5P.KeyboardNav = (function (EventDispatcher) {
    * @param {MouseEvent} event Mouse click event
    * @private
    */
-  KeyboardNav.prototype.onClick = function(event){
+  KeyboardNav.prototype.onClick = function (event) {
     this.toggleSelect(event.currentTarget);
   };
 
@@ -258,7 +260,7 @@ H5P.KeyboardNav = (function (EventDispatcher) {
    * @param {Number} index
    * @return {KeyboardNavigationEventData}
    */
-  KeyboardNav.prototype.createEventPayload = function(index){
+  KeyboardNav.prototype.createEventPayload = function (index) {
     /**
      * Data that is passed along as the event parameter
      *
@@ -280,7 +282,7 @@ H5P.KeyboardNav = (function (EventDispatcher) {
    * @param {HTMLElement} el The element to set selected
    * @return {boolean}
    */
-  var isElementSelected = function(el){
+  var isElementSelected = function (el) {
     return el.getAttribute('aria-selected') === 'true';
   };
 

@@ -29,15 +29,15 @@ H5P.MarkTheWordsPapiJo.Word = (function () {
    * @param {jQuery} $word
    */
   function Word($word, params) {
-    var self = this;
+    let self = this;
     self.params = params;
     H5P.EventDispatcher.call(self);
 
-    var input = $word.text();
-    var handledInput = input;
+    let input = $word.text();
+    let handledInput = input;
 
     // Check if word is an answer
-    var isAnswer = checkForAnswer();
+    let isAnswer = checkForAnswer();
 
     // Remove single asterisk and escape double asterisks.
     handleAsterisks();
@@ -47,7 +47,7 @@ H5P.MarkTheWordsPapiJo.Word = (function () {
     }
 
     // Check if word is a distracter (wrong answer)
-    var isDistracter = checkForDistracter(self.params.distractorDelimiter);
+    let isDistracter = checkForDistracter(self.params.distractorDelimiter);
 
     // Remove single asterisk and escape double asterisks.
     //handleAsterisks();
@@ -69,7 +69,7 @@ H5P.MarkTheWordsPapiJo.Word = (function () {
      */
     function checkForAnswer() {
       // Check last and next to last character, in case of punctuations.
-      var wordString = removeDoubleAsterisks(input);
+      let wordString = removeDoubleAsterisks(input);
       if (wordString.charAt(0) === ('*') && wordString.length > 2) {
         if (wordString.charAt(wordString.length - 1) === ('*')) {
           handledInput = input.slice(1, input.length - 1);
@@ -80,14 +80,14 @@ H5P.MarkTheWordsPapiJo.Word = (function () {
           return false;
         }
         // If punctuation, add the punctuation to the end of the word.
-        else if(wordString.charAt(wordString.length - 2) === ('*')) {
+        else if (wordString.charAt(wordString.length - 2) === ('*')) {
           handledInput = input.slice(1, input.length - 2);
           return true;
         }
         return false;
       }
       return false;
-  }
+    }
 
     /**
      * Checks if the word is a distracter by checking the first, second to last and last character of the word.
@@ -97,14 +97,14 @@ H5P.MarkTheWordsPapiJo.Word = (function () {
      */
     function checkForDistracter(dl) {
       // Check last and next to last character, in case of punctuations.
-      var wordString = removeDoubleAsterisks(input);
+      let wordString = removeDoubleAsterisks(input);
       if (wordString.charAt(0) === (dl) && wordString.length > 2) {
         if (wordString.charAt(wordString.length - 1) === (dl)) {
           handledInput = input.slice(1, input.length - 1);
           return true;
         }
         // If punctuation, add the punctuation to the end of the word.
-        else if(wordString.charAt(wordString.length - 2) === (dl)) {
+        else if (wordString.charAt(wordString.length - 2) === (dl)) {
           handledInput = input.slice(1, input.length - 2);
           return true;
         }
@@ -121,8 +121,8 @@ H5P.MarkTheWordsPapiJo.Word = (function () {
      * @return {String} Returns a string without double asterisks.
      */
     function removeDoubleAsterisks(wordString) {
-      var asteriskIndex = wordString.indexOf('*');
-      var slicedWord = wordString;
+      let asteriskIndex = wordString.indexOf('*');
+      let slicedWord = wordString;
 
       while (asteriskIndex !== -1) {
         if (wordString.indexOf('*', asteriskIndex + 1) === asteriskIndex + 1) {
@@ -139,7 +139,7 @@ H5P.MarkTheWordsPapiJo.Word = (function () {
      * @private
      */
     function handleAsterisks() {
-      var asteriskIndex = handledInput.indexOf('*');
+      let asteriskIndex = handledInput.indexOf('*');
 
       while (asteriskIndex !== -1) {
         handledInput = handledInput.slice(0, asteriskIndex) + handledInput.slice(asteriskIndex + 1, handledInput.length);
@@ -171,43 +171,55 @@ H5P.MarkTheWordsPapiJo.Word = (function () {
      *
      * @public
      */
-    this.markClear = function (keepCorrectAnswers, isFinished) {
-      var className = $word.attr('class');      
+    this.markClear = function (isFinished) {       
+      const className = $word.attr('class');      
+      const ariaAttr = $word.attr('aria-describedby');      
+      const keepCorrectAnswers = self.params.behaviour.keepCorrectAnswers;
+      const hideMistakes = self.params.behaviour.hideMistakes;
+      const markSelectables = self.params.behaviour.markSelectables;
+       
       if (isFinished) {
-        // Hide correctly spotted mistake at the very end of activity only.
-        if (className === '' || className === 'removePipe') {
+        // Hide correctly spotted mistake at the very end of activity only; also hide potential pipe character.
+        if (hideMistakes && (className === 'removePipe' || ariaAttr === Word.ID_MARK_IS_MISTAKE)) {
           $word.attr('class', 'h5p-description-remove-mistake');          
           return;
         }
-      } else { // If this word is the pipe choice character, do not clear the removePipe class !
-        var input = $word.text();
-        if (input == '|') {
+      }      
+      else { // If this word is the pipe choice character, do not clear the removePipe class !
+        let input = $word.text();
+        if (input === '|') {
           return;
         }
       }
-
-      if (keepCorrectAnswers) {
-        if (ariaAttr !== undefined) {
-        // h5p-description-is-mistake
-          var keep = ariaAttr.match(/h5p-description-(correct|is-mistake)/g);
-        }
+      
+      let keep;      
+      if ((isFinished || keepCorrectAnswers) && ariaAttr) {        
+        keep = ariaAttr.match(/h5p-description-(correct|is-mistake)/g);
       }
 
-      if (keep == undefined) {
+      if (!keep) {
         $word
-          .attr('aria-selected', false)
+          .attr('aria-selected', false)      
           .removeAttr('aria-describedby');
-          
+        if (markSelectables) {
+          if (ariaAttr === Word.ID_MARK_IS_MISTAKE || ariaAttr === Word.ID_MARK_NOT_MISTAKE 
+            || ariaAttr === Word.ID_MARK_CORRECT || ariaAttr === Word.ID_MARK_INCORRECT) {
+            $word
+              .attr('class', 'groups_unread');
+          }
+        }
         ariaText.innerHTML = '';
         this.clearScorePoint();
       } 
       else {
         $word
           .attr('aria-selected', true)
-          .attr('class', 'keepanswer-no-ticks')
-          .attr('aria-describedby', Word.ID_MARK_CORRECT);
+          .attr('aria-describedby', ariaAttr);
+        if (!isFinished) {
+          $word
+            .attr('class', 'keepanswer');
+        }
       }
-
     };
 
     /**
@@ -216,7 +228,6 @@ H5P.MarkTheWordsPapiJo.Word = (function () {
      * @public
      */
     this.markClearAndResetTask = function () {
-      var ariaAttr = $word.attr('aria-describedby');
       $word
         .attr('aria-selected', false)
         .removeAttr('aria-describedby')
@@ -232,8 +243,8 @@ H5P.MarkTheWordsPapiJo.Word = (function () {
      * @public
      * @param {H5P.Question.ScorePoints} scorePoints
      */
-    this.markCheck = function (scorePoints, spotTheMistakes) {
-    // TODO remove keepanswer before adding it if needed.
+    this.markCheck = function (scorePoints) {
+      const spotTheMistakes = self.params.behaviour.spotTheMistakes;
       if (this.isSelected()) {
         $word.attr('aria-describedby', isAnswer ? Word.ID_MARK_CORRECT : Word.ID_MARK_INCORRECT);
         ariaText.innerHTML = isAnswer
@@ -250,15 +261,18 @@ H5P.MarkTheWordsPapiJo.Word = (function () {
           if (isAnswer) {
             $word.attr('aria-describedby', Word.ID_MARK_IS_MISTAKE);
             ariaText.innerHTML = self.params.isMistake;
-          } else {
+          } 
+          else {
             $word.attr('aria-describedby', Word.ID_MARK_NOT_MISTAKE);
             ariaText.innerHTML = self.params.notMistake;
           }
         }
-      } else if (isAnswer) {
+      } 
+      else if (isAnswer) {
         if (spotTheMistakes) {
           $word.attr('aria-describedby', Word.ID_MARK_MISSED_MISTAKE);
-        } else {
+        } 
+        else {
           $word.attr('aria-describedby', Word.ID_MARK_MISSED);
         }
         ariaText.innerHTML = self.params.missedAnswer;

@@ -38,7 +38,7 @@
   position: relative;
 }
 
-.h5p-mark-the-words .h5p-word-selectable-words:not(.h5p-disable-hover, .keepanswer) [role="option"]:hover {
+.h5p-mark-the-words .h5p-word-selectable-words:not(.h5p-disable-hover) [role="option"]:hover {
   box-shadow: inset 0px 0px 0px 2px #cee0f4;
   cursor: pointer;
 }
@@ -57,16 +57,14 @@
 }
 
 /* Correctly answered marking */
-.h5p-mark-the-words [aria-describedby="h5p-description-correct"],
-.h5p-mark-the-words [aria-describedby="h5p-description-correct-no-ticks"] {
+.h5p-mark-the-words [aria-describedby="h5p-description-correct"] {
   background: #9dd8bb!important;
   color: #255c41;
   display: inline-block;
   line-height: 1;
 }
 /* Wrongly answered marking */
-.h5p-mark-the-words [aria-describedby="h5p-description-incorrect"],
-.h5p-mark-the-words [aria-describedby="h5p-description-incorrect-no-ticks"] {
+.h5p-mark-the-words [aria-describedby="h5p-description-incorrect"] {
   background-color: #f7d0d0!important;
   color: #b71c1c;
   text-decoration: line-through;
@@ -125,13 +123,11 @@ button.h5p-retry-button.h5p-retry-button {
  border-radius: .25em;
 }
 
-.h5p-mark-the-words [aria-describedby="h5p-description-is-mistake"],
-.h5p-mark-the-words [aria-describedby="h5p-description-correct-is-mistake-no-ticks"] {
+.h5p-mark-the-words [aria-describedby="h5p-description-is-mistake"] {
   color: red;
   background-color: rgb(255,255,255);
 }
-.h5p-mark-the-words [aria-describedby="h5p-description-not-mistake"],
-.h5p-mark-the-words [aria-describedby="h5p-description-incorrect-not-mistake-no-ticks"] {
+.h5p-mark-the-words [aria-describedby="h5p-description-not-mistake"] {
   color: blue;
   background-color: rgb(255,255,255);
 }
@@ -150,10 +146,10 @@ button.h5p-retry-button.h5p-retry-button {
 
 .h5p-mark-the-words .removePipe {
   pointer-events: none;
-  padding: 0 ;  
+  padding: 0 ;
 }
 
-.h5p-mark-the-words .keepanswer-no-ticks:after {
+.h5p-mark-the-words .keepanswer:after {
   content: "";
   padding-left: 0px;
 }

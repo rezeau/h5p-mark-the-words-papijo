@@ -277,7 +277,24 @@
         "label": "Enable the 'Spot The Mistakes' mode",
         "importance": "low",
         "default": false,
-        "description": "This mode swaps your correct <-> incorrect answers. The student will have to click on the mistakes/WRONG answers. The correctly spotted WRONG answers will be marked as correct (and give the point). They will disappear from the text when the activity is finished."
+        "description": "This mode swaps your correct <-> incorrect answers. The student will have to click on the mistakes/wrong answers. The correctly spotted wrong answers will be marked as correct (and give the point)."
+      },
+      {
+        "name": "hideMistakes",
+        "type": "boolean",
+        "label": "Hide mistakes at the end",
+        "importance": "low",
+        "default": false,
+        "description": "If you check this option, the correctly spotted wrong answers will disappear from the text when the activity is finished (i.e. when the maximum score has been reached).", 
+        "widget": "showWhen",
+        "showWhen": {                
+          "rules": [
+            {
+              "field": "spotTheMistakes",
+              "equals": true
+            }            
+          ]
+        }
       },
       {
         "name": "keepCorrectAnswers",
