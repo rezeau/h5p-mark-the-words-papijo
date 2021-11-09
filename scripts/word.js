@@ -46,13 +46,13 @@ H5P.MarkTheWordsPapiJo.Word = (function () {
       $word.text(handledInput);
     }
 
-    // Check if word is a distracter (wrong answer)
-    let isDistracter = checkForDistracter(self.params.distractorDelimiter);
+    // Check if word is a distractor (wrong answer)
+    let isDistractor = checkForDistractor(self.params.distractorDelimiter);
 
     // Remove single asterisk and escape double asterisks.
     //handleAsterisks();
 
-    if (isDistracter) {
+    if (isDistractor) {
       $word.text(handledInput);
     }
 
@@ -90,12 +90,12 @@ H5P.MarkTheWordsPapiJo.Word = (function () {
     }
 
     /**
-     * Checks if the word is a distracter by checking the first, second to last and last character of the word.
+     * Checks if the word is a distractor by checking the first, second to last and last character of the word.
      *
      * @private
-     * @return {Boolean} Returns true if the word is a distracter.
+     * @return {Boolean} Returns true if the word is a distractor.
      */
-    function checkForDistracter(dl) {
+    function checkForDistractor(dl) {
       // Check last and next to last character, in case of punctuations.
       let wordString = removeDoubleAsterisks(input);
       if (wordString.charAt(0) === (dl) && wordString.length > 2) {

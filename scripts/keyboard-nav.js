@@ -52,26 +52,23 @@ H5P.KeyboardNav = (function (EventDispatcher) {
    * @public
    * @fires KeyboardNav#previousOption
    */
+  
   KeyboardNav.prototype.previousOption = function (index) {
-    var isFirstElement = index === 0;
+    let isFirstElement = index === 0;
     if (isFirstElement) {
       return;
-    }    
-    var i = 1;
-    var prevKeepanswer = true;
-    while (prevKeepanswer && (index - i >= 0)) {   
-      let className = this.getElements()[index - i].className;
-      if (className && className === 'keepanswer') {
-        i++;
-      } 
-      else {
-        prevKeepanswer = false;
-        this.focusOnElementAt(index - i);
-      }
     }
-    return;
-  };
 
+    this.focusOnElementAt(isFirstElement ? (this.elements.length - 1) : (index - 1));
+
+    /**
+     * Previous option event
+     *
+     * @event KeyboardNav#previousOption
+     * @type KeyboardNavigationEventData
+     */
+    this.trigger('previousOption', this.createEventPayload(index));
+  };
 
   /**
    * Select the next element in the list. Select the first element,
@@ -81,28 +78,24 @@ H5P.KeyboardNav = (function (EventDispatcher) {
    * @public
    * @fires KeyboardNav#previousOption
    */
+  
   KeyboardNav.prototype.nextOption = function (index) {
-    var nbElements = this.elements.length;
-    var isLastElement = index === this.elements.length - 1;
-    
+    let isLastElement = index === this.elements.length - 1;
     if (isLastElement) {
       return;
-    }    
-    var i = 1;
-    var nextKeepanswer = true;
-    while (nextKeepanswer && (index + i < nbElements)) {
-      let className = this.getElements()[index + i].className;
-      if (className && className === 'keepanswer') {
-        i++;
-      } 
-      else {
-        nextKeepanswer = false;
-        this.focusOnElementAt(index + i);
-      }
     }
-    return;
-  };
 
+    this.focusOnElementAt(isLastElement ? 0 : (index + 1));
+
+    /**
+     * Previous option event
+     *
+     * @event KeyboardNav#nextOption
+     * @type KeyboardNavigationEventData
+     */
+    this.trigger('nextOption', this.createEventPayload(index));
+  };
+  
   /**
    * Focus on an element by index
    *
@@ -134,18 +127,19 @@ H5P.KeyboardNav = (function (EventDispatcher) {
    */
   KeyboardNav.prototype.enableSelectability = function () {
     this.elements.forEach(function (el) {
-      let className = el.el.className;
-      if (className === 'keepanswer') {
-        el.el.removeEventListener('keydown', el.keyDown);
-        el.el.removeEventListener('click', el.onClick);
-        this.selectability = false;
-        return;
-      }    
       el.el.addEventListener('keydown', el.keyDown);
       el.el.addEventListener('click', el.onClick);
     }.bind(this));
     this.selectability = true;
     
+  };
+
+  KeyboardNav.prototype.enableSelectability00 = function () {
+    this.elements.forEach(function (el) {
+      el.el.addEventListener('keydown', el.keyDown);
+      el.el.addEventListener('click', el.onClick);
+    }.bind(this));
+    this.selectability = true;
   };
 
   /**
@@ -187,7 +181,7 @@ H5P.KeyboardNav = (function (EventDispatcher) {
       el.setAttribute('tabindex', '0');
       el.focus();
 
-      var index = this.getElements().indexOf(el);
+      let index = this.getElements().indexOf(el);
 
       /**
        * Previous option event
@@ -206,20 +200,22 @@ H5P.KeyboardNav = (function (EventDispatcher) {
    * @private
    */
   KeyboardNav.prototype.handleKeyDown = function (event) {
-    var index;
-
+    const index = this.getElements().indexOf(event.currentTarget);
+    const className = this.getElements()[index].className;
     switch (event.which) {
       case 13: // Enter
       case 32: // Space
         // Select
-        this.toggleSelect(event.target);
-        event.preventDefault();
+        // If element is a kept answer, do not toggle its status.
+        if (className !== 'keepanswer') {
+          this.toggleSelect(event.target);
+          event.preventDefault();
+        }
         break;
 
       case 37: // Left Arrow
       case 38: // Up Arrow
-        // Go to previous Option
-        index = this.getElements().indexOf(event.currentTarget);
+        // Go to previous Option        
         this.previousOption(index);
         event.preventDefault();
         break;
@@ -227,7 +223,6 @@ H5P.KeyboardNav = (function (EventDispatcher) {
       case 39: // Right Arrow
       case 40: // Down Arrow
         // Go to next Option
-        index = this.getElements().indexOf(event.currentTarget);
         this.nextOption(index);
         event.preventDefault();
         break;
@@ -251,7 +246,12 @@ H5P.KeyboardNav = (function (EventDispatcher) {
    * @private
    */
   KeyboardNav.prototype.onClick = function (event) {
-    this.toggleSelect(event.currentTarget);
+    // If element is a kept answer, do not toggle its status.
+    let index = this.getElements().indexOf(event.currentTarget);
+    let className = this.getElements()[index].className;
+    if (className !== 'keepanswer') {
+      this.toggleSelect(event.currentTarget);
+    }
   };
 
   /**
@@ -282,7 +282,7 @@ H5P.KeyboardNav = (function (EventDispatcher) {
    * @param {HTMLElement} el The element to set selected
    * @return {boolean}
    */
-  var isElementSelected = function (el) {
+  const isElementSelected = function (el) {
     return el.getAttribute('aria-selected') === 'true';
   };
 

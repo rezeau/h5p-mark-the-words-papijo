@@ -242,7 +242,7 @@ H5P.MarkTheWordsPapiJo = (function ($, Question, Word, KeyboardNav, XapiGenerato
               removePipe = true;
             }
             if (entry.length) {
-              // Match * for correct answers and distDel for distracters.
+              // Match * for correct answers and distDel for distractors.
               const rg = new RegExp ('(\\*|' + distDel + ')');
               let match = entry.match(rg);
               if (markSelectables === false) {
