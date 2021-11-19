@@ -1,17 +1,43 @@
 {
   "semantics": [
     {
+      "label": "Media",
+      "fields": [
+        {
+          "label": "Type",
+          "description": "Optional media to display above the question."
+        },
+        {
+          "label": "Disable image zooming"
+        }
+      ]
+    },
+    {
       "label": "Task description",
       "description": "Describe how the user should solve the task.",
       "placeholder": "Click on all the verbs in the text that follows."
+    },
+    {
+      "label": "Distractor delimiter character (optional)",
+      "description": "Select the character to be used for delimiting distractors (wrong words/groups of words).",
+      "options": [
+        {
+          "label": "underscore: _distractor_"
+        },
+        {
+          "label": "hash: #distractor#"
+        },
+        {
+          "label": "commercial at: @distractor@"
+        }
+      ]
     },
     {
       "label": "Textfield",
       "placeholder": "This is an answer: *answer*.",
       "description": "",
       "important": {
-        "description": "<ul><li>Marked words are added with an asterisk (*).</li><li>Asterisks can be added within marked words by adding another asterisk, *correctword*** =&gt; correctword*.</li></ul>",
-        "example": "The correct words are marked like this: *correctword*, an asterisk is written like this: *correctword***."
+        "description": "<ul><li>Tutorial and Examples: <a href=\"http://www.rezeau.org/drupal/\" target=\"_blank\" rel=\"noopener\">Papi Jo's Drupal test site</a></span></li><li>Correct words/groups of words are marked with asterisks (*) before and after the word/group.</li><li>Asterisks can be added within marked words by adding another asterisk, e.g. \"6 = *2**3*\" =&gt; \"2*3\".</li><li>Words can be divided into syllables by using the normal hyphen character (-).</li><li>Put any word/group of words between square brackets to make them [non-selectable].</li><li>The 'Mark selectable words' option is especially useful if your Textfield contains *groups of words*. Remember to add distractors to the text by adding your selected distractor delimiter (above), e.g. with underscores e.g. _this is a distractor_ or _distractor_. If this option is selected it's not necessary to use []. All the words which are un-marked are also non-selectable.</li><li>For phonetic transcription, please use the British English system, with forward slashes as in the example below.</li></ul>"
       }
     },
     {
@@ -31,7 +57,6 @@
               {
                 "label": "Score Range"
               },
-              {},
               {
                 "label": "Feedback for defined score range",
                 "placeholder": "Fill in the feedback"
@@ -54,6 +79,11 @@
       "default": "Show solution"
     },
     {
+      "label": "Score too low to display Solution",
+      "description": "@minscore and @maxscore are placeholders that will be replaced by their respective values when this message is displayed to the student.",
+      "default": "The solution won't be available until your score is at least @minscore/@maxscore."
+    },
+    {
       "label": "Behavioural settings.",
       "description": "These options will let you control how the task behaves.",
       "fields": [
@@ -64,11 +94,35 @@
           "label": "Enable \"Show solution\" button"
         },
         {
+          "label": "Minimum score percentage",
+          "description": "Minimum score percentage to obtain before Solutions can be displayed. Enter 0(%) OR leave empty for no minimum limit."
+        },
+        {
+          "label": "Mark selectable words?",
+          "description": "Check this box if you want selectable words or groups of words to be displayed inside borders."
+        },
+        {
           "label": "Enable \"Check\" button"
         },
         {
           "label": "Show score points",
           "description": "Show points earned for each answer."
+        },
+        {
+          "label": "Enable the 'Spot The Mistakes' mode",
+          "description": "This mode swaps your correct <-> incorrect answers. The student will have to click on the mistakes/wrong answers. The correctly spotted wrong answers will be marked as correct (and give the point)."
+        },
+        {
+          "label": "Hide mistakes at the end",
+          "description": "If you check this option, the correctly spotted wrong answers will disappear from the text when the activity is finished (i.e. when the maximum score has been reached)."
+        },
+        {
+          "label": "Keep correct answers",
+          "description": "Check this option if you want to keep the correct answers displayed after pressing 'Retry'. Not available in the Spot The Mistakes mode as it would give away the solutions."
+        },
+        {
+          "label": "Remove hyphens",
+          "description": "Select this option if you do not want the 'parts of words' separator (hyphen) to be displayed."
         }
       ]
     },
@@ -86,6 +140,16 @@
       "label": "Missed answer text",
       "default": "Answer not found!",
       "description": "Text used to indicate that an answer is missing"
+    },
+    {
+      "label": "Spotted mistake text",
+      "default": "Correctly spotted mistake!",
+      "description": "Text used to indicate that a mistake has been correctly spotted"
+    },
+    {
+      "label": "Incorrectly marked mistake text",
+      "default": "This is not a mistake!",
+      "description": "Text used to indicate that a word has been incorrectly marked as a mistake"
     },
     {
       "label": "Description for Display Solution",

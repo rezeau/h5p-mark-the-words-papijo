@@ -1,29 +1,56 @@
 {
   "semantics": [
     {
+      "label": "Media",
+      "fields": [
+        {
+          "label": "Type",
+          "description": "Supports optionnels à afficher au-dessus de la question."
+        },
+        {
+          "label": "Désactiver le zoom sur les images"
+        }
+      ]
+    },
+    {
       "label": "Consigne",
       "description": "Expliquez ce que doit faire l'utilisateur.",
       "placeholder": "Cliquer sur tous les verbes dans le texte ci-dessous."
     },
     {
+      "label": "Caractère de délimitation du distracteur (facultatif)",
+      "description": "Sélectionnez le caractère à utiliser pour délimiter les distracteurs ( mots/groupes de mots erronés ).",
+      "options": [
+        {
+          "label": "tiret bas: _distracteur_"
+        },
+        {
+          "label": "dièse: #distracteur#"
+        },
+        {
+          "label": "@ commercial: @distracteur@"
+        }
+      ]
+    },
+    {
       "label": "Champ de texte",
-      "placeholder": "Voici une rÃ©ponse exacte : *rÃ©ponse*.",
+      "placeholder": "Voici une réponse exacte : *réponse*.",
       "description": "",
       "important": {
-        "description" : "<ul><li>Les mots corrects sont marquÃ©s par des astÃ©risques (*) avant et aprÃ¨s le mot.</li><li>Les mots peuvent Ãªtre divisÃ©s en syllabes en utilisant le trait d'union normal (-).</li><li>Les mots et les groupes de mots peuvent Ãªtre marquÃ©s comme corrects.</li><li>Pour la transcription phonÃ©tique, veuillez utiliser le systÃ¨me API, avec des barres obliques comme dans l'exemple ci-dessous.</li></ul>",
-      "exemple" : "Les mots corrects sont marquÃ©s comme suit : *lemonade*, les syllabes accentuÃ©es correctes sont marquÃ©es comme ceci : le-mo-*nade*, les phrases correctes comme ceci : *un verre de limonade*. Tapez la syllabe accentuÃ©e correcte dans 'limonade' en phonÃ©tique comme ceci : /le-mÉ™-*neÉªd*/"
+        "description": "<ul><li>Tutoriel et Exemples: <a href=\"http://www.rezeau.org/drupal/\" target=\"_blank\" rel=\"noopener\">Papi Jo's Drupal test site</a></span></li><li>Les mots/groupes de mots corrects sont marqués par des astérisques (*) avant et après le mot/groupe.</li><li>Les astérisques peuvent être ajoutées à l'intérieur des mots marqués en ajoutant une autre astérisque, par exemple : \"6 = *2**3*\" =&gt ; \"2*3\". </li><li>Les mots peuvent être divisés en syllabes en utilisant le caractère trait d'union normal (-).</li><li>Mettez n'importe quel mot/groupe de mots entre crochets pour les rendre [non sélectionnables].</li><li>L'option 'Marquer les mots sélectionnables' est particulièrement utile si votre champ de texte contient des *groupes de mots*. N'oubliez pas d'ajouter des distracteurs au texte en ajoutant votre délimiteur de distracteur sélectionné (ci-dessus), par exemple avec des traits de soulignement, par exemple _c'est un distracteur_ ou _distracteur_. Si cette option est sélectionnée, il n'est pas nécessaire d'utiliser []. Tous les mots non marqués sont également non sélectionnables.</li><li>Pour la transcription phonétique, veuillez utiliser le système anglais britannique, avec des barres obliques comme dans l'exemple ci-dessous.</li></ul>.",
+        "example": "<ul><li>Les mots corrects sont marqués comme ceci : *lemonade*, les syllabes accentuées correctes sont marquées comme ceci : le-mo-*nade*, les phrases correctes comme ceci : *un verre de limonade*. </li><li>Tapez la syllabe accentuée correcte dans \"lemonade\" en phonétique comme ceci : /le-m?-*ne?d*/</li><li>Ces animaux sont des mammifères : *chat*, _aigle_, *baleine*.</li></ul>"
       }
     },
     {
-      "label": "Feedback gÃ©nÃ©ral",
+      "label": "Feedback général",
       "fields": [
         {
           "widgets": [
             {
-              "label": "Par dÃ©faut"
+              "label": "Par défaut"
             }
           ],
-          "label": "DÃ©finissez le feedback pour chaque intervalle de score",
+          "label": "Définissez le feedback pour chaque intervalle de score",
           "description": "Cliquez sur le bouton \"Ajoutez Intervalle\" pour ajouter autant d'intervalles que vous le souhaitez. Exemple: 0-20% Mauvais score, 21-91% Score moyen, 91-100% Score excellent !",
           "entity": "intervalle",
           "field": {
@@ -33,7 +60,7 @@
               },
               {},
               {
-                "label": "Feedback pour l'intervalle de score dÃ©fini",
+                "label": "Feedback pour l'intervalle de score défini",
                 "placeholder": "Remplir le feedback"
               }
             ]
@@ -42,8 +69,8 @@
       ]
     },
     {
-      "label": "Texte du bouton \"VÃ©rifier\"",
-      "default": "VÃ©rifier"
+      "label": "Texte du bouton \"Vérifier\"",
+      "default": "Vérifier"
     },
     {
       "label": "Texte du bouton \"Recommencer\"",
@@ -54,8 +81,13 @@
       "default": "Voir la correction"
     },
     {
-      "label": "Options gÃ©nÃ©rales",
-      "description": "Ces options vous permettent de contrÃ´ler le dÃ©roulement de vos activitÃ©s.",
+      "label": "Score trop faible pour pouvoir montrer la solution",
+      "description": "@minscore et @maxscore sont des paramètres de remplacement qui seront remplacés par leurs valeurs respectives lorsque ce message sera affiché à l'étudiant.",
+      "default": "La solution ne sera pas accessible tant que votre score ne sera pas au moins égal à @minscore/@maxscore."
+    },
+    {
+      "label": "Options générales",
+      "description": "Ces options vous permettent de contrôler le déroulement de vos activités.",
       "fields": [
         {
           "label": "Activer le bouton \"Recommencer\""
@@ -64,37 +96,71 @@
           "label": "Activer le bouton \"Voir la solution\""
         },
         {
-          "label": "Activer le bouton \"VÃ©rifier\""
+          "label": "Pourcentage minimum de points",
+          "description": "Pourcentage minimum de points à obtenir avant que les solutions puissent être affichées. Entrez 0(%) OU laissez vide pour ne pas fixer de limite minimale."
+        },
+        {
+          "label": "Marquer les mots sélectionnables ?",
+          "description": "Cochez cette case si vous souhaitez que les mots ou groupes de mots sélectionnables soient encadrés par des bordures."
+        },
+        {
+          "label": "Activer le bouton \"Vérifier\""
         },
         {
           "label": "Montrer le score en points",
-          "description": "Afficher les points obtenus pour chaque rÃ©ponse."
+          "description": "Afficher les points obtenus pour chaque réponse."
+        },
+        {
+          "label": "Activez le mode \"repérer les erreurs\".",
+          "description": "Ce mode permute les réponses correctes <-> incorrectes. L'élève devra cliquer sur les erreurs/les mauvaises réponses. Les mauvaises réponses correctement repérées seront marquées comme correctes (et donneront le point)."
+        },
+        {
+          "label": "Masquer les erreurs à la fin",
+          "description": "Si vous cochez cette option, les fautes correctement repérées disparaîtront du texte lorsque l'activité sera terminée (c'est-à-dire lorsque le score maximum aura été atteint)."
+        },
+        {
+          "label": "Conserver les réponses correctes",
+          "description": "Cochez cette option si vous souhaitez que les réponses correctes restent affichées après avoir cliqué sur \"Réessayer\". Cette option n'est pas disponible dans le mode \"Repérer les erreurs\", car elle permettrait de révéler les solutions."
+        },
+        {
+          "label": "Supprimer les tirets",
+          "description": "Sélectionnez cette option si vous ne voulez pas que le séparateur de \"parties de mots\" (tiret) soit affiché."
         }
       ]
     },
     {
-      "label": "Texte de rÃ©ponse correcte",
-      "default": "RÃ©ponse correcte !",
-      "description": "Texte pour indiquer qu'une rÃ©ponse est bonne"
+      "label": "Texte de réponse correcte",
+      "default": "Réponse correcte !",
+      "description": "Texte pour indiquer qu'une réponse est bonne"
     },
     {
-      "label": "Texte de rÃ©ponse incorrecte",
-      "default": "RÃ©ponse incorrecte !",
-      "description": "Texte pour indiquer qu'une rÃ©ponse est mauvaise"
+      "label": "Texte de réponse incorrecte",
+      "default": "Réponse incorrecte !",
+      "description": "Texte pour indiquer qu'une réponse est mauvaise"
     },
     {
-      "label": "Texte de rÃ©ponse manquÃ©e",
-      "default": "Absence de rÃ©ponse !",
-      "description": "Texte pour indiquer qu'une rÃ©ponse manque"
+      "label": "Texte de réponse manquée",
+      "default": "Absence de réponse !",
+      "description": "Texte pour indiquer qu'une réponse manque"
     },
     {
-      "label": "Description pour la solution d'affichage",
-      "default": "L'activitÃ© a Ã©tÃ© mise Ã  jour pour afficher la solution.",
-      "description": "Ce texte indique Ã  l'utilisateur que l'activitÃ© a Ã©tÃ© mise Ã  jour avec la solution."
+      "label": "Texte d'erreur repérée",
+      "default": "Erreur correctement repérée !",
+      "description": "Texte utilisé pour indiquer qu'une erreur a été correctement repérée."
     },
     {
-      "label": "ReprÃ©sentation textuelle du panneau du score pour les utilisateurs de la sythÃ¨se vocale",
-      "default": "Vous avez :num points sur un total de :total"
+      "label": "Texte pour un mot repéré à tort comme une faute",
+      "default": "Ce n'est pas une faute!",
+      "description": "Texte utilisé pour indiquer qu'un mot a été incorrectement marqué comme une faute."
+    },
+    {
+      "label": "Description for Display Solution",
+      "default": "Task is updated to contain the solution.",
+      "description": "This text tells the user that the tasks has been updated with the solution."
+    },
+    {
+      "label": "Textual representation of the score bar for those using a readspeaker",
+      "default": "You got :num out of :total points"
     },
     {
       "label": "Label for the full readable text for assistive technologies",
