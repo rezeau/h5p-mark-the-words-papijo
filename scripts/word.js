@@ -231,6 +231,7 @@ H5P.MarkTheWordsPapiJo.Word = (function () {
       $word
         .attr('aria-selected', false)
         .removeAttr('aria-describedby')
+        .removeClass('h5p-description-remove-mistake')
         .attr('role', 'option');
       ariaText.innerHTML = '';
       this.clearScorePoint();
@@ -254,9 +255,7 @@ H5P.MarkTheWordsPapiJo.Word = (function () {
         if (scorePoints) {
           $word[0].appendChild(scorePoints.getElement(isAnswer));
         }
-        // TOTO IF KEEPANSWERS
-        $word          
-          .attr('class', '');
+        
         if (spotTheMistakes) {
           if (isAnswer) {
             $word.attr('aria-describedby', Word.ID_MARK_IS_MISTAKE);
