@@ -171,35 +171,35 @@ H5P.MarkTheWordsPapiJo.Word = (function () {
      *
      * @public
      */
-    this.markClear = function (isFinished) {       
-      const className = $word.attr('class');      
-      const ariaAttr = $word.attr('aria-describedby');      
+    this.markClear = function (isFinished) {
+      const className = $word.attr('class');
+      const ariaAttr = $word.attr('aria-describedby');
       const keepCorrectAnswers = self.params.behaviour.keepCorrectAnswers;
       const hideMistakes = self.params.behaviour.hideMistakes;
       const markSelectables = self.params.behaviour.markSelectables;
-       
+
       if (isFinished) {
         // Hide correctly spotted mistake at the very end of activity only; also hide potential pipe character.
         if (hideMistakes && (className === 'removePipe' || ariaAttr === Word.ID_MARK_IS_MISTAKE)) {
-          $word.attr('class', 'h5p-description-remove-mistake');          
+          $word.addClass('h5p-description-remove-mistake');
           return;
         }
-      }      
+      }
       else { // If this word is the pipe choice character, do not clear the removePipe class !
         let input = $word.text();
         if (input === '|') {
           return;
         }
       }
-      
-      let keep;      
-      if ((isFinished || keepCorrectAnswers) && ariaAttr) {        
+
+      let keep;
+      if ((isFinished || keepCorrectAnswers) && ariaAttr) {
         keep = ariaAttr.match(/h5p-description-(correct|is-mistake)/g);
       }
 
       if (!keep) {
         $word
-          .attr('aria-selected', false)      
+          .attr('aria-selected', false)
           .removeAttr('aria-describedby');
         if (markSelectables) {
           if (ariaAttr === Word.ID_MARK_IS_MISTAKE || ariaAttr === Word.ID_MARK_NOT_MISTAKE 
@@ -255,7 +255,7 @@ H5P.MarkTheWordsPapiJo.Word = (function () {
         if (scorePoints) {
           $word[0].appendChild(scorePoints.getElement(isAnswer));
         }
-        
+
         if (spotTheMistakes) {
           if (isAnswer) {
             $word.attr('aria-describedby', Word.ID_MARK_IS_MISTAKE);

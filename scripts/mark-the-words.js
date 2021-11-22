@@ -66,9 +66,9 @@ H5P.MarkTheWordsPapiJo = (function ($, Question, Word, KeyboardNav, XapiGenerato
     this.keyboardNavigators = [];
     this.initMarkTheWordsPapiJo();
     this.XapiGenerator = new XapiGenerator(this);
-    
+
     this.spotTheMistakes = this.params.behaviour.spotTheMistakes;
-    
+
     if (this.spotTheMistakes || this.params.behaviour.markSelectables) {
       this.params.behaviour.keepCorrectAnswers = false;
     }
@@ -175,7 +175,6 @@ H5P.MarkTheWordsPapiJo = (function ($, Question, Word, KeyboardNav, XapiGenerato
         if (removeHyphens) {
           const regex = new RegExp('-', "g");
           text = text.replace(regex, WORD_JOINER);
-          noPadding = 'noPadding';
         }
         // If spotTheMistakes, swap correct <-> incorrect answers!
         if (spotTheMistakes) {
@@ -205,18 +204,20 @@ H5P.MarkTheWordsPapiJo = (function ($, Question, Word, KeyboardNav, XapiGenerato
               return;
             }
             let $sepElements = '';
+            noPadding = '';
             if (!entry.startsWith($sep)) {
               $sepElements = ' ';
             } 
             else { // Case syllables.
               entry = entry.substring(1);
               $sepElements = $sep;
+              noPadding = 'noPadding';
             }
             // Words
             if (html) {
               html += $sepElements;
             }
-            
+
             // Remove prefix punctuations from word.
             const prefix = entry.match(/^[[({⟨¿¡“"«„/]+/);
             if (entry === prefix) {
@@ -225,7 +226,7 @@ H5P.MarkTheWordsPapiJo = (function ($, Question, Word, KeyboardNav, XapiGenerato
             let start = 0;
             if (prefix !== null) {
               start = prefix[0].length;
-              html += prefix;              
+              html += prefix;
             }
 
             // Remove suffix punctuations from word.
@@ -488,7 +489,7 @@ H5P.MarkTheWordsPapiJo = (function ($, Question, Word, KeyboardNav, XapiGenerato
   MarkTheWordsPapiJo.prototype.toggleSelectable = function (disable) {
   // TODO make kept correct answers NOT selectable!
     this.keyboardNavigators.forEach(function (navigator) {
-    
+
       if (disable) {
         navigator.disableSelectability();
         navigator.removeAllTabbable();
@@ -564,7 +565,6 @@ H5P.MarkTheWordsPapiJo = (function ($, Question, Word, KeyboardNav, XapiGenerato
   };
   /**
    * Evaluate task and display score text for word markings.
-   *
    * @fires MarkTheWordsPapiJo#resize
    * @return {Boolean} Returns true if maxScore was achieved.
    */
@@ -580,7 +580,7 @@ H5P.MarkTheWordsPapiJo = (function ($, Question, Word, KeyboardNav, XapiGenerato
       .replace(/@wrong/g, answers.wrong.toString())
       .replace(/@missed/g, answers.missed.toString());
 
-    
+
     this.setFeedback(scoreText, score, maxScore, this.params.scoreBarLabel);
 
     this.trigger('resize');
@@ -855,7 +855,7 @@ H5P.MarkTheWordsPapiJo = (function ($, Question, Word, KeyboardNav, XapiGenerato
 
     // Register description
     this.setIntroduction(introduction);
-    
+
     // papi Jo : not used?!
     // creates aria descriptions for correct/incorrect/missed
     //this.createDescriptionsDom().appendTo(this.$inner);
