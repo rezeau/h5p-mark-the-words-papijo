@@ -216,8 +216,7 @@ H5P.MarkTheWordsPapiJo.Word = (function () {
           .attr('aria-selected', true)
           .attr('aria-describedby', ariaAttr);
         if (!isFinished) {
-          $word
-            .attr('class', 'keepanswer');
+          $word.addClass('keepanswer');
         }
       }
     };
