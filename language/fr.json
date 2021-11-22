@@ -51,7 +51,7 @@
             }
           ],
           "label": "Définissez le feedback pour chaque intervalle de score",
-          "description": "Cliquez sur le bouton \"Ajoutez Intervalle\" pour ajouter autant d'intervalles que vous le souhaitez. Exemple: 0-20% Mauvais score, 21-91% Score moyen, 91-100% Score excellent !",
+          "description": "Cliquez sur le bouton \"Ajoutez Intervalle\" pour ajouter autant d'intervalles que vous le souhaitez. Exemple: 0-20% Mauvais score, 21-91% Score moyen, 91-100% Score excellent ! Vous pouvez utiliser ces variables dans votre texte de feedback : @total, @correct, @wrong et @missed. Exemple : Vous avez sélectionné correctement les mots @correct, incorrectement sélectionné les mots @wrong et manqué les mots @missed. Lorsque l/'étudiant vérifiera ses réponses, ces noms de variables seront remplacés par leurs valeurs actuelles.",
           "entity": "intervalle",
           "field": {
             "fields": [

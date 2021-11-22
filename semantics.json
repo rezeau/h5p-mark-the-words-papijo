@@ -133,7 +133,7 @@
         ],
         "importance": "high",
         "label": "Define custom feedback for any score range",
-        "description": "Click the \"Add range\" button to add as many ranges as you need. Example: 0-20% Bad score, 21-91% Average Score, 91-100% Great Score!",
+        "description": "Click the \"Add range\" button to add as many ranges as you need. Example: 0-20% Bad score, 21-91% Average Score, 91-100% Great Score! You can use these variables in your feedback text: @total, @correct, @wrong and @missed. Example: You have correctly selected @correct words, incorrectly selected @wrong ones and missed @missed ones. When the student checks their answers, these variable names will be replaced with their current values.",
         "entity": "range",
         "min": 1,
         "defaultNum": 1,
