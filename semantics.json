@@ -104,6 +104,10 @@
       "code",
       "table"
     ],
+    "font": {
+      "size": true,
+      "family": true
+    },
     "placeholder": "This is an answer: *answer*.",
     "description": "",
     "important": {
