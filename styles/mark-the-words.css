@@ -83,6 +83,7 @@
   color: #255c41;
   padding-left: 0.75em;
 }
+
 .h5p-mark-the-words [aria-describedby="h5p-description-incorrect"]:after,
 .h5p-mark-the-words [aria-describedby="h5p-description-not-mistake"]:after {
   position: relative;
@@ -94,6 +95,12 @@
   color: #b71c1c;
   padding-left: 0.75em;
 }
+
+.h5p-mark-the-words .hide-ticks:after {
+  content: ""!important;
+  padding-left: 0em;
+}
+
 
 /* SPECIFIC CSS CLASSES FOR MARK THE WORDS MODULE: */
 /* Start state for button: */
@@ -123,7 +130,8 @@ button.h5p-retry-button.h5p-retry-button {
  border-radius: .25em;
 }
 
-.h5p-mark-the-words [aria-describedby="h5p-description-is-mistake"] {
+.h5p-mark-the-words [aria-describedby="h5p-description-is-mistake"],
+.h5p-mark-the-words [aria-describedby="h5p-description-missed-mistake"] {
   color: red;
   background-color: rgb(255,255,255);
 }
@@ -131,10 +139,12 @@ button.h5p-retry-button.h5p-retry-button {
   color: blue;
   background-color: rgb(255,255,255);
 }
+/*
 .h5p-mark-the-words [aria-describedby="h5p-description-missed-mistake"] {
   color: red;
   background-color: rgb(255,255,255);
 }
+*/
 .h5p-mark-the-words .h5p-description-remove-mistake {
   display: none;
 }
@@ -151,7 +161,8 @@ button.h5p-retry-button.h5p-retry-button {
   padding: 0 ;
 }
 
-.h5p-mark-the-words .keepanswer:after {
+.h5p-mark-the-words .keepanswer:after,
+.h5p-mark-the-words .no-ticks:after {
   content: "";
   padding-left: 0px;
 }
@@ -162,4 +173,12 @@ button.h5p-retry-button.h5p-retry-button {
 /* Answer already found and keep correct answers option selected. */
 .h5p-mark-the-words .keepanswer {
   cursor: text!important;
+}
+
+.h5p-mark-the-words .check {
+  background-image: url(../images/check.svg);
+}
+
+.h5p-mark-the-words .cross {
+  background-image: url(../images/cross.svg);
 }

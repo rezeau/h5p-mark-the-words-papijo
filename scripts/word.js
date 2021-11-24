@@ -243,18 +243,24 @@ H5P.MarkTheWordsPapiJo.Word = (function () {
      * @public
      * @param {H5P.Question.ScorePoints} scorePoints
      */
-    this.markCheck = function (scorePoints) {
+    this.markCheck = function () {    
+      const displayTicksMode = self.params.behaviour.displayTicksMode;
       const spotTheMistakes = self.params.behaviour.spotTheMistakes;
       if (this.isSelected()) {
         $word.attr('aria-describedby', isAnswer ? Word.ID_MARK_CORRECT : Word.ID_MARK_INCORRECT);
         ariaText.innerHTML = isAnswer
           ? self.params.correctAnswer
           : self.params.incorrectAnswer;
-
-        if (scorePoints) {
+        
+        if (displayTicksMode === 'ticksAndScorepoints') {
+          const scorePoints = new H5P.Question.ScorePoints();
           $word[0].appendChild(scorePoints.getElement(isAnswer));
-        }
-
+        } 
+        else if (displayTicksMode === 'ticksAbove') {
+          $word.addClass("hide-ticks");
+          this.appendExplanationTo(isAnswer);
+        };
+        
         if (spotTheMistakes) {
           if (isAnswer) {
             $word.attr('aria-describedby', Word.ID_MARK_IS_MISTAKE);
@@ -335,6 +341,23 @@ H5P.MarkTheWordsPapiJo.Word = (function () {
     this.setSelected = function () {
       $word.attr('aria-selected', 'true');
     };
+    
+     /**
+   * Append explanation to solution.
+   * @param {object} $word.
+   */
+    this.appendExplanationTo = function(isAnswer) {
+      const scorePoints = new H5P.Question.ScorePoints();
+      const scoreExplanation = scorePoints.getElement(false);
+      if (isAnswer) {
+        scoreExplanation.classList.add('check');
+      }
+      else {
+        scoreExplanation.classList.add('cross');
+      }
+      $word[0].appendChild(scoreExplanation);
+    }
+
   }
   Word.prototype = Object.create(H5P.EventDispatcher.prototype);
   Word.prototype.constructor = Word;

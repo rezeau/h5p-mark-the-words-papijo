@@ -30,7 +30,7 @@ H5P.MarkTheWordsPapiJo = (function ($, Question, Word, KeyboardNav, XapiGenerato
         enableRetry: true,
         enableSolutionsButton: true,
         enableCheckButton: true,
-        showScorePoints: true,
+        displayTicksMode: "ticksAndScorepoints",
         keepCorrectAnswers: false,
         minScore: 0,
         spotTheMistakes: false,
@@ -498,7 +498,7 @@ H5P.MarkTheWordsPapiJo = (function ($, Question, Word, KeyboardNav, XapiGenerato
         navigator.enableSelectability();
         navigator.setTabbableAt((0));
       }
-    });
+  });
 
     if (disable) {
       this.$wordContainer.removeAttr('aria-multiselectable').removeAttr('role');
@@ -528,7 +528,7 @@ H5P.MarkTheWordsPapiJo = (function ($, Question, Word, KeyboardNav, XapiGenerato
    */
   MarkTheWordsPapiJo.prototype.setAllMarks = function () {
     this.selectableWords.forEach(function (entry) {
-      entry.markCheck(0);
+      entry.markCheck();
       entry.clearScorePoint();
     });
 
@@ -547,18 +547,11 @@ H5P.MarkTheWordsPapiJo = (function ($, Question, Word, KeyboardNav, XapiGenerato
    */
   MarkTheWordsPapiJo.prototype.feedbackSelectedWords = function () {
     const self = this;
-
-    let scorePoints;
-    if (self.params.behaviour.showScorePoints) {
-      scorePoints = new H5P.Question.ScorePoints();
-    }
-
     this.selectableWords.forEach(function (entry) {
       if (entry.isSelected()) {
-        entry.markCheck(scorePoints);
+        entry.markCheck();
       }
     });
-
 
     this.$wordContainer.addClass('h5p-disable-hover');
     this.trigger('resize');

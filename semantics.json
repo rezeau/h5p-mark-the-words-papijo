@@ -104,10 +104,6 @@
       "code",
       "table"
     ],
-    "font": {
-      "size": true,
-      "family": true
-    },
     "placeholder": "This is an answer: *answer*.",
     "description": "",
     "important": {
@@ -268,12 +264,27 @@
         "optional": true
       },
       {
-        "name": "showScorePoints",
-        "type": "boolean",
-        "label": "Show score points",
-        "description": "Show points earned for each answer.",
+        "name": "displayTicksMode",
+        "type": "select",
+        "label": "Display mode for ticks and score points",
         "importance": "low",
-        "default": true
+        "description": "Select the display mode to be used to mark each word when the student checks their answers. If your text contains parts of words it's preferrable to use the 3rd mode (ticks or crosses above the words).",
+        "optional": true,
+        "default": "ticksAndScorepoints", 
+        "options": [
+          {
+            "value": "ticksAndScorepoints",
+            "label": "Display scorepoints and ticks or crosses"
+          },
+          {
+            "value": "ticksOnly",
+            "label": "Display ticks or crosses only"
+          },
+          {
+            "value": "ticksAbove",
+            "label": "Display ticks or crosses above the words"
+          }
+        ]
       },
       {
         "name": "spotTheMistakes",
