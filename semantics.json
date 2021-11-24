@@ -320,13 +320,13 @@
         "default": false, 
         "widget": "showWhen",
         "showWhen": {
-        "type": "and",        
+          "type": "and",
           "rules": [
             {
               "field": "markSelectables",
               "equals": false
             },
-              {
+            {
               "field": "spotTheMistakes",
               "equals": false
             }            

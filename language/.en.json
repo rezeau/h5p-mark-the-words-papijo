@@ -105,8 +105,19 @@
           "label": "Enable \"Check\" button"
         },
         {
-          "label": "Show score points",
-          "description": "Show points earned for each answer."
+          "label": "Display mode for ticks and score points",
+          "description": "Select the display mode to be used to mark each word when the student checks their answers. If your text contains parts of words it's preferrable to use the 3rd mode (ticks or crosses above the words).",
+          "options": [
+            {
+              "label": "Display scorepoints and ticks or crosses"
+            },
+            {
+              "label": "Display ticks or crosses only"
+            },
+            {
+              "label": "Display ticks or crosses above the words"
+            }
+          ]
         },
         {
           "label": "Enable the 'Spot The Mistakes' mode",

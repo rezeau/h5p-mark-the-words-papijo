@@ -259,7 +259,7 @@ H5P.MarkTheWordsPapiJo.Word = (function () {
         else if (displayTicksMode === 'ticksAbove') {
           $word.addClass("hide-ticks");
           this.appendExplanationTo(isAnswer);
-        };
+        }
         
         if (spotTheMistakes) {
           if (isAnswer) {
@@ -342,11 +342,11 @@ H5P.MarkTheWordsPapiJo.Word = (function () {
       $word.attr('aria-selected', 'true');
     };
     
-     /**
+    /**
    * Append explanation to solution.
    * @param {object} $word.
    */
-    this.appendExplanationTo = function(isAnswer) {
+    this.appendExplanationTo = function (isAnswer) {
       const scorePoints = new H5P.Question.ScorePoints();
       const scoreExplanation = scorePoints.getElement(false);
       if (isAnswer) {
@@ -356,7 +356,7 @@ H5P.MarkTheWordsPapiJo.Word = (function () {
         scoreExplanation.classList.add('cross');
       }
       $word[0].appendChild(scoreExplanation);
-    }
+    };
 
   }
   Word.prototype = Object.create(H5P.EventDispatcher.prototype);

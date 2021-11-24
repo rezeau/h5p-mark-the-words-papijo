@@ -51,7 +51,7 @@
             }
           ],
           "label": "Définissez le feedback pour chaque intervalle de score",
-          "description": "Cliquez sur le bouton \"Ajoutez Intervalle\" pour ajouter autant d'intervalles que vous le souhaitez. Exemple: 0-20% Mauvais score, 21-91% Score moyen, 91-100% Score excellent ! Vous pouvez utiliser ces variables dans votre texte de feedback : @total, @correct, @wrong et @missed. Exemple : Vous avez sélectionné correctement les mots @correct, incorrectement sélectionné les mots @wrong et manqué les mots @missed. Lorsque l/'étudiant vérifiera ses réponses, ces noms de variables seront remplacés par leurs valeurs actuelles.",
+          "description": "Cliquez sur le bouton \"Ajoutez Intervalle\" pour ajouter autant d'intervalles que vous le souhaitez. Exemple: 0-20% Mauvais score, 21-91% Score moyen, 91-100% Score excellent ! Vous pouvez utiliser ces variables dans votre texte de feedback : @total, @correct, @wrong et @missed. Exemple : Vous avez sélectionné correctement @correct mot(s), incorrectement sélectionné @wrong mot(s) et oublié de sélectionner @missed mot(s).. Lorsque l'étudiant vérifiera ses réponses, ces noms de variables seront remplacés par leurs valeurs actuelles.",
           "entity": "intervalle",
           "field": {
             "fields": [
@@ -107,8 +107,19 @@
           "label": "Activer le bouton \"Vérifier\""
         },
         {
-          "label": "Montrer le score en points",
-          "description": "Afficher les points obtenus pour chaque réponse."
+          "label": "Mode d'affichage des icônes correct/incorrect et des points",
+          "description": "Sélectionnez le mode d'affichage à utiliser pour la marquage de chaque mot lorsque l'élève vérifie ses réponses. Si votre texte contient des parties de mots, il est préférable d'utiliser le 3ème mode (icônes correct/incorrect au-dessus des mots).",
+          "options": [
+            {
+              "label": "Afficher les points et les icônes correct/incorrect"
+            },
+            {
+              "label": "Afficher seulement les icônes correct/incorrect"
+            },
+            {
+              "label": "Afficher les icônes correct/incorrect au-dessus des mots"
+            }
+          ]
         },
         {
           "label": "Activez le mode \"repérer les erreurs\".",

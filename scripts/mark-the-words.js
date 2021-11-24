@@ -498,7 +498,7 @@ H5P.MarkTheWordsPapiJo = (function ($, Question, Word, KeyboardNav, XapiGenerato
         navigator.enableSelectability();
         navigator.setTabbableAt((0));
       }
-  });
+    });
 
     if (disable) {
       this.$wordContainer.removeAttr('aria-multiselectable').removeAttr('role');
@@ -546,7 +546,6 @@ H5P.MarkTheWordsPapiJo = (function ($, Question, Word, KeyboardNav, XapiGenerato
    * @fires MarkTheWordsPapiJo#resize
    */
   MarkTheWordsPapiJo.prototype.feedbackSelectedWords = function () {
-    const self = this;
     this.selectableWords.forEach(function (entry) {
       if (entry.isSelected()) {
         entry.markCheck();
