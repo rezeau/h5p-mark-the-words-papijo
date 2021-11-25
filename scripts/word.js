@@ -230,7 +230,7 @@ H5P.MarkTheWordsPapiJo.Word = (function () {
       $word
         .attr('aria-selected', false)
         .removeAttr('aria-describedby')
-        .removeClass('h5p-description-remove-mistake')
+        .removeClass('h5p-description-remove-mistake keepanswer')
         .attr('role', 'option');
       ariaText.innerHTML = '';
       this.clearScorePoint();
