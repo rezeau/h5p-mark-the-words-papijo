@@ -572,12 +572,11 @@ H5P.MarkTheWordsPapiJo = (function ($, Question, Word, KeyboardNav, XapiGenerato
       .replace(/@wrong/g, answers.wrong.toString())
       .replace(/@missed/g, answers.missed.toString());
 
-
     this.setFeedback(scoreText, score, maxScore, this.params.scoreBarLabel);
 
     this.trigger('resize');
     if (score === this.answers) {
-      if (this.spotTheMistakes) {
+      if (this.spotTheMistakes || this.params.behaviour.markSelectables) {
         this.clearAllMarks(false, true);
       }
     }

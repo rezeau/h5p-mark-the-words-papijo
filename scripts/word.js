@@ -184,6 +184,10 @@ H5P.MarkTheWordsPapiJo.Word = (function () {
           $word.addClass('h5p-description-remove-mistake');
           return;
         }
+        if (hideMistakes && (className === 'groups_unread' && ariaAttr !== Word.ID_MARK_CORRECT)) {
+          $word.addClass('h5p-description-remove-mistake');
+          return;
+        }
       }
       else { // If this word is the pipe choice character, do not clear the removePipe class !
         let input = $word.text();
