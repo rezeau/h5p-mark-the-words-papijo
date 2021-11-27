@@ -98,8 +98,8 @@
           "description": "Minimum score percentage to obtain before Solutions can be displayed. Enter 0(%) OR leave empty for no minimum limit."
         },
         {
-          "label": "Mark selectable words?",
-          "description": "Check this box if you want selectable words or groups of words to be displayed inside borders."
+          "label": "Mark selectable words mode",
+          "description": "Check this box if you want selectable words or groups of words to be displayed inside borders. If you select this option you must create distractors in your text. "
         },
         {
           "label": "Enable \"Check\" button"
@@ -124,12 +124,12 @@
           "description": "This mode swaps your correct <-> incorrect answers. The student will have to click on the mistakes/wrong answers. The correctly spotted wrong answers will be marked as correct (and give the point)."
         },
         {
-          "label": "Hide mistakes at the end",
-          "description": "If you check this option, the correctly spotted wrong answers will disappear from the text when the activity is finished (i.e. when the maximum score has been reached)."
+          "label": "Hide wrong choices or mistakes at the end",
+          "description": "If you check this option, the selectable marked words which are wrong choices or the correctly spotted wrong answers will disappear from the text when the activity is finished (i.e. when the maximum score has been reached). This option is only available in the 'Mark selectable words' and the 'Spot the mistakes' modes."
         },
         {
           "label": "Keep correct answers",
-          "description": "Check this option if you want to keep the correct answers displayed after pressing 'Retry'. Not available in the Spot The Mistakes mode as it would give away the solutions."
+          "description": "Check this option if you want to keep the correct answers displayed after pressing 'Retry'. Not available in the 'Mark selectable words' and the 'Spot The Mistakes modes' as it would give away the solutions."
         },
         {
           "label": "Remove hyphens",
