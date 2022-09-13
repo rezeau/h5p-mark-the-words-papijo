@@ -17,10 +17,10 @@ H5P.MarkTheWordsPapiJo.XapiGenerator = (function ($) {
      * @return {H5P.XAPIEvent}
      */
     this.generateAnsweredEvent = function () {
-      var xAPIEvent = MarkTheWordsPapiJo.createXAPIEventTemplate('answered');
+      const xAPIEvent = MarkTheWordsPapiJo.createXAPIEventTemplate('answered');
 
       // Extend definition
-      var objectDefinition = createDefinition(MarkTheWordsPapiJo);
+      const objectDefinition = createDefinition(MarkTheWordsPapiJo);
       $.extend(true, xAPIEvent.getVerifiedStatementValue(['object', 'definition']), objectDefinition);
 
       // Set score
@@ -32,7 +32,7 @@ H5P.MarkTheWordsPapiJo.XapiGenerator = (function ($) {
       );
 
       // Extend user result
-      var userResult = {
+      const userResult = {
         response: getUserSelections(MarkTheWordsPapiJo)
       };
 
@@ -49,7 +49,7 @@ H5P.MarkTheWordsPapiJo.XapiGenerator = (function ($) {
    * @return {Object} Object definition
    */
   function createDefinition(MarkTheWordsPapiJo) {
-    var definition = {};
+    let definition = {};
     definition.description = {
       'en-US': replaceLineBreaks(MarkTheWordsPapiJo.params.taskDescription)
     };
@@ -70,7 +70,7 @@ H5P.MarkTheWordsPapiJo.XapiGenerator = (function ($) {
    * @return {string}
    */
   function replaceLineBreaks(description) {
-    var sanitized = $('<div>' + description + '</div>').text();
+    let sanitized = $('<div>' + description + '</div>').text();
     return sanitized.replace(/(\n)+/g, '<br/>');
   }
 
@@ -82,7 +82,7 @@ H5P.MarkTheWordsPapiJo.XapiGenerator = (function ($) {
    */
   function getChoices(MarkTheWordsPapiJo) {
     return MarkTheWordsPapiJo.selectableWords.map(function (word, index) {
-      var text = word.getText();
+      let text = word.getText();
       if (text.charAt(0) === '*' && text.charAt(text.length - 1) === '*') {
         text = text.substr(1, text.length - 2);
       }

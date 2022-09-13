@@ -91,7 +91,7 @@ H5P.MarkTheWordsPapiJo = (function ($, Question, Word, KeyboardNav, XapiGenerato
   /**
    * Recursive function that creates html for the words
    * @method createHtmlForWords
-   * @param  {Array}           nodes Array of dom nodes
+   * @param  {Array} nodes Array of dom nodes
    * @return {string}
    */
   MarkTheWordsPapiJo.prototype.createHtmlForWords = function (nodes) {
@@ -122,6 +122,7 @@ H5P.MarkTheWordsPapiJo = (function ($, Question, Word, KeyboardNav, XapiGenerato
           text = text.replace(match[i], replace);
         }
       }
+
       /*
        * Temporarily replace double asterisks with a replacement character,
        * so they don't tamper with the detection of words/phrases to be marked
@@ -129,7 +130,7 @@ H5P.MarkTheWordsPapiJo = (function ($, Question, Word, KeyboardNav, XapiGenerato
       const DOUBLE_ASTERISK_REPLACEMENT = '\u250C'; // no-width space character
 
       // In text, find $sep preceded or followed by * or _ marker in order to add a blank space just in front of the $sep.
-      const rgsep = new RegExp('(&nbsp;|\r\n|\n|\r|)' + '((?<=(' + distDel + '|\\*))' + $sep + '|' + $sep + '(?=(' + distDel + '|\\*)))', 'g');
+      const rgsep = new RegExp('(&nbsp;|\r\n|\n|\r|)' + '((?<=(' + distDel + '|\\*|))' + $sep + '|' + $sep + '(?=(' + distDel + '|\\*|)))', 'g');
 
       text = text
         .replace(/\s\*\*\*/g, ' *' + DOUBLE_ASTERISK_REPLACEMENT) // Cover edge case with escaped * in front
