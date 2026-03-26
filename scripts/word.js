@@ -152,6 +152,7 @@ H5P.MarkTheWordsPapiJo.Word = (function () {
      */
     self.clearScorePoint = function () {
       const scorePoint = $word[0].querySelector('div');
+
       if (scorePoint) {
         scorePoint.parentNode.removeChild(scorePoint);
       }

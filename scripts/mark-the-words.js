@@ -16,9 +16,10 @@ H5P.MarkTheWordsPapiJo = (function ($, Question, Word, KeyboardNav, XapiGenerato
   function MarkTheWordsPapiJo(params, contentId, contentData) {
     this.contentId = contentId;
     this.contentData = contentData;
+    /// this.introductionId = 'mark-the-words-introduction-' + contentId;
     this.introductionId = 'mark-the-words-introduction-' + contentId;
-
-    Question.call(this, 'mark-the-words');
+    /// Question.call(this, 'mark-the-words');
+        Question.call(this, 'mark-the-words', { theme: true });
 
     // Set default behavior.
     this.params = $.extend(true, {
@@ -442,12 +443,13 @@ H5P.MarkTheWordsPapiJo = (function ($, Question, Word, KeyboardNav, XapiGenerato
         self.toggleSelectable(true);
       }, true, {
         'aria-label': this.params.a11yCheck,
+      }, {
+        contentData: this.contentData,
+        textIfSubmitting: this.params.submitAnswerButton,
+        icon: 'check'
       });
     }
 
-    this.addButton('try-again', this.params.tryAgainButton, this.retry.bind(this), false, {
-      'aria-label': this.params.a11yRetry,
-    });
 
     this.addButton('show-solution', this.params.showSolutionButton, function () {
       if (self.params.behaviour.minScore > 0) {
@@ -480,7 +482,27 @@ H5P.MarkTheWordsPapiJo = (function ($, Question, Word, KeyboardNav, XapiGenerato
       self.toggleSelectable(true);
     }, false, {
       'aria-label': this.params.a11yShowSolution,
-    });
+    },
+      {
+        icon: 'show-solutions',
+        styleType:'secondary'
+      }
+    );
+    
+    
+    this.addButton(
+      'try-again',
+      this.params.tryAgainButton,
+      this.retry.bind(this),
+      false,
+      {
+        'aria-label': this.params.a11yRetry,
+      },
+      {
+        icon: 'retry',
+        styleType: 'secondary'
+      }
+    );
   };
 
   /**
@@ -528,9 +550,12 @@ H5P.MarkTheWordsPapiJo = (function ($, Question, Word, KeyboardNav, XapiGenerato
    * @fires MarkTheWordsPapiJo#resize
    */
   MarkTheWordsPapiJo.prototype.setAllMarks = function () {
+    
     this.selectableWords.forEach(function (entry) {
+      console.log('text = ' + entry.isAnswer);
       entry.markCheck();
       entry.clearScorePoint();
+      
     });
 
     /**
@@ -644,6 +669,7 @@ H5P.MarkTheWordsPapiJo = (function ($, Question, Word, KeyboardNav, XapiGenerato
    * Clear styling on marked words.
    */
   MarkTheWordsPapiJo.prototype.clearAllMarks = function (keepCorrectAnswers, isFinished) {
+    
     this.selectableWords.forEach(function (entry) {
       entry.markClear(isFinished);
     });
@@ -702,7 +728,7 @@ H5P.MarkTheWordsPapiJo = (function ($, Question, Word, KeyboardNav, XapiGenerato
   MarkTheWordsPapiJo.prototype.getTitle = function () {
     return H5P.createTitle((this.contentData && this.contentData.metadata && this.contentData.metadata.title) ? this.contentData.metadata.title : 'Mark the Words');
   };
-
+  
   /**
    * Display the evaluation of the task, with proper markings.
    *
@@ -710,6 +736,7 @@ H5P.MarkTheWordsPapiJo = (function ($, Question, Word, KeyboardNav, XapiGenerato
    * @see {@link https://h5p.org/documentation/developers/contracts|Needed for contracts.}
    */
   MarkTheWordsPapiJo.prototype.showSolutions = function () {
+    console.log('prototype.showSolutions');
     const answers = this.calculateScore();
     this.showEvaluation(answers);
     this.setAllMarks();
@@ -740,7 +767,7 @@ H5P.MarkTheWordsPapiJo = (function ($, Question, Word, KeyboardNav, XapiGenerato
 
     // If correct answers are kept, remove the h5p-question-plus-one div.
     if (this.keepCorrectAnswers) {
-      this.$wordContainer.find('.h5p-question-plus-one').remove();
+      this.$wordContainer.find('.h5p-question-plus-one-cntainer').remove();
     }
     this.toggleSelectable(false);
     this.trigger('resize');
