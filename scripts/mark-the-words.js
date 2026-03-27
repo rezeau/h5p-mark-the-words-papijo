@@ -16,10 +16,8 @@ H5P.MarkTheWordsPapiJo = (function ($, Question, Word, KeyboardNav, XapiGenerato
   function MarkTheWordsPapiJo(params, contentId, contentData) {
     this.contentId = contentId;
     this.contentData = contentData;
-    /// this.introductionId = 'mark-the-words-introduction-' + contentId;
     this.introductionId = 'mark-the-words-introduction-' + contentId;
-    /// Question.call(this, 'mark-the-words');
-        Question.call(this, 'mark-the-words', { theme: true });
+    Question.call(this, 'mark-the-words', { theme: true });
 
     // Set default behavior.
     this.params = $.extend(true, {
@@ -37,8 +35,7 @@ H5P.MarkTheWordsPapiJo = (function ($, Question, Word, KeyboardNav, XapiGenerato
         spotTheMistakes: false,
         removeHyphens:false,
         markSelectables: false,
-        hideMistakes: false,
-        ////showScorePoints: true
+        hideMistakes: false
       },
       checkAnswerButton: "Check",
       tryAgainButton: "Retry",
@@ -485,10 +482,10 @@ H5P.MarkTheWordsPapiJo = (function ($, Question, Word, KeyboardNav, XapiGenerato
     }, false, {
       'aria-label': this.params.a11yShowSolution,
     },
-      {
-        icon: 'show-solutions',
-        styleType:'secondary'
-      }
+    {
+      icon: 'show-solutions',
+      styleType:'secondary'
+    }
     );
     
     
@@ -512,7 +509,6 @@ H5P.MarkTheWordsPapiJo = (function ($, Question, Word, KeyboardNav, XapiGenerato
    * @param {Boolean} disable
    */
   MarkTheWordsPapiJo.prototype.toggleSelectable = function (disable) {
-  // TODO make kept correct answers NOT selectable!
     this.keyboardNavigators.forEach(function (navigator) {
 
       if (disable) {
@@ -572,9 +568,8 @@ H5P.MarkTheWordsPapiJo = (function ($, Question, Word, KeyboardNav, XapiGenerato
    * @fires MarkTheWordsPapiJo#resize
    */
   MarkTheWordsPapiJo.prototype.feedbackSelectedWords = function () {
-    var self = this;
-    var scorePoints;
-    console.log('self.params.behaviour.displayTicksMode = ' + self.params.behaviour.displayTicksMode);
+    let self = this;
+    let scorePoints;
     if (self.params.behaviour.displayTicksMode === 'ticksAndScorepoints') {
       scorePoints = new H5P.Question.ScorePoints();
     }
@@ -691,7 +686,6 @@ H5P.MarkTheWordsPapiJo = (function ($, Question, Word, KeyboardNav, XapiGenerato
    * Clear styling on marked words and reset the task.
    */
   MarkTheWordsPapiJo.prototype.clearAllMarksAndReset = function () {
-    console.log('clearAllMarksAndReset');
     this.selectableWords.forEach(function (entry) {
       entry.markClearAndResetTask();
     });

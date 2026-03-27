@@ -250,7 +250,6 @@ H5P.MarkTheWordsPapiJo.Word = (function () {
     this.markCheck = function (scorePoints) {    
       const displayTicksMode = self.params.behaviour.displayTicksMode;
       const spotTheMistakes = self.params.behaviour.spotTheMistakes;
-      console.log('displayTicksMode = ' + displayTicksMode);
       if (this.isSelected()) {
         $word.attr('aria-describedby', isAnswer ? Word.ID_MARK_CORRECT : Word.ID_MARK_INCORRECT);
         ariaText.innerHTML = isAnswer
