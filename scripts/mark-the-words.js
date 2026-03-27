@@ -37,7 +37,8 @@ H5P.MarkTheWordsPapiJo = (function ($, Question, Word, KeyboardNav, XapiGenerato
         spotTheMistakes: false,
         removeHyphens:false,
         markSelectables: false,
-        hideMistakes: false
+        hideMistakes: false,
+        ////showScorePoints: true
       },
       checkAnswerButton: "Check",
       tryAgainButton: "Retry",
@@ -452,6 +453,7 @@ H5P.MarkTheWordsPapiJo = (function ($, Question, Word, KeyboardNav, XapiGenerato
 
 
     this.addButton('show-solution', this.params.showSolutionButton, function () {
+      self.setAllMarks();
       if (self.params.behaviour.minScore > 0) {
         const minScore = self.params.behaviour.minScore;
         const answers = self.calculateScore();
@@ -467,7 +469,7 @@ H5P.MarkTheWordsPapiJo = (function ($, Question, Word, KeyboardNav, XapiGenerato
           return;
         }
       }
-      self.setAllMarks();
+      
 
       self.$a11yClickableTextLabel.html(self.params.a11ySolutionModeHeader + ' - ' + self.params.a11yClickableTextLabel);
       self.$a11yClickableTextLabel.focus();
@@ -550,12 +552,10 @@ H5P.MarkTheWordsPapiJo = (function ($, Question, Word, KeyboardNav, XapiGenerato
    * @fires MarkTheWordsPapiJo#resize
    */
   MarkTheWordsPapiJo.prototype.setAllMarks = function () {
-    
     this.selectableWords.forEach(function (entry) {
-      console.log('text = ' + entry.isAnswer);
       entry.markCheck();
       entry.clearScorePoint();
-      
+      entry.clearScorePoint();
     });
 
     /**
@@ -572,15 +572,23 @@ H5P.MarkTheWordsPapiJo = (function ($, Question, Word, KeyboardNav, XapiGenerato
    * @fires MarkTheWordsPapiJo#resize
    */
   MarkTheWordsPapiJo.prototype.feedbackSelectedWords = function () {
+    var self = this;
+    var scorePoints;
+    console.log('self.params.behaviour.displayTicksMode = ' + self.params.behaviour.displayTicksMode);
+    if (self.params.behaviour.displayTicksMode === 'ticksAndScorepoints') {
+      scorePoints = new H5P.Question.ScorePoints();
+    }
+
     this.selectableWords.forEach(function (entry) {
       if (entry.isSelected()) {
-        entry.markCheck();
+        entry.markCheck(scorePoints);
       }
     });
 
     this.$wordContainer.addClass('h5p-disable-hover');
     this.trigger('resize');
   };
+
   /**
    * Evaluate task and display score text for word markings.
    * @fires MarkTheWordsPapiJo#resize
@@ -683,6 +691,7 @@ H5P.MarkTheWordsPapiJo = (function ($, Question, Word, KeyboardNav, XapiGenerato
    * Clear styling on marked words and reset the task.
    */
   MarkTheWordsPapiJo.prototype.clearAllMarksAndReset = function () {
+    console.log('clearAllMarksAndReset');
     this.selectableWords.forEach(function (entry) {
       entry.markClearAndResetTask();
     });
@@ -736,7 +745,6 @@ H5P.MarkTheWordsPapiJo = (function ($, Question, Word, KeyboardNav, XapiGenerato
    * @see {@link https://h5p.org/documentation/developers/contracts|Needed for contracts.}
    */
   MarkTheWordsPapiJo.prototype.showSolutions = function () {
-    console.log('prototype.showSolutions');
     const answers = this.calculateScore();
     this.showEvaluation(answers);
     this.setAllMarks();
@@ -767,7 +775,7 @@ H5P.MarkTheWordsPapiJo = (function ($, Question, Word, KeyboardNav, XapiGenerato
 
     // If correct answers are kept, remove the h5p-question-plus-one div.
     if (this.keepCorrectAnswers) {
-      this.$wordContainer.find('.h5p-question-plus-one-cntainer').remove();
+      this.$wordContainer.find('.h5p-question-plus-one').remove();
     }
     this.toggleSelectable(false);
     this.trigger('resize');

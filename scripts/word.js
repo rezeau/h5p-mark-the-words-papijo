@@ -152,7 +152,6 @@ H5P.MarkTheWordsPapiJo.Word = (function () {
      */
     self.clearScorePoint = function () {
       const scorePoint = $word[0].querySelector('div');
-
       if (scorePoint) {
         scorePoint.parentNode.removeChild(scorePoint);
       }
@@ -178,7 +177,7 @@ H5P.MarkTheWordsPapiJo.Word = (function () {
       const keepCorrectAnswers = self.params.behaviour.keepCorrectAnswers;
       const hideMistakes = self.params.behaviour.hideMistakes;
       const markSelectables = self.params.behaviour.markSelectables;
-
+      this.clearScorePoint();
       if (isFinished) {
         // Hide correctly spotted mistake at the very end of activity only; also hide potential pipe character.
         if (hideMistakes && (className === 'removePipe' || ariaAttr === Word.ID_MARK_IS_MISTAKE)) {
@@ -214,7 +213,6 @@ H5P.MarkTheWordsPapiJo.Word = (function () {
           }
         }
         ariaText.innerHTML = '';
-        this.clearScorePoint();
       } 
       else {
         $word
@@ -232,13 +230,13 @@ H5P.MarkTheWordsPapiJo.Word = (function () {
      * @public
      */
     this.markClearAndResetTask = function () {
+      this.clearScorePoint();
       $word
         .attr('aria-selected', false)
         .removeAttr('aria-describedby')
         .removeClass('h5p-description-remove-mistake keepanswer')
         .attr('role', 'option');
       ariaText.innerHTML = '';
-      this.clearScorePoint();
     };
 
     /**
@@ -248,22 +246,24 @@ H5P.MarkTheWordsPapiJo.Word = (function () {
      * @public
      * @param {H5P.Question.ScorePoints} scorePoints
      */
-    this.markCheck = function () {    
+     
+    this.markCheck = function (scorePoints) {    
       const displayTicksMode = self.params.behaviour.displayTicksMode;
       const spotTheMistakes = self.params.behaviour.spotTheMistakes;
+      console.log('displayTicksMode = ' + displayTicksMode);
       if (this.isSelected()) {
         $word.attr('aria-describedby', isAnswer ? Word.ID_MARK_CORRECT : Word.ID_MARK_INCORRECT);
         ariaText.innerHTML = isAnswer
           ? self.params.correctAnswer
           : self.params.incorrectAnswer;
-        
-        if (displayTicksMode === 'ticksAndScorepoints') {
-          const scorePoints = new H5P.Question.ScorePoints();
+        if (scorePoints) {
           $word[0].appendChild(scorePoints.getElement(isAnswer));
-        } 
+        }
         else if (displayTicksMode === 'ticksAbove') {
           $word.addClass("hide-ticks");
           this.appendExplanationTo(isAnswer);
+          // Remove the Score minus or plus element that has been automatically added by theme/question.
+          $word.find('.h5p-question-minus-one').remove();
         }
         
         if (spotTheMistakes) {
