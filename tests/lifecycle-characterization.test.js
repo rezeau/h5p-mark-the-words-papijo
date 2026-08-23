@@ -240,11 +240,12 @@ for (const [keyName, which] of [['Enter', 13], ['Space', 32]]) {
   });
 }
 
-test('mouse selection leaves both the initial and clicked words with tabindex zero', () => {
+test('mouse selection moves tabindex ownership to the clicked word', () => {
   const harness = createInteraction('*answer* wrong');
   harness.mouseSelect(1);
 
-  assert.deepEqual(harness.summary().map(({ tabindex }) => tabindex), ['0', '0']);
+  assert.deepEqual(harness.summary().map(({ tabindex }) => tabindex), [undefined, '0']);
+  assert.equal(harness.elements[1].focused, true);
 });
 
 test('Check removes listbox state and tab stops but leaves orphaned option roles', () => {
@@ -270,14 +271,16 @@ test('Show Solution keeps selection disabled and option roles orphaned', () => {
   assert.equal(harness.summary()[0].selected, false);
 });
 
-test('pipe/removePipe participates in keyboard focus and can be selected with Enter', () => {
+test('pipe/removePipe is skipped by keyboard navigation and cannot be toggled with Enter or Space', () => {
   const harness = createInteraction('| *answer*');
 
   assert.equal(harness.summary()[0].className, 'removePipe');
-  assert.equal(harness.summary()[0].tabindex, '0');
-  harness.key(0, 13);
-  assert.equal(harness.summary()[0].selected, true);
-  assert.deepEqual(harness.task.__triggeredXapi, ['interacted']);
+  assert.equal(harness.summary()[0].tabindex, undefined);
+  assert.equal(harness.summary()[1].tabindex, '0');
+  assert.equal(harness.key(0, 13).prevented, false);
+  assert.equal(harness.key(0, 32).prevented, false);
+  assert.equal(harness.summary()[0].selected, false);
+  assert.deepEqual(harness.task.__triggeredXapi, []);
 });
 
 test('aria-describedby points to an ID that is not registered in the task DOM', () => {

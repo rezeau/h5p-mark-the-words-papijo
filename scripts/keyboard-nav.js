@@ -174,14 +174,14 @@ H5P.KeyboardNav = (function (EventDispatcher) {
    */
   KeyboardNav.prototype.toggleSelect = function (el) {
     if (this.selectability) {
+      const index = this.getElements().indexOf(el);
+
       // toggle selection
       el.setAttribute('aria-selected', !isElementSelected(el));
 
       // focus current
-      el.setAttribute('tabindex', '0');
+      this.setTabbableAt(index);
       el.focus();
-
-      let index = this.getElements().indexOf(el);
 
       /**
        * Previous option event

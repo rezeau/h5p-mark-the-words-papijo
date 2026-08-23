@@ -353,20 +353,22 @@ H5P.MarkTheWordsPapiJo = (function ($, Question, Word, KeyboardNav, XapiGenerato
         return;
       }
 
-      if (isNewParagraph) {
-        // Add keyboard navigation helper
-        self.currentKeyboardNavigator = new KeyboardNav(self.keepCorrectAnswers);
+      if (!this.classList.contains('removePipe')) {
+        if (isNewParagraph) {
+          // Add keyboard navigation helper
+          self.currentKeyboardNavigator = new KeyboardNav(self.keepCorrectAnswers);
 
-        // on word clicked
-        self.currentKeyboardNavigator.on('select', function () {
-          self.isAnswered = true;
-          self.triggerXAPI('interacted');
-        });
+          // on word clicked
+          self.currentKeyboardNavigator.on('select', function () {
+            self.isAnswered = true;
+            self.triggerXAPI('interacted');
+          });
 
-        self.keyboardNavigators.push(self.currentKeyboardNavigator);
-        isNewParagraph = false;
+          self.keyboardNavigators.push(self.currentKeyboardNavigator);
+          isNewParagraph = false;
+        }
+        self.currentKeyboardNavigator.addElement(this);
       }
-      self.currentKeyboardNavigator.addElement(this);
 
       // Add keyboard navigation to this element
       const selectableWord = new Word($(this), self.params);
