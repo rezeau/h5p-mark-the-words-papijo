@@ -17,7 +17,7 @@
   "machineName": "H5P.MarkTheWordsPapiJo",
   "preloadedCss": [
     {
-      "path": "styles/mark-the-words.css"
+      "path": "styles/mark-the-words-papijo.css"
     }
   ],
   "preloadedJs": [
