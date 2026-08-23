@@ -450,7 +450,6 @@ H5P.MarkTheWordsPapiJo = (function ($, Question, Word, KeyboardNav, XapiGenerato
 
 
     this.addButton('show-solution', this.params.showSolutionButton, function () {
-      self.setAllMarks();
       if (self.params.behaviour.minScore > 0) {
         const minScore = self.params.behaviour.minScore;
         const answers = self.calculateScore();
@@ -466,6 +465,8 @@ H5P.MarkTheWordsPapiJo = (function ($, Question, Word, KeyboardNav, XapiGenerato
           return;
         }
       }
+
+      self.setAllMarks();
       
 
       self.$a11yClickableTextLabel.html(self.params.a11ySolutionModeHeader + ' - ' + self.params.a11yClickableTextLabel);

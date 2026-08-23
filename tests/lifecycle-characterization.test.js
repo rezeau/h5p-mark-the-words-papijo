@@ -103,20 +103,47 @@ test('Show Solution marks selected correct, selected incorrect, and missed answe
   assert.deepEqual(harness.task.__reads, ['Task is updated to contain the solution.']);
 });
 
-test('minimum-score gate currently reveals all marks before displaying the threshold warning', () => {
+test('minimum-score gate preserves learner markings while displaying the threshold warning', () => {
   const harness = createInteraction('*one* *two* wrong', {
     behaviour: { minScore: 50 }
   });
   harness.mouseSelect(2);
   harness.clickButton('check-answer');
+  const stateBeforeShowSolution = harness.summary().map((entry) => ({
+    selected: entry.selected,
+    ariaDescribedBy: entry.ariaDescribedBy,
+    className: entry.className
+  }));
   harness.clickButton('show-solution');
 
-  assert.equal(harness.summary()[0].ariaDescribedBy, 'h5p-description-missed');
-  assert.equal(harness.summary()[1].ariaDescribedBy, 'h5p-description-missed');
+  assert.deepEqual(
+    harness.summary().map((entry) => ({
+      selected: entry.selected,
+      ariaDescribedBy: entry.ariaDescribedBy,
+      className: entry.className
+    })),
+    stateBeforeShowSolution
+  );
+  assert.equal(harness.summary()[0].ariaDescribedBy, undefined);
+  assert.equal(harness.summary()[1].ariaDescribedBy, undefined);
   assert.equal(harness.summary()[2].ariaDescribedBy, 'h5p-description-incorrect');
   assert.equal(harness.task.__feedback.text, "The solution won't be available until your score is at least 1/2");
   assert.equal(harness.buttonVisibility()['show-solution'], true);
   assert.deepEqual(harness.task.__reads, []);
+});
+
+test('minimum-score gate preserves Show Solution behavior when the threshold is met', () => {
+  const harness = createInteraction('*one* *two* wrong', {
+    behaviour: { minScore: 50 }
+  });
+  harness.mouseSelect(0);
+  harness.clickButton('check-answer');
+  harness.clickButton('show-solution');
+
+  assert.equal(harness.summary()[0].ariaDescribedBy, 'h5p-description-correct');
+  assert.equal(harness.summary()[1].ariaDescribedBy, 'h5p-description-missed');
+  assert.equal(harness.buttonVisibility()['show-solution'], false);
+  assert.deepEqual(harness.task.__reads, ['Task is updated to contain the solution.']);
 });
 
 test('hideMistakes hides the unselected distractor after perfect Mark Selectables completion', () => {
