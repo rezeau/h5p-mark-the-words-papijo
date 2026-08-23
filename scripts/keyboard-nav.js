@@ -201,13 +201,13 @@ H5P.KeyboardNav = (function (EventDispatcher) {
    */
   KeyboardNav.prototype.handleKeyDown = function (event) {
     const index = this.getElements().indexOf(event.currentTarget);
-    const className = this.getElements()[index].className;
+    const classList = this.getElements()[index].classList;
     switch (event.which) {
       case 13: // Enter
       case 32: // Space
         // Select
         // If element is a kept answer, do not toggle its status.
-        if (className !== 'keepanswer') {
+        if (!classList.contains('keepanswer')) {
           this.toggleSelect(event.target);
           event.preventDefault();
         }
@@ -248,8 +248,8 @@ H5P.KeyboardNav = (function (EventDispatcher) {
   KeyboardNav.prototype.onClick = function (event) {
     // If element is a kept answer, do not toggle its status.
     let index = this.getElements().indexOf(event.currentTarget);
-    let className = this.getElements()[index].className;
-    if (className !== 'keepanswer') {
+    let classList = this.getElements()[index].classList;
+    if (!classList.contains('keepanswer')) {
       this.toggleSelect(event.currentTarget);
     }
   };

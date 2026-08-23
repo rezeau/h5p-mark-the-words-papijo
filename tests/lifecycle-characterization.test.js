@@ -70,6 +70,27 @@ test('Retry keeps correct answer state and class when keepCorrectAnswers is enab
   assert.equal(harness.task.getAnswerGiven(), false);
 });
 
+test('Retry protects a retained syllable answer with composite classes from keyboard and mouse toggles', () => {
+  const harness = createInteraction('le-mo-*nade*', {
+    behaviour: { keepCorrectAnswers: true }
+  });
+  harness.mouseSelect(0);
+  harness.mouseSelect(2);
+  harness.clickButton('check-answer');
+  harness.clickButton('try-again');
+
+  assert.equal(harness.summary()[2].className, 'noPadding keepanswer');
+  assert.equal(harness.summary()[2].selected, true);
+  assert.equal(harness.score().score, 1);
+
+  harness.key(2, 13);
+  assert.equal(harness.summary()[2].selected, true);
+
+  harness.mouseSelect(2);
+  assert.equal(harness.summary()[2].selected, true);
+  assert.equal(harness.task.__triggeredXapi.length, 2);
+});
+
 test('resetTask clears answers retained by Retry', () => {
   const harness = createInteraction('*right* wrong', {
     behaviour: { keepCorrectAnswers: true }
