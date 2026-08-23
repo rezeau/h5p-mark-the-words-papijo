@@ -151,8 +151,13 @@ H5P.MarkTheWordsPapiJo = (function ($, Question, Word, KeyboardNav, XapiGenerato
           outputStrings = outputStrings.concat(text.slice(0, pos + 1).match(/[^\u0020\f\n\r\t\v]+/g) || []);
           // Middle part (word/phrase to be marked), can be added as one word/phrase
           outputStrings.push(match[0]);
+          const trailingPunctuation = text.slice(pos + match[0].length)
+            .match(/^[",….:;?!/\]()}⟩»”]+(?=\s|$)/);
+          if (trailingPunctuation) {
+            outputStrings[outputStrings.length - 1] += trailingPunctuation[0];
+          }
           // back part (could be anything), still needs to be checked
-          text = text.slice(pos + match[0].length - 1);
+          text = text.slice(pos + match[0].length - 1 + (trailingPunctuation ? trailingPunctuation[0].length : 0));
         }
       } while (pos !== -1);
 

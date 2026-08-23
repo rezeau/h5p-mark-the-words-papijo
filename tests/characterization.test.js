@@ -92,14 +92,24 @@ test('removeHyphens replaces visible syllable separators with word joiners', () 
   assert.deepEqual(task.summary().map(({ text }) => text), ['le', 'mo', 'nade']);
 });
 
-test('characterizes punctuation outside a marked word, including a dropped trailing comma', () => {
-  const task = createRuntime('Say (*hello*), please.');
+for (const [name, punctuation] of [
+  ['comma', ','],
+  ['period', '.'],
+  ['question mark', '?'],
+  ['exclamation mark', '!']
+]) {
+  test(`preserves a trailing ${name} outside a parenthesized marked word`, () => {
+    const task = createRuntime(`Say (*hello*)${punctuation} please.`);
+    const answer = task.summary().find(({ answer: isAnswer }) => isAnswer);
 
-  assert.equal(task.html.includes('(<span'), true);
-  assert.equal(task.html.includes('</span>)'), true);
-  assert.equal(task.html.includes(','), false);
-  assert.equal(task.summary().find(({ answer }) => answer).text, 'hello');
-});
+    assert.equal(task.html.includes('(<span'), true);
+    assert.equal(task.html.includes(`</span>)${punctuation}`), true);
+    assert.equal(answer.text, 'hello');
+
+    task.select(answer.index);
+    assert.equal(task.getScoreDetails().score, 1);
+  });
+}
 
 test('characterizes pipe handling as ordinary content without selectable ARIA semantics', () => {
   const task = createRuntime('left | right');
