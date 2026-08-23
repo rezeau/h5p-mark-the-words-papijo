@@ -389,8 +389,19 @@ function loadRuntime() {
     this.removeFeedback = () => { this.__feedback = null; };
     this.setIntroduction = (introduction) => { this.__introduction = introduction; };
     this.setContent = (content, options) => { this.__content = { content, options }; };
-    this.setImage = (...args) => { this.__media = { type: 'image', args }; };
-    this.setVideo = (...args) => { this.__media = { type: 'video', args }; };
+    this.__mediaCalls = { image: [], video: [], audio: [] };
+    this.setImage = (...args) => {
+      this.__mediaCalls.image.push(args);
+      this.__media = { type: 'image', args };
+    };
+    this.setVideo = (...args) => {
+      this.__mediaCalls.video.push(args);
+      this.__media = { type: 'video', args };
+    };
+    this.setAudio = (...args) => {
+      this.__mediaCalls.audio.push(args);
+      this.__media = { type: 'audio', args };
+    };
     this.read = (text) => this.__reads.push(text);
     this.triggerXAPI = (verb) => this.__triggeredXapi.push(verb);
     this.createXAPIEventTemplate = (verb) => new FakeXAPIEvent(verb);

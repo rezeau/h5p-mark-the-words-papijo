@@ -881,8 +881,8 @@ H5P.MarkTheWordsPapiJo = (function ($, Question, Word, KeyboardNav, XapiGenerato
       } 
       else if (type === 'H5P.Audio') {
         if (media.params.files) {
-          // Use setVideo pending forthcoming fix in H5P.Question OCT 2021
-          self.setVideo(media);
+          // Register task audio
+          self.setAudio(media);
         }
       }
     }

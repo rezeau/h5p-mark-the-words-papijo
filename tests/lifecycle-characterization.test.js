@@ -232,6 +232,42 @@ test('an empty previous state preserves unanswered reporting', () => {
   assert.equal(harness.task.getAnswerGiven(), undefined);
 });
 
+test('audio media registers through setAudio and not setVideo', () => {
+  const harness = createInteraction('*answer*', {
+    params: {
+      media: {
+        type: {
+          library: 'H5P.Audio 1.5',
+          params: { files: [{ path: 'audio.mp3' }] }
+        }
+      }
+    }
+  });
+
+  assert.equal(harness.task.__mediaCalls.audio.length, 1);
+  assert.equal(harness.task.__mediaCalls.video.length, 0);
+  assert.equal(harness.task.__media.type, 'audio');
+  assert.equal(harness.task.__media.args[0].library, 'H5P.Audio 1.5');
+});
+
+test('video media continues to register through setVideo and not setAudio', () => {
+  const harness = createInteraction('*answer*', {
+    params: {
+      media: {
+        type: {
+          library: 'H5P.Video 1.6',
+          params: { sources: [{ path: 'video.mp4' }] }
+        }
+      }
+    }
+  });
+
+  assert.equal(harness.task.__mediaCalls.video.length, 1);
+  assert.equal(harness.task.__mediaCalls.audio.length, 0);
+  assert.equal(harness.task.__media.type, 'video');
+  assert.equal(harness.task.__media.args[0].library, 'H5P.Video 1.6');
+});
+
 test('getCurrentState follows current mouse selections', () => {
   const harness = createInteraction('*one* *two* wrong');
   harness.mouseSelect(0);
