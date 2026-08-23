@@ -1,9 +1,32 @@
 'use strict';
 
 const assert = require('node:assert/strict');
+const fs = require('node:fs');
+const path = require('node:path');
 const test = require('node:test');
 
 const { createRuntime } = require('./helpers/runtime-harness');
+
+test('stylesheet scopes retry behavior and provides theme fallbacks', () => {
+  const stylesheet = fs.readFileSync(
+    path.resolve(__dirname, '..', 'styles', 'mark-the-words-papijo.css'),
+    'utf8'
+  );
+
+  assert.doesNotMatch(stylesheet, /;0\s*(?:\r?\n|$)/);
+  assert.match(
+    stylesheet,
+    /\.h5p-mark-the-words button\.h5p-retry-button\.h5p-retry-button\s*\{/
+  );
+  assert.doesNotMatch(
+    stylesheet,
+    /(?:^|\r?\n)[ \t]*button\.h5p-retry-button\.h5p-retry-button\s*\{/
+  );
+  assert.deepEqual(
+    [...stylesheet.matchAll(/var\(\s*(--[\w-]+)\s*\)/g)].map((match) => match[1]),
+    []
+  );
+});
 
 test('parses an ordinary asterisk-marked correct word', () => {
   const task = createRuntime('This is *correct*.');
