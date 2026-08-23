@@ -73,6 +73,10 @@
       "default": "Vérifier"
     },
     {
+      "label": "Texte du bouton \"Soumettre\"",
+      "default": "Soumettre"
+    },
+    {
       "label": "Texte du bouton \"Recommencer\"",
       "default": "Recommencer"
     },

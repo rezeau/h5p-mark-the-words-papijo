@@ -382,7 +382,41 @@ test('a perfect answered xAPI result is marked successful', () => {
   assert.equal(result.completion, true);
 });
 
-test('H5P.Question button registration captures initial visibility and undefined submit text', () => {
+test('ordinary standalone context keeps the Check button label', () => {
+  const harness = createInteraction('*answer* wrong', {
+    contentData: { standalone: true }
+  });
+
+  assert.equal(harness.task.__buttons['check-answer'].label, 'Check');
+  assert.equal(harness.task.__buttons['check-answer'].extras.textIfSubmitting, 'Submit');
+});
+
+for (const flag of ['isScoringEnabled', 'isReportingEnabled']) {
+  test(`standalone context with ${flag} uses submitAnswerButton without changing Check behavior`, () => {
+    const harness = createInteraction('*answer* wrong', {
+      contentData: { standalone: true, [flag]: true },
+      params: { submitAnswerButton: 'Send answer' }
+    });
+
+    assert.equal(harness.task.__buttons['check-answer'].label, 'Send answer');
+    harness.mouseSelect(0);
+    harness.clickButton('check-answer');
+    assert.equal(harness.score().score, 1);
+    assert.equal(harness.answeredEvents().length, 1);
+    assert.equal(harness.buttonVisibility()['check-answer'], false);
+  });
+}
+
+test('nested context keeps the Check button label when reporting is enabled', () => {
+  const harness = createInteraction('*answer* wrong', {
+    contentData: { standalone: false, isReportingEnabled: true },
+    params: { submitAnswerButton: 'Send answer' }
+  });
+
+  assert.equal(harness.task.__buttons['check-answer'].label, 'Check');
+});
+
+test('H5P.Question button registration retains initial visibility and content data', () => {
   const harness = createInteraction('*answer* wrong');
 
   assert.deepEqual(harness.buttonVisibility(), {
@@ -390,7 +424,7 @@ test('H5P.Question button registration captures initial visibility and undefined
     'show-solution': false,
     'try-again': false
   });
-  assert.equal(harness.task.__buttons['check-answer'].extras.textIfSubmitting, undefined);
+  assert.equal(harness.task.__buttons['check-answer'].extras.textIfSubmitting, 'Submit');
   assert.equal(harness.task.__buttons['check-answer'].extras.contentData, harness.task.contentData);
 });
 

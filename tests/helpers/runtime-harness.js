@@ -372,7 +372,10 @@ function loadRuntime() {
     this.__reads = [];
     this.__triggeredXapi = [];
     this.addButton = (id, label, callback, visible, attributes, extras) => {
-      this.__buttons[id] = { id, label, callback, visible, attributes, extras };
+      const isSubmitting = extras?.contentData?.standalone &&
+        (extras.contentData.isScoringEnabled || extras.contentData.isReportingEnabled);
+      const effectiveLabel = isSubmitting && extras.textIfSubmitting ? extras.textIfSubmitting : label;
+      this.__buttons[id] = { id, label: effectiveLabel, callback, visible, attributes, extras };
     };
     this.showButton = (id) => { if (this.__buttons[id]) this.__buttons[id].visible = true; };
     this.hideButton = (id) => { if (this.__buttons[id]) this.__buttons[id].visible = false; };

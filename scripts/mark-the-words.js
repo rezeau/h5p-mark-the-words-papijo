@@ -38,6 +38,7 @@ H5P.MarkTheWordsPapiJo = (function ($, Question, Word, KeyboardNav, XapiGenerato
         hideMistakes: false
       },
       checkAnswerButton: "Check",
+      submitAnswerButton: "Submit",
       tryAgainButton: "Retry",
       showSolutionButton: "Show solution",
       correctAnswer: "Correct!",
