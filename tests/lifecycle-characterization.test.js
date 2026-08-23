@@ -326,7 +326,7 @@ test('registers one localized description for every result state', () => {
   });
 });
 
-test('xAPI records interacted and answered with score, patterns, hard-coded language, and distractor markers', () => {
+test('xAPI records interacted and answered with score, patterns, language, and visible choice text', () => {
   const harness = createInteraction('*right* _wrong_', {
     taskDescription: '<strong>Choose</strong> now.'
   });
@@ -341,9 +341,35 @@ test('xAPI records interacted and answered with score, patterns, hard-coded lang
   assert.equal(statement.result.response, '0[,]1');
   assert.deepEqual(Array.from(statement.object.definition.correctResponsesPattern), ['0']);
   assert.equal(statement.object.definition.description['en-US'], 'Choose now.');
+  assert.deepEqual(Array.from(statement.object.definition.choices, (choice) => choice.id), ['0', '1']);
   assert.equal(statement.object.definition.choices[0].description['en-US'], 'right');
-  assert.equal(statement.object.definition.choices[1].description['en-US'], '_wrong_');
+  assert.equal(statement.object.definition.choices[1].description['en-US'], 'wrong');
   assert.deepEqual(Array.from(statement.object.definition.extensions['https://h5p.org/x-api/line-breaks']), []);
+});
+
+for (const delimiter of ['_', '#', '@']) {
+  test(`xAPI strips ${delimiter} distractor delimiters from choice descriptions`, () => {
+    const harness = createInteraction(`*right* ${delimiter}wrong${delimiter}`, {
+      distractorDelimiter: delimiter
+    });
+    harness.clickButton('check-answer');
+
+    const choices = harness.answeredEvents()[0].data.statement.object.definition.choices;
+    assert.deepEqual(
+      Array.from(choices, (choice) => choice.description['en-US']),
+      ['right', 'wrong']
+    );
+  });
+}
+
+test('xAPI line-break extension records the preceding rendered choice index', () => {
+  const harness = createInteraction('*one* two *three*');
+  harness.insertLineBreakAfter(1);
+  harness.clickButton('check-answer');
+
+  const extension = harness.answeredEvents()[0].data.statement.object.definition
+    .extensions['https://h5p.org/x-api/line-breaks'];
+  assert.deepEqual(Array.from(extension), [1]);
 });
 
 test('a perfect answered xAPI result is marked successful', () => {

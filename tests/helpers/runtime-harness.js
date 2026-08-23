@@ -539,6 +539,14 @@ function createInteraction(text, options = {}) {
     },
     mouseSelect: (index) => elements[index].dispatch('click'),
     key: (index, which) => elements[index].dispatch('keydown', { which }),
+    insertLineBreakAfter(index) {
+      const element = elements[index];
+      const parent = element.parentNode;
+      const elementIndex = parent.children.indexOf(element);
+      const lineBreak = new FakeElement('br');
+      parent.children.splice(elementIndex + 1, 0, lineBreak);
+      lineBreak.parentNode = parent;
+    },
     buttonVisibility: () => Object.fromEntries(
       Object.entries(task.__buttons).map(([id, button]) => [id, button.visible])
     ),

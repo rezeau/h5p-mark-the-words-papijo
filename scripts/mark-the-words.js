@@ -313,14 +313,15 @@ H5P.MarkTheWordsPapiJo = (function ($, Question, Word, KeyboardNav, XapiGenerato
   MarkTheWordsPapiJo.prototype.getIndexesOfLineBreaks = function () {
 
     let indexes = [];
-    const selectables = this.$wordContainer.find('span.h5p-word-selectable');
+    const selectables = this.$wordContainer.find('[role="option"], .removePipe');
 
     selectables.each(function (index, selectable) {
+      const $parent = $(selectable).parent();
       if ($(selectable).next().is('br')) {
         indexes.push(index);
       }
 
-      if ($(selectable).parent('p') && !$(selectable).parent().is(':last-child') && $(selectable).is(':last-child')) {
+      if ($parent.is('p') && !$parent.is(':last-child') && $(selectable).is(':last-child')) {
         indexes.push(index);
       }
     });

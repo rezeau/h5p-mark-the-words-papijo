@@ -83,7 +83,9 @@ H5P.MarkTheWordsPapiJo.XapiGenerator = (function ($) {
   function getChoices(MarkTheWordsPapiJo) {
     return MarkTheWordsPapiJo.selectableWords.map(function (word, index) {
       let text = word.getText();
-      if (text.charAt(0) === '*' && text.charAt(text.length - 1) === '*') {
+      const marker = text.charAt(0);
+      if ((marker === '*' || marker === MarkTheWordsPapiJo.params.distractorDelimiter) &&
+        text.charAt(text.length - 1) === marker) {
         text = text.substr(1, text.length - 2);
       }
 
