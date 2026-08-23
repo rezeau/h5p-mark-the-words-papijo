@@ -188,16 +188,26 @@ test('custom modes force keepCorrectAnswers off even when supplied as true', () 
   assert.equal(harness.task.keepCorrectAnswers, false);
 });
 
-test('restores selected indexes but leaves isAnswered and getAnswerGiven unset', () => {
+test('restores selected indexes and reports that an answer exists', () => {
   const harness = createInteraction('*answer* wrong', {
     contentData: { previousState: [1] }
   });
 
   assert.equal(harness.summary()[1].selected, true);
   assert.deepEqual(Array.from(harness.task.getCurrentState()), [1]);
+  assert.equal(harness.task.isAnswered, true);
+  assert.equal(harness.task.getAnswerGiven(), true);
+  assert.deepEqual(harness.task.__triggeredXapi, []);
+});
+
+test('an empty previous state preserves unanswered reporting', () => {
+  const harness = createInteraction('*answer* wrong', {
+    contentData: { previousState: [] }
+  });
+
+  assert.deepEqual(Array.from(harness.task.getCurrentState()), []);
   assert.equal(harness.task.isAnswered, undefined);
   assert.equal(harness.task.getAnswerGiven(), undefined);
-  assert.deepEqual(harness.task.__triggeredXapi, []);
 });
 
 test('getCurrentState follows current mouse selections', () => {

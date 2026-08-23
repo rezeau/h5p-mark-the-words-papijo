@@ -834,6 +834,7 @@ H5P.MarkTheWordsPapiJo = (function ($, Question, Word, KeyboardNav, XapiGenerato
       if (isNaN(answeredWordIndex) || answeredWordIndex >= self.selectableWords.length || answeredWordIndex < 0) {
         throw new Error('Stored user state is invalid');
       }
+      self.isAnswered = true;
       self.selectableWords[answeredWordIndex].setSelected();
     });
   };
