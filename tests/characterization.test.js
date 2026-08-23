@@ -101,7 +101,7 @@ test('characterizes punctuation outside a marked word, including a dropped trail
   assert.equal(task.summary().find(({ answer }) => answer).text, 'hello');
 });
 
-test('characterizes pipe handling as a role=option entry without aria-selected', () => {
+test('characterizes pipe handling as ordinary content without selectable ARIA semantics', () => {
   const task = createRuntime('left | right');
   const pipe = task.summary().find(({ text }) => text === '|');
 
@@ -112,7 +112,7 @@ test('characterizes pipe handling as a role=option entry without aria-selected',
     answer: false,
     selected: false,
     className: 'removePipe',
-    role: 'option',
+    role: undefined,
     ariaSelected: undefined
   });
 });

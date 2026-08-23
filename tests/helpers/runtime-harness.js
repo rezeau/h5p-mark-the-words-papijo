@@ -434,7 +434,9 @@ function loadRuntime() {
 const runtimeClasses = loadRuntime();
 
 function extractWordElements(html) {
-  return extractElements(html).filter((element) => element.getAttribute('role') === 'option');
+  return extractElements(html).filter((element) => (
+    element.getAttribute('role') === 'option' || element.classList.contains('removePipe')
+  ));
 }
 
 function baseParams(options = {}) {
@@ -522,7 +524,7 @@ function createInteraction(text, options = {}) {
     options.contentData || {}
   );
   task.registerDomElements();
-  const elements = task.$wordContainer.find('[role="option"]').toArray();
+  const elements = task.$wordContainer.find('[role="option"], .removePipe').toArray();
 
   return {
     task,

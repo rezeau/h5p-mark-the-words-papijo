@@ -25,7 +25,8 @@ test('Check marks selected correct and incorrect words, scores, feeds back, lock
     'show-solution': true,
     'try-again': true
   });
-  assert.equal(harness.task.$wordContainer.attr('role'), undefined);
+  assert.equal(harness.task.$wordContainer.attr('role'), 'listbox');
+  assert.equal(harness.task.$wordContainer.attr('aria-disabled'), 'true');
   assert.equal(harness.summary().every(({ tabindex }) => tabindex === undefined), true);
   assert.equal(harness.answeredEvents().length, 1);
 
@@ -248,24 +249,26 @@ test('mouse selection moves tabindex ownership to the clicked word', () => {
   assert.equal(harness.elements[1].focused, true);
 });
 
-test('Check removes listbox state and tab stops but leaves orphaned option roles', () => {
+test('Check retains a disabled listbox with child option roles and no tab stops', () => {
   const harness = createInteraction('*answer* wrong');
   harness.mouseSelect(1);
   harness.clickButton('check-answer');
 
-  assert.equal(harness.task.$wordContainer.attr('role'), undefined);
-  assert.equal(harness.task.$wordContainer.attr('aria-multiselectable'), undefined);
+  assert.equal(harness.task.$wordContainer.attr('role'), 'listbox');
+  assert.equal(harness.task.$wordContainer.attr('aria-multiselectable'), 'true');
+  assert.equal(harness.task.$wordContainer.attr('aria-disabled'), 'true');
   assert.equal(harness.summary().every(({ role }) => role === 'option'), true);
   assert.equal(harness.summary().every(({ tabindex }) => tabindex === undefined), true);
 });
 
-test('Show Solution keeps selection disabled and option roles orphaned', () => {
+test('Show Solution keeps the listbox disabled with valid child option roles', () => {
   const harness = createInteraction('*one* *two* wrong');
   harness.mouseSelect(2);
   harness.clickButton('check-answer');
   harness.clickButton('show-solution');
 
-  assert.equal(harness.task.$wordContainer.attr('role'), undefined);
+  assert.equal(harness.task.$wordContainer.attr('role'), 'listbox');
+  assert.equal(harness.task.$wordContainer.attr('aria-disabled'), 'true');
   assert.equal(harness.summary().every(({ role }) => role === 'option'), true);
   harness.mouseSelect(0);
   assert.equal(harness.summary()[0].selected, false);
@@ -275,21 +278,52 @@ test('pipe/removePipe is skipped by keyboard navigation and cannot be toggled wi
   const harness = createInteraction('| *answer*');
 
   assert.equal(harness.summary()[0].className, 'removePipe');
+  assert.equal(harness.summary()[0].role, undefined);
   assert.equal(harness.summary()[0].tabindex, undefined);
   assert.equal(harness.summary()[1].tabindex, '0');
   assert.equal(harness.key(0, 13).prevented, false);
   assert.equal(harness.key(0, 32).prevented, false);
   assert.equal(harness.summary()[0].selected, false);
   assert.deepEqual(harness.task.__triggeredXapi, []);
+
+  harness.mouseSelect(1);
+  harness.clickButton('check-answer');
+  harness.clickButton('try-again');
+  assert.equal(harness.summary()[0].role, undefined);
+  assert.equal(harness.summary()[0].ariaSelected, undefined);
+  assert.equal(harness.summary()[1].role, 'option');
+  assert.equal(harness.task.$wordContainer.attr('aria-disabled'), undefined);
+
+  harness.task.resetTask();
+  assert.equal(harness.summary()[0].role, undefined);
+  assert.equal(harness.summary()[0].ariaSelected, undefined);
 });
 
-test('aria-describedby points to an ID that is not registered in the task DOM', () => {
+test('aria-describedby references one registered result description in the task DOM', () => {
   const harness = createInteraction('*answer* wrong');
   harness.mouseSelect(0);
   harness.clickButton('check-answer');
 
   assert.equal(harness.summary()[0].ariaDescribedBy, 'h5p-description-correct');
-  assert.equal(harness.task.$inner.find('#h5p-description-correct').length, 0);
+  assert.equal(harness.task.$inner.find('#h5p-description-correct').length, 1);
+});
+
+test('registers one localized description for every result state', () => {
+  const harness = createInteraction('*answer* wrong');
+  const expectedDescriptions = {
+    'h5p-description-correct': 'Correct!',
+    'h5p-description-incorrect': 'Incorrect!',
+    'h5p-description-missed': 'Answer not found!',
+    'h5p-description-is-mistake': 'Correctly spotted mistake!',
+    'h5p-description-not-mistake': 'This is not a mistake!',
+    'h5p-description-missed-mistake': 'Answer not found!'
+  };
+
+  Object.entries(expectedDescriptions).forEach(([id, text]) => {
+    const $description = harness.task.$inner.find(`#${id}`);
+    assert.equal($description.length, 1);
+    assert.equal($description.text(), text);
+  });
 });
 
 test('xAPI records interacted and answered with score, patterns, hard-coded language, and distractor markers', () => {

@@ -251,7 +251,7 @@ H5P.MarkTheWordsPapiJo = (function ($, Question, Word, KeyboardNav, XapiGenerato
                   html += '<span role="option" aria-selected="false" class=' + noPadding + '>' + self.escapeHTML(entry) + '</span>';
                 } 
                 else {
-                  html += '<span role="option" class="removePipe">' + self.escapeHTML(entry) + '</span>';
+                  html += '<span class="removePipe">' + self.escapeHTML(entry) + '</span>';
                 }
               } 
               else if (markSelectables && match) {
@@ -262,7 +262,7 @@ H5P.MarkTheWordsPapiJo = (function ($, Question, Word, KeyboardNav, XapiGenerato
                   html += self.escapeHTML(entry);
                 } 
                 else {
-                  html += '<span role="option" class="removePipe">' + self.escapeHTML(entry) + '</span>';
+                  html += '<span class="removePipe">' + self.escapeHTML(entry) + '</span>';
                 }
               }
             }
@@ -347,7 +347,7 @@ H5P.MarkTheWordsPapiJo = (function ($, Question, Word, KeyboardNav, XapiGenerato
     });
 
     let isNewParagraph = true;
-    $wordContainer.find('[role="option"], br').each(function () {
+    $wordContainer.find('[role="option"], .removePipe, br').each(function () {
       if ($(this).is('br')) {
         isNewParagraph = true;
         return;
@@ -513,7 +513,6 @@ H5P.MarkTheWordsPapiJo = (function ($, Question, Word, KeyboardNav, XapiGenerato
    */
   MarkTheWordsPapiJo.prototype.toggleSelectable = function (disable) {
     this.keyboardNavigators.forEach(function (navigator) {
-
       if (disable) {
         navigator.disableSelectability();
         navigator.removeAllTabbable();
@@ -524,11 +523,16 @@ H5P.MarkTheWordsPapiJo = (function ($, Question, Word, KeyboardNav, XapiGenerato
       }
     });
 
+    this.$wordContainer.find('.removePipe')
+      .removeAttr('role')
+      .removeAttr('aria-selected');
+
     if (disable) {
-      this.$wordContainer.removeAttr('aria-multiselectable').removeAttr('role');
+      this.$wordContainer.attr('aria-disabled', 'true');
     }
     else {
-      this.$wordContainer.attr('aria-multiselectable', 'true')
+      this.$wordContainer.removeAttr('aria-disabled')
+        .attr('aria-multiselectable', 'true')
         .attr('role', 'listbox');
     }
   };
@@ -881,9 +885,8 @@ H5P.MarkTheWordsPapiJo = (function ($, Question, Word, KeyboardNav, XapiGenerato
     // Register description
     this.setIntroduction(introduction);
 
-    // papi Jo : not used?!
-    // creates aria descriptions for correct/incorrect/missed
-    //this.createDescriptionsDom().appendTo(this.$inner);
+    // Create aria descriptions for result states.
+    this.createDescriptionsDom().appendTo(this.$inner);
 
     // Register content
 
@@ -900,9 +903,12 @@ H5P.MarkTheWordsPapiJo = (function ($, Question, Word, KeyboardNav, XapiGenerato
     const self = this;
     const $el = $('<div class="h5p-mark-the-words-descriptions"></div>');
 
-    $('<div id="' + Word.ID_MARK_CORRECT + '">' + 'toto is here' + '</div>').appendTo($el);
+    $('<div id="' + Word.ID_MARK_CORRECT + '">' + self.params.correctAnswer + '</div>').appendTo($el);
     $('<div id="' + Word.ID_MARK_INCORRECT + '">' + self.params.incorrectAnswer + '</div>').appendTo($el);
-    $('<div id="' + Word.ID_MARK_MISSED + '">' + 'coucou' + '</div>').appendTo($el);
+    $('<div id="' + Word.ID_MARK_MISSED + '">' + self.params.missedAnswer + '</div>').appendTo($el);
+    $('<div id="' + Word.ID_MARK_IS_MISTAKE + '">' + self.params.isMistake + '</div>').appendTo($el);
+    $('<div id="' + Word.ID_MARK_NOT_MISTAKE + '">' + self.params.notMistake + '</div>').appendTo($el);
+    $('<div id="' + Word.ID_MARK_MISSED_MISTAKE + '">' + self.params.missedAnswer + '</div>').appendTo($el);
 
     return $el;
   };
