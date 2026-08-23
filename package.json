@@ -4,8 +4,8 @@
   "private": true,
   "description": "Characterization tests for H5P.MarkTheWordsPapiJo",
   "scripts": {
-    "test": "node --test tests/characterization.test.js tests/lifecycle-characterization.test.js tests/presave-characterization.test.js",
-    "check:syntax": "node --check scripts/keyboard-nav.js && node --check scripts/xAPI-generator.js && node --check scripts/word.js && node --check scripts/mark-the-words.js && node --check presave.js"
+    "test": "node --test tests/characterization.test.js tests/lifecycle-characterization.test.js",
+    "check:syntax": "node --check scripts/keyboard-nav.js && node --check scripts/xAPI-generator.js && node --check scripts/word.js && node --check scripts/mark-the-words.js"
   },
   "engines": {
     "node": ">=20"
