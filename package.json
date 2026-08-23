@@ -1,11 +1,12 @@
 {
   "name": "h5p-mark-the-words-papijo",
-  "version": "1.1.0",
+  "version": "1.2.0",
   "private": true,
   "description": "Characterization tests for H5P.MarkTheWordsPapiJo",
   "scripts": {
-    "test": "node --test tests/characterization.test.js tests/lifecycle-characterization.test.js",
-    "check:syntax": "node --check scripts/keyboard-nav.js && node --check scripts/xAPI-generator.js && node --check scripts/word.js && node --check scripts/mark-the-words.js"
+    "test": "node --test tests/characterization.test.js tests/lifecycle-characterization.test.js tests/upgrades.test.js tests/package-validation.test.js",
+    "check:syntax": "node --check scripts/keyboard-nav.js && node --check scripts/xAPI-generator.js && node --check scripts/word.js && node --check scripts/mark-the-words.js && node --check upgrades.js && node --check tools/validate-package.mjs",
+    "validate:package": "node tools/validate-package.mjs"
   },
   "engines": {
     "node": ">=20"
