@@ -37,7 +37,7 @@
       "placeholder": "Voici une réponse exacte : *réponse*.",
       "description": "",
       "important": {
-        "description": "<ul><li>Tutoriel et Exemples: <a href=\"http://www.h5p.rezeau.org\" target=\"_blank\" rel=\"noopener\">Papi Jo's Drupal H5P Moodle site</a></span></li><li>Les mots/groupes de mots corrects sont marqués par des astérisques (*) avant et après le mot/groupe.</li><li>Les astérisques peuvent être ajoutées à l'intérieur des mots marqués en ajoutant une autre astérisque, par exemple : \"6 = *2**3*\" =&gt ; \"2*3\". </li><li>Les mots peuvent être divisés en syllabes en utilisant le caractère trait d'union normal (-).</li><li>Mettez n'importe quel mot/groupe de mots entre crochets pour les rendre [non sélectionnables].</li><li>L'option 'Marquer les mots sélectionnables' est particulièrement utile si votre champ de texte contient des *groupes de mots*. N'oubliez pas d'ajouter des distracteurs au texte en ajoutant votre délimiteur de distracteur sélectionné (ci-dessus), par exemple avec des traits de soulignement, par exemple _c'est un distracteur_ ou _distracteur_. Si cette option est sélectionnée, il n'est pas nécessaire d'utiliser []. Tous les mots non marqués sont également non sélectionnables.</li><li>Pour la transcription phonétique, veuillez utiliser le système anglais britannique, avec des barres obliques comme dans l'exemple ci-dessous.</li></ul>.",
+        "description": "<ul><li>Tutoriel et Exemples: <a href=\"http://www.h5p.rezeau.org\" target=\"_blank\" rel=\"noopener\">Papi Jo's Drupal H5P Moodle site</a></li><li>Les mots/groupes de mots corrects sont marqués par des astérisques (*) avant et après le mot/groupe.</li><li>Les astérisques peuvent être ajoutées à l'intérieur des mots marqués en ajoutant une autre astérisque, par exemple : \"6 = *2**3*\" =&gt; \"2*3\". </li><li>Les mots peuvent être divisés en syllabes en utilisant le caractère trait d'union normal (-).</li><li>Mettez n'importe quel mot/groupe de mots entre crochets pour les rendre [non sélectionnables].</li><li>L'option 'Marquer les mots sélectionnables' est particulièrement utile si votre champ de texte contient des *groupes de mots*. N'oubliez pas d'ajouter des distracteurs au texte en ajoutant votre délimiteur de distracteur sélectionné (ci-dessus), par exemple avec des traits de soulignement, par exemple _c'est un distracteur_ ou _distracteur_. Si cette option est sélectionnée, il n'est pas nécessaire d'utiliser []. Tous les mots non marqués sont également non sélectionnables.</li><li>Pour la transcription phonétique, veuillez utiliser le système anglais britannique, avec des barres obliques comme dans l'exemple ci-dessous.</li></ul>.",
         "example": "<ul><li>Les mots corrects sont marqués comme ceci : *lemonade*, les syllabes accentuées correctes sont marquées comme ceci : le-mo-*nade*, les phrases correctes comme ceci : *un verre de limonade*. </li><li>Tapez la syllabe accentuée correcte dans \"lemonade\" en phonétique comme ceci : /le-m?-*ne?d*/</li><li>Ces animaux sont des mammifères : *chat*, _aigle_, *baleine*.</li></ul>"
       }
     },
@@ -169,41 +169,41 @@
       "description": "Texte utilisé pour indiquer qu'un mot a été incorrectement marqué comme une faute."
     },
     {
-      "label": "Description for Display Solution",
-      "default": "Task is updated to contain the solution.",
-      "description": "This text tells the user that the tasks has been updated with the solution."
+      "label": "Description pour l'affichage de la solution",
+      "default": "La tâche a été mise à jour pour afficher la solution.",
+      "description": "Ce texte indique à l'utilisateur que la tâche a été mise à jour avec la solution."
     },
     {
-      "label": "Textual representation of the score bar for those using a readspeaker",
-      "default": "You got :num out of :total points"
+      "label": "Représentation textuelle de la barre de score pour les utilisateurs d'un lecteur d'écran",
+      "default": "Vous avez obtenu :num points sur :total"
     },
     {
-      "label": "Label for the full readable text for assistive technologies",
-      "default": "Full readable text"
+      "label": "Libellé du texte intégral lisible pour les technologies d'assistance",
+      "default": "Texte intégral lisible"
     },
     {
-      "label": "Label for the text where words can be marked for assistive technologies",
-      "default": "Full text where words can be marked"
+      "label": "Libellé du texte dans lequel des mots peuvent être marqués pour les technologies d'assistance",
+      "default": "Texte intégral dans lequel des mots peuvent être marqués"
     },
     {
-      "label": "Solution mode header for assistive technologies",
-      "default": "Solution mode"
+      "label": "En-tête du mode solution pour les technologies d'assistance",
+      "default": "Mode solution"
     },
     {
-      "label": "Checking mode header for assistive technologies",
-      "default": "Checking mode"
+      "label": "En-tête du mode vérification pour les technologies d'assistance",
+      "default": "Mode vérification"
     },
     {
-      "label": "Assistive technology description for \"Check\" button",
-      "default": "Check the answers. The responses will be marked as correct, incorrect, or unanswered."
+      "label": "Description du bouton \"Vérifier\" pour les technologies d'assistance",
+      "default": "Vérifier les réponses. Les réponses seront indiquées comme correctes, incorrectes ou sans réponse."
     },
     {
-      "label": "Assistive technology description for \"Show Solution\" button",
-      "default": "Show the solution. The task will be marked with its correct solution."
+      "label": "Description du bouton \"Voir la solution\" pour les technologies d'assistance",
+      "default": "Afficher la solution. La tâche sera marquée avec sa solution correcte."
     },
     {
-      "label": "Assistive technology description for \"Retry\" button",
-      "default": "Retry the task. Reset all responses and start the task over again."
+      "label": "Description du bouton \"Recommencer\" pour les technologies d'assistance",
+      "default": "Recommencer la tâche. Réinitialiser toutes les réponses et reprendre la tâche depuis le début."
     }
   ]
 }

@@ -7,6 +7,48 @@ const test = require('node:test');
 
 const { createRuntime } = require('./helpers/runtime-harness');
 
+const assertTranslationArraysAligned = (source, translation, file, location = 'semantics') => {
+  if (Array.isArray(translation)) {
+    assert.ok(Array.isArray(source), `${file}: ${location} must translate an array`);
+    assert.equal(
+      translation.length,
+      source.length,
+      `${file}: ${location} must preserve positional array length`
+    );
+    translation.forEach((value, index) => {
+      assertTranslationArraysAligned(source[index], value, file, `${location}[${index}]`);
+    });
+    return;
+  }
+
+  if (translation && typeof translation === 'object') {
+    Object.entries(translation).forEach(([key, value]) => {
+      if (value && typeof value === 'object') {
+        assert.ok(source && Object.hasOwn(source, key), `${file}: ${location}.${key} must exist`);
+        assertTranslationArraysAligned(source[key], value, file, `${location}.${key}`);
+      }
+    });
+  }
+};
+
+test('translation arrays align with semantics and authoring help avoids known malformed HTML', () => {
+  const semantics = JSON.parse(fs.readFileSync(path.resolve(__dirname, '..', 'semantics.json'), 'utf8'));
+
+  ['.en.json', 'fr.json'].forEach((file) => {
+    const filename = path.resolve(__dirname, '..', 'language', file);
+    const rawTranslation = fs.readFileSync(filename, 'utf8');
+    const translation = JSON.parse(rawTranslation);
+
+    assertTranslationArraysAligned(semantics, translation.semantics, file);
+    assert.doesNotMatch(rawTranslation, /<\/span>/);
+    assert.doesNotMatch(rawTranslation, /&[A-Za-z][A-Za-z0-9]+\s+;/);
+  });
+
+  const rawSemantics = fs.readFileSync(path.resolve(__dirname, '..', 'semantics.json'), 'utf8');
+  assert.doesNotMatch(rawSemantics, /<\/span>/);
+  assert.doesNotMatch(rawSemantics, /&[A-Za-z][A-Za-z0-9]+\s+;/);
+});
+
 test('stylesheet scopes retry behavior and provides theme fallbacks', () => {
   const stylesheet = fs.readFileSync(
     path.resolve(__dirname, '..', 'styles', 'mark-the-words-papijo.css'),
