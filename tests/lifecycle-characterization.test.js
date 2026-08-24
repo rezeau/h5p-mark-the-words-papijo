@@ -313,6 +313,106 @@ test('an empty previous state preserves unanswered reporting', () => {
   assert.equal(harness.task.getAnswerGiven(), undefined);
 });
 
+test('WordPress empty-object state starts an unanswered interactive task', () => {
+  const harness = createInteraction('*answer* wrong', {
+    contentData: { previousState: {} }
+  });
+
+  assert.equal(harness.summary().every(({ selected }) => selected === false), true);
+  assert.equal(harness.task.isAnswered, undefined);
+  assert.equal(harness.task.getAnswerGiven(), undefined);
+  assert.equal(harness.task.$wordContainer.attr('aria-disabled'), undefined);
+  assert.deepEqual(harness.buttonVisibility(), {
+    'check-answer': true,
+    'show-solution': false,
+    'try-again': false
+  });
+  assert.equal(harness.task.__feedback, null);
+  assert.deepEqual(harness.task.__triggeredXapi, []);
+  assert.equal(harness.answeredEvents().length, 0);
+  assert.deepEqual(plainState(harness.task.getCurrentState()), {
+    schemaVersion: 1,
+    selected: [],
+    checked: false,
+    retained: [],
+    answered: false
+  });
+});
+
+test('recognized fresh-state values are normalized as no saved state', () => {
+  const cases = [
+    ['omitted previousState', {}],
+    ['undefined', { previousState: undefined }],
+    ['null', { previousState: null }],
+    ['false', { previousState: false }],
+    ['empty string', { previousState: '' }],
+    ['whitespace-only string', { previousState: ' \t\n' }],
+    ['empty object', { previousState: {} }],
+    ['empty legacy array', { previousState: [] }]
+  ];
+
+  cases.forEach(([label, contentData]) => {
+    const harness = createInteraction('*answer* wrong', { contentData });
+
+    assert.deepEqual(
+      plainState(harness.task.getCurrentState()),
+      {
+        schemaVersion: 1,
+        selected: [],
+        checked: false,
+        retained: [],
+        answered: false
+      },
+      label
+    );
+    assert.equal(harness.task.getAnswerGiven(), undefined, label);
+  });
+});
+
+test('malformed non-empty saved-state objects remain invalid', () => {
+  const malformedStates = [
+    { checked: false },
+    { schemaVersion: 1 },
+    { state: [] },
+    { data: [] }
+  ];
+
+  malformedStates.forEach((previousState) => {
+    assert.throws(
+      () => createInteraction('*answer* wrong', { contentData: { previousState } }),
+      /Stored user state is invalid/
+    );
+  });
+});
+
+test('invalid selected and retained indexes remain invalid', () => {
+  const state = (selected, retained) => ({
+    schemaVersion: 1,
+    selected,
+    checked: false,
+    retained,
+    answered: selected.length > 0
+  });
+  const invalidCases = [
+    ['negative selected index', '*one* wrong', [-1]],
+    ['out-of-range selected index', '*one* wrong', [2]],
+    ['non-numeric selected index', '*one* wrong', ['invalid']],
+    ['out-of-range retained index', '*one* wrong', [0], [2]],
+    ['retained index absent from selected', '*one* *two*', [0], [1]],
+    ['retained index is not an answer', '*one* wrong', [1], [1]]
+  ];
+
+  invalidCases.forEach(([label, text, selected, retained = []]) => {
+    assert.throws(
+      () => createInteraction(text, {
+        contentData: { previousState: state(selected, retained) }
+      }),
+      /Stored user state is invalid/,
+      label
+    );
+  });
+});
+
 test('new pre-Check object state restores selections without result presentation or locking', () => {
   const harness = createInteraction('*answer* wrong', {
     contentData: {

@@ -63,7 +63,21 @@ H5P.MarkTheWordsPapiJo = (function ($, Question, Word, KeyboardNav, XapiGenerato
     this.retainedAnswerIndexes = [];
     if (this.contentData !== undefined && this.contentData.previousState !== undefined) {
       const previousState = this.contentData.previousState;
-      if (Array.isArray(previousState)) {
+      const isObject = previousState !== null && typeof previousState === 'object';
+      const previousStatePrototype = isObject ? Object.getPrototypeOf(previousState) : undefined;
+      const isEmptyPlainObject = isObject &&
+        !Array.isArray(previousState) &&
+        (previousStatePrototype === null || Object.getPrototypeOf(previousStatePrototype) === null) &&
+        Object.keys(previousState).length === 0;
+      const isEmptyState = previousState === null ||
+        previousState === false ||
+        (typeof previousState === 'string' && previousState.trim() === '') ||
+        isEmptyPlainObject;
+
+      if (isEmptyState) {
+        // WordPress supplies an empty object when no user state has been saved.
+      }
+      else if (Array.isArray(previousState)) {
         this.previousState = previousState;
       }
       else if (
