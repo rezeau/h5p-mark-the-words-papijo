@@ -97,13 +97,6 @@
           "label": "Activer le bouton \"Recommencer\""
         },
         {
-          "label": "Activer le bouton \"Voir la solution\""
-        },
-        {
-          "label": "Pourcentage minimum de points",
-          "description": "Pourcentage minimum de points à obtenir avant que les solutions puissent être affichées. Entrez 0(%) OU laissez vide pour ne pas fixer de limite minimale."
-        },
-        {
           "label": "Mode 'Marquer les mots sélectionnables'",
           "description": "Cochez cette case si vous souhaitez que les mots ou groupes de mots sélectionnables soient encadrés par des bordures. Si vous sélectionnez cette option, vous devez créer des distracteurs dans votre texte."
         },
@@ -128,6 +121,13 @@
         {
           "label": "Activez le mode \"repérer les erreurs\".",
           "description": "Ce mode permute les réponses correctes <-> incorrectes. L'élève devra cliquer sur les erreurs/les mauvaises réponses. Les mauvaises réponses correctement repérées seront marquées comme correctes (et donneront le point)."
+        },
+        {
+          "label": "Activer le bouton \"Voir la solution\""
+        },
+        {
+          "label": "Pourcentage minimum de points",
+          "description": "Pourcentage minimum de points à obtenir avant que les solutions puissent être affichées. Entrez 0(%) OU laissez vide pour ne pas fixer de limite minimale."
         },
         {
           "label": "Masquer les choix de mots erronés ou les erreurs à la fin",

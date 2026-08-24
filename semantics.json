@@ -226,49 +226,6 @@
         "default": true
       },
       {
-        "name": "enableSolutionsButton",
-        "type": "boolean",
-        "label": "Enable \"Show solution\" button",
-        "importance": "low",
-        "default": true,
-        "widget": "showWhen",
-        "showWhen": {
-          "rules": [
-            {
-              "field": "spotTheMistakes",
-              "equals": false
-            }
-          ]
-        }
-      },
-      {
-        "name": "minScore",
-        "type": "number",
-        "label": "Minimum score percentage",
-        "description": "Minimum score percentage to obtain before Solutions can be displayed. Enter 0(%) OR leave empty for no minimum limit.",
-        "importance": "low",
-        "optional": true,
-        "min": 0,
-        "max": 95,
-        "step": 5,        
-        "default": 0,
-        "unit": "%", 
-        "widget": "showWhen",
-        "showWhen": {
-          "type": "and",
-          "rules": [
-            {
-              "field": "enableSolutionsButton",
-              "equals": true
-            },
-            {
-              "field": "spotTheMistakes",
-              "equals": false
-            }
-          ]
-        }
-      },
-      {
         "name": "markSelectables",
         "type": "boolean",
         "label": "Mark selectable words mode",
@@ -322,6 +279,49 @@
               "field": "markSelectables",
               "equals": false
             }            
+          ]
+        }
+      },
+      {
+        "name": "enableSolutionsButton",
+        "type": "boolean",
+        "label": "Enable \"Show solution\" button",
+        "importance": "low",
+        "default": true,
+        "widget": "showWhen",
+        "showWhen": {
+          "rules": [
+            {
+              "field": "spotTheMistakes",
+              "equals": false
+            }
+          ]
+        }
+      },
+      {
+        "name": "minScore",
+        "type": "number",
+        "label": "Minimum score percentage",
+        "description": "Minimum score percentage to obtain before Solutions can be displayed. Enter 0(%) OR leave empty for no minimum limit.",
+        "importance": "low",
+        "optional": true,
+        "min": 0,
+        "max": 95,
+        "step": 5,
+        "default": 0,
+        "unit": "%",
+        "widget": "showWhen",
+        "showWhen": {
+          "type": "and",
+          "rules": [
+            {
+              "field": "enableSolutionsButton",
+              "equals": true
+            },
+            {
+              "field": "spotTheMistakes",
+              "equals": false
+            }
           ]
         }
       },

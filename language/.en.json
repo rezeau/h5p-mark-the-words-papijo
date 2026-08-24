@@ -96,13 +96,6 @@
           "label": "Enable \"Retry\""
         },
         {
-          "label": "Enable \"Show solution\" button"
-        },
-        {
-          "label": "Minimum score percentage",
-          "description": "Minimum score percentage to obtain before Solutions can be displayed. Enter 0(%) OR leave empty for no minimum limit."
-        },
-        {
           "label": "Mark selectable words mode",
           "description": "Check this box if you want selectable words or groups of words to be displayed inside borders. If you select this option you must create distractors in your text. "
         },
@@ -127,6 +120,13 @@
         {
           "label": "Enable the 'Spot The Mistakes' mode",
           "description": "This mode swaps your correct <-> incorrect answers. The student will have to click on the mistakes/wrong answers. The correctly spotted wrong answers will be marked as correct (and give the point)."
+        },
+        {
+          "label": "Enable \"Show solution\" button"
+        },
+        {
+          "label": "Minimum score percentage",
+          "description": "Minimum score percentage to obtain before Solutions can be displayed. Enter 0(%) OR leave empty for no minimum limit."
         },
         {
           "label": "Hide wrong choices or mistakes at the end",

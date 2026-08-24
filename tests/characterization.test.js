@@ -68,6 +68,53 @@ test('Spot the Mistakes hides local solution and minimum-score authoring control
   });
 });
 
+test('Behaviour showWhen rules reference earlier siblings and translations follow field order', () => {
+  const semantics = JSON.parse(fs.readFileSync(path.resolve(__dirname, '..', 'semantics.json'), 'utf8'));
+  const behaviourIndex = semantics.findIndex((field) => field.name === 'behaviour');
+  const behaviour = semantics[behaviourIndex];
+  const fieldIndexes = new Map(behaviour.fields.map((field, index) => [field.name, index]));
+
+  behaviour.fields.forEach((field, index) => {
+    if (field.widget !== 'showWhen') {
+      return;
+    }
+
+    field.showWhen.rules.forEach((rule) => {
+      assert.ok(fieldIndexes.has(rule.field), `${field.name} must reference an existing sibling field`);
+      assert.ok(
+        fieldIndexes.get(rule.field) < index,
+        `${field.name} must not reference later sibling ${rule.field}`
+      );
+    });
+  });
+
+  const translatedLabels = {
+    '.en.json': {
+      markSelectables: 'Mark selectable words mode',
+      spotTheMistakes: "Enable the 'Spot The Mistakes' mode",
+      enableSolutionsButton: 'Enable "Show solution" button',
+      minScore: 'Minimum score percentage'
+    },
+    'fr.json': {
+      markSelectables: "Mode 'Marquer les mots sélectionnables'",
+      spotTheMistakes: 'Activez le mode "repérer les erreurs".',
+      enableSolutionsButton: 'Activer le bouton "Voir la solution"',
+      minScore: 'Pourcentage minimum de points'
+    }
+  };
+
+  Object.entries(translatedLabels).forEach(([file, expectedLabels]) => {
+    const translation = JSON.parse(
+      fs.readFileSync(path.resolve(__dirname, '..', 'language', file), 'utf8')
+    );
+    const translatedFields = translation.semantics[behaviourIndex].fields;
+
+    Object.entries(expectedLabels).forEach(([fieldName, label]) => {
+      assert.equal(translatedFields[fieldIndexes.get(fieldName)].label, label);
+    });
+  });
+});
+
 test('stylesheet scopes retry behavior and provides theme fallbacks', () => {
   const stylesheet = fs.readFileSync(
     path.resolve(__dirname, '..', 'styles', 'mark-the-words-papijo.css'),
