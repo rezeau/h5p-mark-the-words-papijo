@@ -5,6 +5,8 @@ const test = require('node:test');
 
 const { createInteraction } = require('./helpers/runtime-harness');
 
+const plainState = (state) => JSON.parse(JSON.stringify(state));
+
 test('Check marks selected correct and incorrect words, scores, feeds back, locks, and emits answered', () => {
   const harness = createInteraction('*one* *two* wrong');
   harness.mouseSelect(0);
@@ -210,13 +212,20 @@ test('custom modes force keepCorrectAnswers off even when supplied as true', () 
   assert.equal(harness.task.keepCorrectAnswers, false);
 });
 
-test('restores selected indexes and reports that an answer exists', () => {
+test('legacy array state restores ordinary selected indexes and remains backward compatible', () => {
   const harness = createInteraction('*answer* wrong', {
     contentData: { previousState: [1] }
   });
 
   assert.equal(harness.summary()[1].selected, true);
-  assert.deepEqual(Array.from(harness.task.getCurrentState()), [1]);
+  assert.equal(harness.summary()[1].ariaDescribedBy, undefined);
+  assert.deepEqual(plainState(harness.task.getCurrentState()), {
+    schemaVersion: 1,
+    selected: [1],
+    checked: false,
+    retained: [],
+    answered: true
+  });
   assert.equal(harness.task.isAnswered, true);
   assert.equal(harness.task.getAnswerGiven(), true);
   assert.deepEqual(harness.task.__triggeredXapi, []);
@@ -227,9 +236,197 @@ test('an empty previous state preserves unanswered reporting', () => {
     contentData: { previousState: [] }
   });
 
-  assert.deepEqual(Array.from(harness.task.getCurrentState()), []);
+  assert.deepEqual(plainState(harness.task.getCurrentState()), {
+    schemaVersion: 1,
+    selected: [],
+    checked: false,
+    retained: [],
+    answered: false
+  });
   assert.equal(harness.task.isAnswered, undefined);
   assert.equal(harness.task.getAnswerGiven(), undefined);
+});
+
+test('new pre-Check object state restores selections without result presentation or locking', () => {
+  const harness = createInteraction('*answer* wrong', {
+    contentData: {
+      previousState: {
+        schemaVersion: 1,
+        selected: [1],
+        checked: false,
+        retained: [],
+        answered: true
+      }
+    }
+  });
+
+  assert.equal(harness.summary()[1].selected, true);
+  assert.equal(harness.summary()[1].ariaDescribedBy, undefined);
+  assert.equal(harness.task.$wordContainer.attr('aria-disabled'), undefined);
+  assert.deepEqual(harness.buttonVisibility(), {
+    'check-answer': true,
+    'show-solution': false,
+    'try-again': false
+  });
+
+  harness.mouseSelect(1);
+  assert.equal(harness.summary()[1].selected, false);
+});
+
+test('checked object state restores results, score, feedback, buttons, lock, and accessibility silently', () => {
+  const harness = createInteraction('*one* *two* wrong', {
+    contentData: {
+      previousState: {
+        schemaVersion: 1,
+        selected: [0, 2],
+        checked: true,
+        retained: [],
+        answered: true
+      }
+    }
+  });
+
+  assert.equal(harness.summary()[0].ariaDescribedBy, 'h5p-description-correct');
+  assert.equal(harness.summary()[2].ariaDescribedBy, 'h5p-description-incorrect');
+  assert.deepEqual(harness.task.__feedback, {
+    text: 'Score 0/2',
+    score: 0,
+    maxScore: 2,
+    scoreBarLabel: 'You got :num out of :total points'
+  });
+  assert.deepEqual(harness.buttonVisibility(), {
+    'check-answer': false,
+    'show-solution': true,
+    'try-again': true
+  });
+  assert.equal(harness.task.$wordContainer.attr('aria-disabled'), 'true');
+  assert.equal(
+    harness.task.$a11yClickableTextLabel.html(),
+    'Checking mode - Full text where words can be marked'
+  );
+  assert.equal(harness.task.$a11yClickableTextLabel[0].focused, false);
+  assert.deepEqual(harness.task.__triggeredXapi, []);
+  assert.equal(harness.answeredEvents().length, 0);
+
+  harness.mouseSelect(1);
+  assert.equal(harness.summary()[1].selected, false);
+});
+
+test('perfect checked object state restores completion without result controls', () => {
+  const harness = createInteraction('*answer* wrong', {
+    contentData: {
+      previousState: {
+        schemaVersion: 1,
+        selected: [0],
+        checked: true,
+        retained: [],
+        answered: true
+      }
+    }
+  });
+
+  assert.deepEqual(harness.task.__feedback, {
+    text: 'Score 1/1',
+    score: 1,
+    maxScore: 1,
+    scoreBarLabel: 'You got :num out of :total points'
+  });
+  assert.deepEqual(harness.buttonVisibility(), {
+    'check-answer': false,
+    'show-solution': false,
+    'try-again': false
+  });
+  assert.equal(harness.task.$wordContainer.attr('aria-disabled'), 'true');
+});
+
+test('Retry after restored checked state retains only correct answers', () => {
+  const harness = createInteraction('*right* wrong', {
+    behaviour: { keepCorrectAnswers: true },
+    contentData: {
+      previousState: {
+        schemaVersion: 1,
+        selected: [0, 1],
+        checked: true,
+        retained: [],
+        answered: true
+      }
+    }
+  });
+
+  harness.clickButton('try-again');
+
+  assert.equal(harness.summary()[0].selected, true);
+  assert.equal(harness.summary()[0].ariaDescribedBy, 'h5p-description-correct');
+  assert.equal(harness.summary()[0].className.includes('keepanswer'), true);
+  assert.equal(harness.summary()[1].selected, false);
+  assert.equal(harness.task.__feedback, null);
+  assert.deepEqual(plainState(harness.task.getCurrentState()), {
+    schemaVersion: 1,
+    selected: [0],
+    checked: false,
+    retained: [0],
+    answered: false
+  });
+});
+
+test('retained-answer object state restores composite class, ARIA, protection, and open interaction', () => {
+  const harness = createInteraction('le-mo-*nade* wrong', {
+    behaviour: { keepCorrectAnswers: true },
+    contentData: {
+      previousState: {
+        schemaVersion: 1,
+        selected: [2],
+        checked: false,
+        retained: [2],
+        answered: false
+      }
+    }
+  });
+
+  assert.equal(harness.summary()[2].className, 'noPadding keepanswer');
+  assert.equal(harness.summary()[2].selected, true);
+  assert.equal(harness.summary()[2].ariaDescribedBy, 'h5p-description-correct');
+  assert.equal(harness.task.__feedback, null);
+  assert.equal(harness.task.$wordContainer.attr('aria-disabled'), undefined);
+  assert.equal(harness.task.getAnswerGiven(), false);
+  assert.deepEqual(harness.buttonVisibility(), {
+    'check-answer': true,
+    'show-solution': false,
+    'try-again': false
+  });
+
+  harness.key(2, 13);
+  harness.mouseSelect(2);
+  assert.equal(harness.summary()[2].selected, true);
+
+  harness.mouseSelect(3);
+  assert.equal(harness.summary()[3].selected, true);
+  assert.equal(harness.task.getAnswerGiven(), true);
+});
+
+test('saved state survives JSON serialization and restores checked presentation', () => {
+  const original = createInteraction('*right* wrong');
+  original.mouseSelect(0);
+  original.mouseSelect(1);
+  original.clickButton('check-answer');
+
+  const serializedState = JSON.stringify(original.task.getCurrentState());
+  assert.deepEqual(JSON.parse(serializedState), {
+    schemaVersion: 1,
+    selected: [0, 1],
+    checked: true,
+    retained: [],
+    answered: true
+  });
+
+  const restored = createInteraction('*right* wrong', {
+    contentData: { previousState: JSON.parse(serializedState) }
+  });
+
+  assert.equal(restored.summary()[0].ariaDescribedBy, 'h5p-description-correct');
+  assert.equal(restored.summary()[1].ariaDescribedBy, 'h5p-description-incorrect');
+  assert.deepEqual(restored.task.__triggeredXapi, []);
+  assert.equal(restored.answeredEvents().length, 0);
 });
 
 test('audio media registers through setAudio and not setVideo', () => {
@@ -273,7 +470,13 @@ test('getCurrentState follows current mouse selections', () => {
   harness.mouseSelect(0);
   harness.mouseSelect(2);
 
-  assert.deepEqual(Array.from(harness.task.getCurrentState()), [0, 2]);
+  assert.deepEqual(plainState(harness.task.getCurrentState()), {
+    schemaVersion: 1,
+    selected: [0, 2],
+    checked: false,
+    retained: [],
+    answered: true
+  });
   assert.equal(harness.task.getAnswerGiven(), true);
 });
 

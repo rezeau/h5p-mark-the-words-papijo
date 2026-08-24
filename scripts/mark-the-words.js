@@ -59,8 +59,29 @@ H5P.MarkTheWordsPapiJo = (function ($, Question, Word, KeyboardNav, XapiGenerato
     }, params);
 
     this.contentData = contentData;
+    this.isChecked = false;
+    this.retainedAnswerIndexes = [];
     if (this.contentData !== undefined && this.contentData.previousState !== undefined) {
-      this.previousState = this.contentData.previousState;
+      const previousState = this.contentData.previousState;
+      if (Array.isArray(previousState)) {
+        this.previousState = previousState;
+      }
+      else if (
+        previousState &&
+        previousState.schemaVersion === 1 &&
+        Array.isArray(previousState.selected) &&
+        typeof previousState.checked === 'boolean' &&
+        Array.isArray(previousState.retained) &&
+        typeof previousState.answered === 'boolean'
+      ) {
+        this.previousState = previousState.selected;
+        this.isChecked = previousState.checked;
+        this.retainedAnswerIndexes = previousState.retained;
+        this.restoredAnsweredState = previousState.answered;
+      }
+      else {
+        throw new Error('Stored user state is invalid');
+      }
     }
 
     this.keyboardNavigators = [];
@@ -430,6 +451,8 @@ H5P.MarkTheWordsPapiJo = (function ($, Question, Word, KeyboardNav, XapiGenerato
     if (this.params.behaviour.enableCheckButton) {
       this.addButton('check-answer', this.params.checkAnswerButton, function () {
         self.isAnswered = true;
+        self.isChecked = true;
+        self.retainedAnswerIndexes = [];
         const answers = self.calculateScore();
         self.feedbackSelectedWords();
         if (!self.showEvaluation(answers)) {
@@ -774,7 +797,16 @@ H5P.MarkTheWordsPapiJo = (function ($, Question, Word, KeyboardNav, XapiGenerato
 
   MarkTheWordsPapiJo.prototype.retry = function () {
     this.isAnswered = false;
+    this.isChecked = false;
     this.clearAllMarks(this.keepCorrectAnswers, false);
+    this.retainedAnswerIndexes = this.keepCorrectAnswers
+      ? this.selectableWords.reduce(function (indexes, word, index) {
+        if (word.isCorrect()) {
+          indexes.push(index);
+        }
+        return indexes;
+      }, [])
+      : [];
     this.hideEvaluation();
     this.hideButton('try-again');
     this.hideButton('show-solution');
@@ -798,6 +830,8 @@ H5P.MarkTheWordsPapiJo = (function ($, Question, Word, KeyboardNav, XapiGenerato
 
   MarkTheWordsPapiJo.prototype.resetTask = function () {
     this.isAnswered = false;
+    this.isChecked = false;
+    this.retainedAnswerIndexes = [];
     this.clearAllMarksAndReset();
 
     this.hideEvaluation();
@@ -812,10 +846,10 @@ H5P.MarkTheWordsPapiJo = (function ($, Question, Word, KeyboardNav, XapiGenerato
 
 
   /**
-   * Returns an object containing the selected words
+   * Returns the current task state
    *
    * @public
-   * @returns {object} containing indexes of selected words
+   * @returns {object} Current task state
    */
   MarkTheWordsPapiJo.prototype.getCurrentState = function () {
     const selectedWordsIndexes = [];
@@ -828,7 +862,15 @@ H5P.MarkTheWordsPapiJo = (function ($, Question, Word, KeyboardNav, XapiGenerato
         selectedWordsIndexes.push(swIndex);
       }
     });
-    return selectedWordsIndexes;
+    return {
+      schemaVersion: 1,
+      selected: selectedWordsIndexes,
+      checked: this.isChecked === true,
+      retained: this.retainedAnswerIndexes.filter(function (index) {
+        return selectedWordsIndexes.indexOf(index) !== -1;
+      }),
+      answered: this.isAnswered === true
+    };
   };
 
   /**
@@ -850,6 +892,54 @@ H5P.MarkTheWordsPapiJo = (function ($, Question, Word, KeyboardNav, XapiGenerato
       self.isAnswered = true;
       self.selectableWords[answeredWordIndex].setSelected();
     });
+
+    this.retainedAnswerIndexes.forEach(function (retainedWordIndex) {
+      if (
+        isNaN(retainedWordIndex) ||
+        retainedWordIndex >= self.selectableWords.length ||
+        retainedWordIndex < 0 ||
+        self.previousState.indexOf(retainedWordIndex) === -1 ||
+        !self.selectableWords[retainedWordIndex].isAnswer()
+      ) {
+        throw new Error('Stored user state is invalid');
+      }
+    });
+
+    if (this.restoredAnsweredState !== undefined) {
+      this.isAnswered = this.restoredAnsweredState;
+    }
+  };
+
+  /**
+   * Restore result presentation without triggering learner interaction events.
+   */
+  MarkTheWordsPapiJo.prototype.restoreUserStatePresentation = function () {
+    const self = this;
+
+    if (this.isChecked) {
+      const answers = this.calculateScore();
+      this.feedbackSelectedWords();
+      if (!this.showEvaluation(answers)) {
+        if (this.params.behaviour.enableSolutionsButton && answers.correct < this.answers) {
+          this.showButton('show-solution');
+        }
+        if (this.params.behaviour.enableRetry) {
+          this.showButton('try-again');
+        }
+      }
+      this.$a11yClickableTextLabel.html(this.params.a11yCheckingHeader + ' - ' + this.params.a11yClickableTextLabel);
+      this.hideButton('check-answer');
+      this.toggleSelectable(true);
+      return;
+    }
+
+    if (this.keepCorrectAnswers) {
+      this.retainedAnswerIndexes.forEach(function (retainedWordIndex) {
+        const retainedWord = self.selectableWords[retainedWordIndex];
+        retainedWord.markCheck();
+        retainedWord.markClear(false);
+      });
+    }
   };
 
   /**
@@ -903,6 +993,9 @@ H5P.MarkTheWordsPapiJo = (function ($, Question, Word, KeyboardNav, XapiGenerato
 
     // Register buttons
     this.addButtons();
+
+    // Restore result presentation after feedback and buttons are available.
+    this.restoreUserStatePresentation();
 
   };
 
