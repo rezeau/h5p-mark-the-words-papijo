@@ -230,7 +230,16 @@
         "type": "boolean",
         "label": "Enable \"Show solution\" button",
         "importance": "low",
-        "default": true
+        "default": true,
+        "widget": "showWhen",
+        "showWhen": {
+          "rules": [
+            {
+              "field": "spotTheMistakes",
+              "equals": false
+            }
+          ]
+        }
       },
       {
         "name": "minScore",
@@ -246,10 +255,15 @@
         "unit": "%", 
         "widget": "showWhen",
         "showWhen": {
+          "type": "and",
           "rules": [
             {
               "field": "enableSolutionsButton",
               "equals": true
+            },
+            {
+              "field": "spotTheMistakes",
+              "equals": false
             }
           ]
         }

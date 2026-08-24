@@ -90,6 +90,10 @@ H5P.MarkTheWordsPapiJo = (function ($, Question, Word, KeyboardNav, XapiGenerato
 
     this.spotTheMistakes = this.params.behaviour.spotTheMistakes;
 
+    if (this.spotTheMistakes) {
+      this.params.behaviour.enableSolutionsButton = false;
+    }
+
     if (this.spotTheMistakes || this.params.behaviour.markSelectables) {
       this.params.behaviour.keepCorrectAnswers = false;
     }

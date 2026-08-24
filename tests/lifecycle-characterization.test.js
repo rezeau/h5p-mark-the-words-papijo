@@ -212,6 +212,72 @@ test('custom modes force keepCorrectAnswers off even when supplied as true', () 
   assert.equal(harness.task.keepCorrectAnswers, false);
 });
 
+test('Spot the Mistakes forces local Show Solution off through Check, minScore, and Retry', () => {
+  const harness = createInteraction('*original answer* _mistake_', {
+    behaviour: {
+      spotTheMistakes: true,
+      enableSolutionsButton: true,
+      minScore: 50
+    }
+  });
+
+  assert.equal(harness.task.params.behaviour.enableSolutionsButton, false);
+
+  harness.clickButton('check-answer');
+  assert.equal(harness.buttonVisibility()['show-solution'], false);
+
+  harness.clickButton('try-again');
+  assert.equal(harness.buttonVisibility()['show-solution'], false);
+});
+
+test('restored imperfect checked Spot the Mistakes state keeps local Show Solution hidden', () => {
+  const harness = createInteraction('*original answer* _mistake_', {
+    behaviour: { spotTheMistakes: true, enableSolutionsButton: true },
+    contentData: {
+      previousState: {
+        schemaVersion: 1,
+        selected: [],
+        checked: true,
+        retained: [],
+        answered: true
+      }
+    }
+  });
+
+  assert.equal(harness.score().score, 0);
+  assert.equal(harness.buttonVisibility()['show-solution'], false);
+  assert.equal(harness.buttonVisibility()['try-again'], true);
+});
+
+test('ordinary and Mark Selectables modes still show local solutions after an imperfect Check', () => {
+  const ordinary = createInteraction('*one* *two* wrong', {
+    behaviour: { enableSolutionsButton: true }
+  });
+  ordinary.mouseSelect(0);
+  ordinary.clickButton('check-answer');
+  assert.equal(ordinary.buttonVisibility()['show-solution'], true);
+
+  const markSelectables = createInteraction('plain *one* *two* _wrong_', {
+    behaviour: { markSelectables: true, enableSolutionsButton: true }
+  });
+  markSelectables.mouseSelect(0);
+  markSelectables.clickButton('check-answer');
+  assert.equal(markSelectables.buttonVisibility()['show-solution'], true);
+});
+
+test('public showSolutions contract remains available in Spot the Mistakes mode', () => {
+  const harness = createInteraction('*original answer* _mistake_', {
+    behaviour: { spotTheMistakes: true, enableSolutionsButton: true }
+  });
+
+  harness.task.showSolutions();
+
+  assert.equal(harness.summary()[1].ariaDescribedBy, 'h5p-description-missed-mistake');
+  assert.equal(harness.task.$wordContainer.attr('aria-disabled'), 'true');
+  assert.deepEqual(harness.task.__reads, ['Task is updated to contain the solution.']);
+  assert.deepEqual(harness.task.__triggeredXapi, []);
+});
+
 test('legacy array state restores ordinary selected indexes and remains backward compatible', () => {
   const harness = createInteraction('*answer* wrong', {
     contentData: { previousState: [1] }

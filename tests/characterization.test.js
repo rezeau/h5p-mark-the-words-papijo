@@ -49,6 +49,25 @@ test('translation arrays align with semantics and authoring help avoids known ma
   assert.doesNotMatch(rawSemantics, /&[A-Za-z][A-Za-z0-9]+\s+;/);
 });
 
+test('Spot the Mistakes hides local solution and minimum-score authoring controls', () => {
+  const semantics = JSON.parse(fs.readFileSync(path.resolve(__dirname, '..', 'semantics.json'), 'utf8'));
+  const behaviour = semantics.find((field) => field.name === 'behaviour');
+  const enableSolutionsButton = behaviour.fields.find((field) => field.name === 'enableSolutionsButton');
+  const minScore = behaviour.fields.find((field) => field.name === 'minScore');
+
+  assert.equal(enableSolutionsButton.default, true);
+  assert.deepEqual(enableSolutionsButton.showWhen, {
+    rules: [{ field: 'spotTheMistakes', equals: false }]
+  });
+  assert.deepEqual(minScore.showWhen, {
+    type: 'and',
+    rules: [
+      { field: 'enableSolutionsButton', equals: true },
+      { field: 'spotTheMistakes', equals: false }
+    ]
+  });
+});
+
 test('stylesheet scopes retry behavior and provides theme fallbacks', () => {
   const stylesheet = fs.readFileSync(
     path.resolve(__dirname, '..', 'styles', 'mark-the-words-papijo.css'),
